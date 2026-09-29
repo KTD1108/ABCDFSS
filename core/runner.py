@@ -40,6 +40,9 @@ def makeConfig():
     config.fitting.lr = 1e-2
     config.fitting.debug = args.verbosity > 2
     config.model.out_channels = 64
+    config.model.adapter_type = getattr(args, 'adapter_type', 'depthwise_separable_3x3')
+    config.model.fusion_mode = getattr(args, 'fusion_mode', 'softmax_margin')
+    config.model.fusion_temp = getattr(args, 'fusion_temp', 1.0)
     config.model.debug = args.verbosity > 0
     config.featext.fit_every_episode = False
     config.aug.blurkernelsize = [1]
@@ -66,7 +69,9 @@ def makeFeatureMaker(dataset, config, device='cpu', randseed=2, feat_extr_method
 # Motivation of this class: Handle every task individually -> create an object for each task, example: see main.py
 class SingleSampleEval:
     def __init__(self, batch, feat_maker):
-        self.damat_comp = dautils.DAMatComparison()
+        fusion_mode = getattr(feat_maker.config.model, 'fusion_mode', 'softmax_margin')
+        fusion_temp = getattr(feat_maker.config.model, 'fusion_temp', 1.0)
+        self.damat_comp = dautils.DAMatComparison(fusion_mode=fusion_mode, fusion_temp=fusion_temp)
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.batch = batch
         self.feat_maker = feat_maker

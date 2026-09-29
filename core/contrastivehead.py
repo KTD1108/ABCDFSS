@@ -27,6 +27,9 @@ class ContrastiveConfig:
                 'model': {
                     'out_channels': 64,
                     'kernel_size': 1,
+                    'adapter_type': 'depthwise_separable_3x3',  # 'conv1x1' or 'depthwise_separable_3x3'
+                    'fusion_mode': 'softmax_margin',            # 'mean', 'softmax_margin', 'learnable'
+                    'fusion_temp': 1.0,
                     'prepend_relu': False,
                     'append_normalize': False,
                     'debug': False
@@ -320,6 +323,51 @@ class ContrastiveFeatureTransformer(nn.Module):
             if config_fit.debug and epoch % 10 == 0: print('loss', loss.detach())
 
 
+class DepthwiseSeparableFeatureTransformer(ContrastiveFeatureTransformer):
+    r""" Adapter with Depthwise Separable Conv 3x3 for spatial context learning without overfitting """
+    def __init__(self, in_channels, config_model):
+        super(DepthwiseSeparableFeatureTransformer, self).__init__(in_channels, config_model)
+        out_channels = config_model.out_channels
+
+        # 1. Depthwise 3x3 Conv: captures local spatial context with replicate padding
+        self.dw_conv = nn.Conv2d(
+            in_channels, in_channels, kernel_size=3,
+            padding=1, groups=in_channels, bias=False, padding_mode='replicate'
+        )
+        self.dw_bn = nn.BatchNorm2d(in_channels)
+        self.dw_act = nn.ReLU(inplace=True)
+
+        # 2. Pointwise 1x1 Conv: channel reduction to out_channels (64)
+        self.pw_conv = nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False)
+        self.pw_bn = nn.BatchNorm2d(out_channels)
+        self.pw_act = nn.ReLU(inplace=True)
+
+        # 3. Second linear 1x1 projection
+        self.linear = nn.Conv2d(out_channels, out_channels, kernel_size=1)
+
+        # 4. Residual shortcut projection
+        self.shortcut = nn.Sequential(
+            nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False),
+            nn.BatchNorm2d(out_channels)
+        )
+
+        # Alias for debug gradient inspection
+        self.conv = self.pw_conv
+
+    def forward(self, x):
+        if self.prepend_relu:
+            x = nn.ReLU()(x)
+
+        res = self.shortcut(x)
+        out = self.dw_act(self.dw_bn(self.dw_conv(x)))
+        out = self.pw_act(self.pw_bn(self.pw_conv(out)))
+        out = self.linear(out) + res
+
+        if self.append_normalize:
+            out = F.normalize(out, p=2, dim=1)
+        return out
+
+
 import numpy as np
 import torch.nn.functional as F
 from torchvision.transforms.functional import affine
@@ -490,7 +538,8 @@ class CTrBuilder:
             sfeataug = sfeataug.view(-1, *qfeataug.shape[-3:])
 
             device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-            contrastive_head = ContrastiveFeatureTransformer(in_channels=ch, config_model=self.config.model).to(device)
+            adapter_cls = DepthwiseSeparableFeatureTransformer if getattr(self.config.model, 'adapter_type', 'conv1x1') == 'depthwise_separable_3x3' else ContrastiveFeatureTransformer
+            contrastive_head = adapter_cls(in_channels=ch, config_model=self.config.model).to(device)
 
             # 3. Feature volumes from untransformed image need to be geometrically mapped to allow for dense matching
             mapped_qfeat = self.augmentator.applyAffines(qfeat)

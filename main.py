@@ -11,6 +11,12 @@ def parse_opts():
     parser.add_argument('--nshot', type=int, default=1)
     parser.add_argument('--adapt-to', type=str, default='first-episode', choices=['first-episode', 'every-episode'])
     parser.add_argument('--postprocessing', type=str, default='off', choices=['off', 'dynamic', 'always'])
+    parser.add_argument('--adapter-type', type=str, default='depthwise_separable_3x3', choices=['depthwise_separable_3x3', 'conv1x1'],
+                        help='Adapter architecture: depthwise_separable_3x3 (proposed) or conv1x1 (baseline)')
+    parser.add_argument('--fusion-mode', type=str, default='softmax_margin', choices=['softmax_margin', 'mean', 'learnable'],
+                        help='Multi-layer fusion mode: softmax_margin (proposed), mean (baseline flat average), or learnable')
+    parser.add_argument('--fusion-temp', type=float, default=1.0,
+                        help='Softmax temperature scaling for layer fusion weights')
     parser.add_argument('--logpath', type=str, default='./logs')
     parser.add_argument('--verbosity', type=int, default=0)
 

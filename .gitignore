@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+logs/
+datasets/
+data/datasets/
+.ipynb_checkpoints/
+.vscode/
+.idea/
+*.zip
+*.tar.gz
