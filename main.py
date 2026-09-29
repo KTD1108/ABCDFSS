@@ -42,4 +42,7 @@ if __name__ == '__main__':
         sseval.calc_metrics()
         average_meter.update(sseval)
         average_meter.write(idx)
-    print('Result m|FB:', average_meter.average_meter.compute_iou())
+    miou, fb_iou = average_meter.average_meter.compute_iou()
+    final_msg = f"\n================ FINAL RESULTS ================\nBenchmark: {args.benchmark.upper()} | Shot: {args.nshot}\nFinal mIoU:   {miou:.2f}%\nFinal FB-IoU: {fb_iou:.2f}%\n================================================"
+    print(final_msg)
+    runner.Logger.info(final_msg)
