@@ -38,6 +38,11 @@ image = (
 )
 
 
+DATASET_DRIVE_IDS = {
+    "deepglobe": "1ktPxbmkNzNsZuEO_sUvyt27T-w8xFbzd",
+    "fss1000": "1tt3dkdASjXt58t-2A9zeucZ397ZRF7In",
+}
+
 # ---------------------------------------------------------------------------
 # FUNCTION 1: Tải dữ liệu từ Google Drive vào Modal Volume (chỉ chạy 1 lần)
 # ---------------------------------------------------------------------------
@@ -46,13 +51,19 @@ image = (
     volumes={"/data": volume},
     timeout=7200,  # 2 giờ cho các file lớn
 )
-def sync_from_gdrive(drive_id: str, target_name: str, is_folder: bool = False):
+def sync_from_gdrive(target_name: str = "deepglobe", drive_id: str = "", is_folder: bool = False):
     r"""
     Tải file zip hoặc folder từ Google Drive trực tiếp vào Modal Volume /data/{target_name}
     Ví dụ:
-      modal run modal_runner.py::sync_from_gdrive --drive-id "1abcxyz..." --target-name "deepglobe"
+      modal run modal_runner.py::sync_from_gdrive --target-name deepglobe
+      modal run modal_runner.py::sync_from_gdrive --target-name fss1000
     """
     import gdown
+
+    if not drive_id:
+        drive_id = DATASET_DRIVE_IDS.get(target_name, "")
+    if not drive_id:
+        raise ValueError(f"Không tìm thấy Google Drive ID cho '{target_name}'. Vui lòng truyền --drive-id.")
 
     os.makedirs(f"/data/{target_name}", exist_ok=True)
     temp_zip = f"/tmp/{target_name}.zip"
