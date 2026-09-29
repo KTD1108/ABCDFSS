@@ -16,6 +16,16 @@ class DatasetFSS(Dataset):
         self.shot = shot
 
         self.base_path = os.path.join(datapath, 'FSS-1000')
+        if not os.path.exists(self.base_path) and os.path.exists(datapath):
+            for sub in os.listdir(datapath):
+                cand = os.path.join(datapath, sub)
+                if os.path.isdir(cand):
+                    if os.path.exists(os.path.join(cand, 'FSS-1000')):
+                        self.base_path = os.path.join(cand, 'FSS-1000')
+                        print(f"[*] FSS-1000 auto-detected base_path at: {self.base_path}")
+                        break
+            if not os.path.exists(self.base_path):
+                self.base_path = datapath
 
         # Given predefined test split, load randomly generated training/val splits:
         # (reference regarding trn/val/test splits: https://github.com/HKUSTCV/FSS-1000/issues/7))

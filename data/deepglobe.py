@@ -20,8 +20,17 @@ class DatasetDeepglobe(Dataset):
         self.to_annpath = lambda p: p.replace('jpg', 'png').replace('origin', 'groundtruth')
 
         self.categories = ['1','2','3','4','5','6']
-
         self.class_ids = range(0, 6)
+
+        # Auto-detect if categories '1'..'6' are inside a subfolder (e.g. datapath/deepglobe)
+        if os.path.exists(self.base_path) and not any(os.path.exists(os.path.join(self.base_path, c, 'test', 'origin')) for c in self.categories):
+            for sub in os.listdir(self.base_path):
+                cand = os.path.join(self.base_path, sub)
+                if os.path.isdir(cand) and any(os.path.exists(os.path.join(cand, c, 'test', 'origin')) for c in self.categories):
+                    self.base_path = cand
+                    print(f"[*] Deepglobe auto-detected base_path at: {self.base_path}")
+                    break
+
         self.img_metadata_classwise, self.num_images = self.build_img_metadata_classwise()
 
         self.transform = transform
@@ -63,14 +72,11 @@ class DatasetDeepglobe(Dataset):
         query_img = Image.open(query_name).convert('RGB')
         support_imgs = [Image.open(name).convert('RGB') for name in support_names]
 
-        query_id = query_name.split('/')[-1].split('.')[0]
-        ann_path = os.path.join(self.base_path, query_name.split('/')[-4], 'test', 'groundtruth')
-        query_name = os.path.join(ann_path, query_id) + '.png'
-        support_ids = [name.split('/')[-1].split('.')[0] for name in support_names]
-        support_names = [os.path.join(ann_path, sid) + '.png' for name, sid in zip(support_names, support_ids)]
+        query_mask_path = self.to_annpath(query_name)
+        support_mask_paths = [self.to_annpath(name) for name in support_names]
 
-        query_mask = self.read_mask(query_name)
-        support_masks = [self.read_mask(name) for name in support_names]
+        query_mask = self.read_mask(query_mask_path)
+        support_masks = [self.read_mask(name) for name in support_mask_paths]
 
         return query_img, query_mask, support_imgs, support_masks
 

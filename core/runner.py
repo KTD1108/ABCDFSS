@@ -24,6 +24,12 @@ def set_args(_args):
 def makeDataloader():
     FSSDataset.initialize(img_size=400, datapath=args.datapath)
     dataloader = FSSDataset.build_dataloader(args.benchmark, args.bsz, args.nworker, args.fold, 'test', args.nshot)
+    if len(dataloader) == 0:
+        raise RuntimeError(
+            f"\n[!] LỖI: Dataloader trả về 0 mẫu (len=0) cho benchmark '{args.benchmark}' tại datapath '{args.datapath}'!\n"
+            f"Nguyên nhân: Không tìm thấy ảnh hoặc thư mục giải nén chưa khớp.\n"
+            f"Hãy chạy lệnh kiểm tra: !ls -la {args.datapath}"
+        )
     return dataloader
 
 
