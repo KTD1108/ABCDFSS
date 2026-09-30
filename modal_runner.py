@@ -167,9 +167,9 @@ def evaluate(
         print("[!] Vui lòng chạy `modal run modal_runner.py::check_volume` để xem các thư mục hiện có.")
         return
 
-    # Chuẩn bị lệnh gọi main.py
+    # Chuẩn bị lệnh gọi evaluate.py
     cmd = [
-        "python", "main.py",
+        "python", "evaluate.py",
         "--benchmark", benchmark,
         "--datapath", datapath,
         "--nshot", str(nshot),

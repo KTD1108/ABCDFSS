@@ -32,17 +32,21 @@ def parse_args():
                         help='Path to dataset directory')
     parser.add_argument('--nshot', type=int, default=1,
                         help='Number of support shots (default: 1)')
-    parser.add_argument('--adapter', type=str, default='depthwise_separable_3x3',
+    parser.add_argument('--adapter', '--adapter-type', dest='adapter', type=str, default='depthwise_separable_3x3',
                         choices=['depthwise_separable_3x3', 'conv1x1'],
                         help='Adapter architecture: depthwise_separable_3x3 or conv1x1')
-    parser.add_argument('--fusion', type=str, default='softmax_margin',
-                        choices=['softmax_margin', 'mean'],
+    parser.add_argument('--fusion', '--fusion-mode', dest='fusion', type=str, default='softmax_margin',
+                        choices=['softmax_margin', 'mean', 'learnable'],
                         help='Multi-layer fusion method: softmax_margin or mean')
     parser.add_argument('--fusion-temp', type=float, default=1.0,
                         help='Softmax temperature scaling factor')
     parser.add_argument('--adapt-to', type=str, default='first-episode',
                         choices=['first-episode', 'every-episode'],
                         help='Adaptation mode: first-episode (quick-infer) or every-episode')
+    parser.add_argument('--postprocessing', type=str, default='off',
+                        help='Postprocessing option (off by default)')
+    parser.add_argument('--verbosity', type=int, default=1,
+                        help='Verbosity level')
     parser.add_argument('--img-size', type=int, default=400,
                         help='Input image resolution (default: 400)')
     parser.add_argument('--device', type=str, default='cuda',
