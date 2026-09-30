@@ -19,6 +19,13 @@ class DatasetISIC(Dataset):
         self.base_path = os.path.join(datapath)
         self.categories = ['1', '2', '3']
 
+        if os.path.exists(self.base_path) and not os.path.exists(os.path.join(self.base_path, 'ISIC2018_Task1-2_Training_Input')):
+            for root, dirs, files in os.walk(self.base_path):
+                if 'ISIC2018_Task1-2_Training_Input' in dirs:
+                    self.base_path = root
+                    print(f"[*] ISIC auto-detected base_path at: {self.base_path}")
+                    break
+
         self.class_ids = range(0, 3)
         self.img_metadata_classwise,self.num_images = self.build_img_metadata_classwise()
 

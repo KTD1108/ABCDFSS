@@ -17,6 +17,13 @@ class DatasetLung(Dataset):
         self.num_val = num_val
 
         self.base_path = os.path.join(datapath)
+        if os.path.exists(self.base_path) and not os.path.exists(os.path.join(self.base_path, 'CXR_png')):
+            for root, dirs, files in os.walk(self.base_path):
+                if 'CXR_png' in dirs:
+                    self.base_path = root
+                    print(f"[*] Lung auto-detected base_path at: {self.base_path}")
+                    break
+
         self.img_path = os.path.join(self.base_path, 'CXR_png')
         self.ann_path = os.path.join(self.base_path, 'masks')
 
