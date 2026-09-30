@@ -17,10 +17,17 @@ class DatasetSUIM(Dataset):
         self.num_val = num_val
 
         self.base_path = os.path.join(datapath)
-        if os.path.exists(self.base_path) and not os.path.exists(os.path.join(self.base_path, 'images')):
+        if os.path.exists(os.path.join(self.base_path, 'suim_merged')):
+            self.base_path = os.path.join(self.base_path, 'suim_merged')
+            print(f"[*] SUIM auto-detected base_path at: {self.base_path}")
+        elif os.path.exists(self.base_path) and not (os.path.exists(os.path.join(self.base_path, 'images')) and os.path.exists(os.path.join(self.base_path, 'masks'))):
             for root, dirs, files in os.walk(self.base_path):
                 if 'images' in dirs and 'masks' in dirs:
                     self.base_path = root
+                    print(f"[*] SUIM auto-detected base_path at: {self.base_path}")
+                    break
+                elif 'suim_merged' in dirs:
+                    self.base_path = os.path.join(root, 'suim_merged')
                     print(f"[*] SUIM auto-detected base_path at: {self.base_path}")
                     break
 
@@ -70,7 +77,13 @@ class DatasetSUIM(Dataset):
     def load_frame(self, query_mask_path, support_mask_paths):
         def maskpath_to_imgpath(maskpath):
             filename = os.path.splitext(os.path.basename(maskpath))[0]
-            return os.path.join(self.img_path, filename) + '.jpg'
+            jpg_path = os.path.join(self.img_path, filename + '.jpg')
+            if os.path.exists(jpg_path):
+                return jpg_path
+            png_path = os.path.join(self.img_path, filename + '.png')
+            if os.path.exists(png_path):
+                return png_path
+            return jpg_path
 
         query_img = Image.open(maskpath_to_imgpath(query_mask_path)).convert('RGB')
 
