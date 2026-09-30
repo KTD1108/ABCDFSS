@@ -71,7 +71,6 @@ ABCDFSS/
 ├── README.md                   # Complete architectural guide & benchmark documentation
 ├── requirements.txt            # Minimal runtime dependencies
 ├── evaluate.py                 # Standalone, clean evaluation CLI
-├── modal_runner.py             # Optional serverless Modal GPU launcher
 │
 └── src/                        # 100% Independent Clean Modular Codebase
     ├── models/
