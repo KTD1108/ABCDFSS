@@ -8,6 +8,14 @@ Usage examples:
     python evaluate.py --benchmark suim --datapath /path/to/suim --adapter conv1x1 --fusion softmax_margin
 """
 
+import sys
+import os
+
+# Ensure project root is always in sys.path for direct or subprocess invocation
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 import argparse
 import torch
 import random

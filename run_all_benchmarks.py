@@ -32,6 +32,23 @@ def check_or_download_dataset(benchmark: str, default_local_path: str = None, ka
             print(f"[✓] Tìm thấy '{benchmark}' tại cache: {c}")
             return c
 
+    # Special fallback for FSS-1000 via Google Drive
+    if benchmark == 'fss' and not os.path.exists('./datasets/fss1000'):
+        print("[*] Đang tải FSS-1000 từ Google Drive qua gdown...")
+        os.makedirs("./datasets", exist_ok=True)
+        try:
+            import gdown, zipfile
+            zip_path = "./datasets/fss1000.zip"
+            if not os.path.exists(zip_path):
+                gdown.download(id="1tt3dkdASjXt58t-2A9zeucZ397ZRF7In", output=zip_path, quiet=False)
+            print("[*] Đang giải nén FSS-1000...")
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall("./datasets/fss1000")
+            print("[✓] Giải nén FSS-1000 thành công!")
+            return "./datasets/fss1000"
+        except Exception as e:
+            print(f"[!] Lỗi khi tải FSS-1000: {e}")
+
     # Download via kagglehub if available
     if kaggle_slug:
         print(f"[*] Đang tải '{benchmark}' từ Kaggle ({kaggle_slug})...")
@@ -148,7 +165,10 @@ def main():
         ]
 
         print(f"[*] Thực thi lệnh: {' '.join(cmd)}")
-        result = subprocess.run(cmd)
+        env = os.environ.copy()
+        project_root = os.path.dirname(os.path.abspath(__file__))
+        env["PYTHONPATH"] = project_root + (":" + env.get("PYTHONPATH", "") if env.get("PYTHONPATH") else "")
+        result = subprocess.run(cmd, cwd=project_root, env=env)
         if result.returncode != 0:
             print(f"[!] Lỗi khi chạy thử nghiệm {exp['name']}")
 
