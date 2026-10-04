@@ -164,64 +164,98 @@ def main():
         'deepglobe': check_or_download_dataset('deepglobe', kaggle_slug='heyoujue/deepglobe')
     }
 
-    # 2. Danh sách các thử nghiệm cần chạy
+    # 2. Danh sách 10 thử nghiệm đối sánh toàn diện (Conv1x1 vs Depthwise 3x3, No-PP, 1-shot)
     experiments = [
-        # Domain 1: Natural Objects
+        # Domain 1: Natural Objects (FSS-1000)
         {
-            'name': 'FSS-1000 (Cải tiến Đề xuất)',
+            'name': 'FSS-1000 (Adapter Conv1x1 - Baseline)',
             'benchmark': 'fss',
+            'domain': 'Vật thể tự nhiên',
+            'datapath': dataset_paths['fss'],
+            'adapter': 'conv1x1',
+            'fusion': 'softmax_margin',
+            'nshot': 1
+        },
+        {
+            'name': 'FSS-1000 (Adapter Depthwise 3x3 - Đề xuất)',
+            'benchmark': 'fss',
+            'domain': 'Vật thể tự nhiên',
             'datapath': dataset_paths['fss'],
             'adapter': 'depthwise_separable_3x3',
             'fusion': 'softmax_margin',
             'nshot': 1
         },
-        # Domain 2: Dermatology
+        # Domain 2: Dermatology (ISIC 2018)
         {
-            'name': 'ISIC (Cải tiến Fusion)',
+            'name': 'ISIC (Adapter Conv1x1 - Baseline)',
             'benchmark': 'isic',
+            'domain': 'Da liễu (Y tế)',
             'datapath': dataset_paths['isic'],
             'adapter': 'conv1x1',
             'fusion': 'softmax_margin',
             'nshot': 1
         },
         {
-            'name': 'ISIC (Cải tiến Adapter)',
+            'name': 'ISIC (Adapter Depthwise 3x3 - Đề xuất)',
             'benchmark': 'isic',
+            'domain': 'Da liễu (Y tế)',
             'datapath': dataset_paths['isic'],
             'adapter': 'depthwise_separable_3x3',
             'fusion': 'softmax_margin',
             'nshot': 1
         },
-        # Domain 3: Underwater
+        # Domain 3: Underwater (SUIM)
         {
-            'name': 'SUIM (Cải tiến Fusion)',
+            'name': 'SUIM (Adapter Conv1x1 - Baseline)',
             'benchmark': 'suim',
+            'domain': 'Dưới nước',
             'datapath': dataset_paths['suim'],
             'adapter': 'conv1x1',
             'fusion': 'softmax_margin',
             'nshot': 1
         },
         {
-            'name': 'SUIM (Cải tiến Adapter)',
+            'name': 'SUIM (Adapter Depthwise 3x3 - Đề xuất)',
             'benchmark': 'suim',
+            'domain': 'Dưới nước',
             'datapath': dataset_paths['suim'],
             'adapter': 'depthwise_separable_3x3',
             'fusion': 'softmax_margin',
             'nshot': 1
         },
-        # Domain 4: Radiology
+        # Domain 4: Radiology (Lung / CXR)
         {
-            'name': 'Lung / CXR (Cải tiến Đề xuất)',
+            'name': 'Lung / CXR (Adapter Conv1x1 - Baseline)',
             'benchmark': 'lung',
+            'domain': 'X-quang lồng ngực',
+            'datapath': dataset_paths['lung'],
+            'adapter': 'conv1x1',
+            'fusion': 'softmax_margin',
+            'nshot': 1
+        },
+        {
+            'name': 'Lung / CXR (Adapter Depthwise 3x3 - Đề xuất)',
+            'benchmark': 'lung',
+            'domain': 'X-quang lồng ngực',
             'datapath': dataset_paths['lung'],
             'adapter': 'depthwise_separable_3x3',
             'fusion': 'softmax_margin',
             'nshot': 1
         },
-        # Domain 5: Satellite
+        # Domain 5: Satellite (DeepGlobe)
         {
-            'name': 'Deepglobe (Cải tiến Đề xuất)',
+            'name': 'Deepglobe (Adapter Conv1x1 - Baseline)',
             'benchmark': 'deepglobe',
+            'domain': 'Vệ tinh viễn thám',
+            'datapath': dataset_paths['deepglobe'],
+            'adapter': 'conv1x1',
+            'fusion': 'softmax_margin',
+            'nshot': 1
+        },
+        {
+            'name': 'Deepglobe (Adapter Depthwise 3x3 - Đề xuất)',
+            'benchmark': 'deepglobe',
+            'domain': 'Vệ tinh viễn thám',
             'datapath': dataset_paths['deepglobe'],
             'adapter': 'depthwise_separable_3x3',
             'fusion': 'softmax_margin',
