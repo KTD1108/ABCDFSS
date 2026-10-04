@@ -43,31 +43,71 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
 
     # 2. Xử lý chuyên biệt cho FSS-1000
     if benchmark == 'fss':
-        import shutil
+        import shutil, zipfile, urllib.request
+        from tqdm import tqdm
+
         fss_check_dirs = [
-            "/root/.cache/kagglehub/datasets/nikhilpandey360/fss-1000-a-1000-class-few-shot-segmentation/versions/1",
-            "/root/.cache/kagglehub/datasets/itsahmad/fss-1000/versions/1",
+            "./datasets/fewshot1000",
             "./datasets/fss1000",
-            "./datasets/fss"
+            "./datasets/fss",
+            "/root/.cache/kagglehub/datasets/nikhilpandey360/fss-1000-a-1000-class-few-shot-segmentation/versions/1",
+            "/root/.cache/kagglehub/datasets/itsahmad/fss-1000/versions/1"
         ]
         for cd in fss_check_dirs:
             if is_valid_fss_dir(cd):
+                for root, dirs, files in os.walk(cd):
+                    if len(dirs) >= 10:
+                        sample_sub = dirs[0]
+                        sub_p = os.path.join(root, sample_sub)
+                        if os.path.isdir(sub_p):
+                            try:
+                                if any(f.endswith('.jpg') for f in os.listdir(sub_p)):
+                                    print(f"[✓] Đã có sẵn FSS-1000 hợp lệ tại: {root}")
+                                    return root
+                            except Exception:
+                                pass
                 print(f"[✓] Đã có sẵn FSS-1000 hợp lệ tại: {cd}")
                 return cd
 
-        # Nếu thư mục ./datasets/fss1000 bị rỗng hoặc lỗi, dọn dẹp để tải lại
-        if os.path.exists("./datasets/fss1000"):
-            shutil.rmtree("./datasets/fss1000", ignore_errors=True)
+        # Dọn dẹp thư mục lỗi trước khi tải mới
+        for bad_dir in ["./datasets/fss1000", "./datasets/fewshot1000"]:
+            if os.path.exists(bad_dir):
+                shutil.rmtree(bad_dir, ignore_errors=True)
 
-        print("[*] Đang tự động tải FSS-1000 từ Google Drive...")
         os.makedirs("./datasets", exist_ok=True)
         zip_path = "./datasets/fss1000.zip"
-        dest_dir = "./datasets/fss1000"
-        gdrive_ids = ["16TgqOeI_0P41Eh3jWQlxlRXG9KIqtMgI", "1tt3dkdASjXt58t-2A9zeucZ397ZRF7In"]
 
+        # Ưu tiên 1: Tải trực tiếp siêu tốc từ Hugging Face CDN (không giới hạn quota, không cần API key)
+        hf_url = "https://huggingface.co/datasets/zhaoyuan666/ConceptSeg-Benchmark/resolve/main/fewshot1000.zip"
+        try:
+            print("[*] Đang tự động tải FSS-1000 từ Hugging Face CDN (679 MB)...")
+            req = urllib.request.Request(hf_url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req) as resp, open(zip_path, 'wb') as out_f:
+                total_size = int(resp.headers.get('Content-Length', 0))
+                with tqdm(total=total_size, unit='B', unit_scale=True, desc="fewshot1000.zip") as pbar:
+                    while True:
+                        chunk = resp.read(1024 * 1024)
+                        if not chunk:
+                            break
+                        out_f.write(chunk)
+                        pbar.update(len(chunk))
+
+            if os.path.exists(zip_path) and os.path.getsize(zip_path) > 100000000:
+                print("[*] Đang giải nén FSS-1000...")
+                with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                    zip_ref.extractall("./datasets")
+                for root, dirs, files in os.walk("./datasets"):
+                    if is_valid_fss_dir(root):
+                        print(f"[✓] Tải và giải nén FSS-1000 thành công vào: {root}")
+                        return root
+        except Exception as hf_err:
+            print(f"[-] Lỗi tải Hugging Face ({hf_err}), chuyển sang Google Drive...")
+
+        # Ưu tiên 2: Tải từ Google Drive qua gdown
+        gdrive_ids = ["16TgqOeI_0P41Eh3jWQlxlRXG9KIqtMgI", "1tt3dkdASjXt58t-2A9zeucZ397ZRF7In"]
         for gid in gdrive_ids:
             try:
-                import gdown, zipfile
+                import gdown
                 if os.path.exists(zip_path) and os.path.getsize(zip_path) < 10000000:
                     os.remove(zip_path)
                 if not os.path.exists(zip_path):
@@ -76,16 +116,16 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
                 if os.path.exists(zip_path) and os.path.getsize(zip_path) > 10000000:
                     print("[*] Đang giải nén FSS-1000...")
                     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                        zip_ref.extractall(dest_dir)
-                    for root, dirs, files in os.walk(dest_dir):
+                        zip_ref.extractall("./datasets/fss1000")
+                    for root, dirs, files in os.walk("./datasets/fss1000"):
                         if is_valid_fss_dir(root):
                             print(f"[✓] Tải và giải nén FSS-1000 thành công vào: {root}")
                             return root
             except Exception as gde:
                 print(f"[-] Lỗi với Google Drive ID {gid}: {gde}")
 
-        print("[!] Không thể tự động tải FSS-1000 từ Google Drive.")
-        return dest_dir
+        print("[!] Không thể tự động tải FSS-1000 từ internet.")
+        return "./datasets/fss1000"
 
     # 3. Kiểm tra thư mục cục bộ ./datasets
     local_candidates = [
