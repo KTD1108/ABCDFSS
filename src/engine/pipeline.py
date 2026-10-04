@@ -159,16 +159,17 @@ class CDFSSEngine:
 
         return pred_mask, q_mask, class_id
 
-    def evaluate_dataset(self, dataloader, benchmark_name: str = "dataset"):
+    def evaluate_dataset(self, dataloader, benchmark_name: str = "dataset", max_episodes: int = None):
         """
         Runs complete evaluation loop across the dataset and outputs formatted metrics.
         """
+        total_episodes = min(len(dataloader), max_episodes) if max_episodes else len(dataloader)
         print(f"\n:=========== CD-FSS Clean Framework Evaluation: {benchmark_name.upper()} ===========")
         print(f"| Device:         {self.device}")
         print(f"| Adapter Type:   {self.adapter_type}")
         print(f"| Fusion Mode:    {self.fusion_mode} (temp={self.fusion_temp})")
         print(f"| Adapt Mode:     {self.adapt_mode}")
-        print(f"| Total Episodes: {len(dataloader)}")
+        print(f"| Total Episodes: {total_episodes}")
         print(f":========================================================================\n")
 
         dataset = getattr(dataloader, 'dataset', None)
@@ -177,12 +178,14 @@ class CDFSSEngine:
 
         start_time = time.time()
         for idx, batch in enumerate(dataloader):
+            if max_episodes is not None and idx >= max_episodes:
+                break
             pred_mask, gt_mask, class_id = self.evaluate_episode(batch)
             tracker.update(pred_mask, gt_mask, class_id)
 
-            if (idx + 1) % 50 == 0 or (idx + 1) == len(dataloader) or idx == 0:
+            if (idx + 1) % 50 == 0 or (idx + 1) == total_episodes or idx == 0:
                 current_metrics = tracker.get_metrics()
-                print(f"[Batch: {idx + 1:04d}/{len(dataloader):04d}]  mIoU: {current_metrics['mIoU']:5.2f}%  |  FB-IoU: {current_metrics['FB-IoU']:5.2f}%")
+                print(f"[Batch: {idx + 1:04d}/{total_episodes:04d}]  mIoU: {current_metrics['mIoU']:5.2f}%  |  FB-IoU: {current_metrics['FB-IoU']:5.2f}%")
 
         total_time = time.time() - start_time
         final_metrics = tracker.get_metrics()

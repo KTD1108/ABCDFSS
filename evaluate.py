@@ -51,6 +51,8 @@ def parse_args():
     parser.add_argument('--adapt-to', type=str, default='first-episode',
                         choices=['first-episode', 'every-episode'],
                         help='Adaptation mode: first-episode (quick-infer) or every-episode')
+    parser.add_argument('--episodes', type=int, default=None,
+                        help='Maximum number of episodes to evaluate (e.g. 1000 for standard CVPR benchmark)')
     parser.add_argument('--postprocessing', type=str, default='off',
                         help='Postprocessing option (off by default)')
     parser.add_argument('--verbosity', type=int, default=1,
@@ -122,7 +124,7 @@ def main():
     )
 
     # 3. Run Evaluation Loop
-    results = engine.evaluate_dataset(dataloader, benchmark_name=args.benchmark)
+    results = engine.evaluate_dataset(dataloader, benchmark_name=args.benchmark, max_episodes=args.episodes)
 
     # Append to master JSON summary
     summary_file = os.path.join(args.logpath, "summary_records.jsonl")
