@@ -67,15 +67,19 @@ Dự án này giải quyết triệt để 2 vấn đề trên thông qua thiế
 
 ## 🏆 3. Bảng Kết Quả Thực Nghiệm Toàn Diện (1-Shot, No-PP)
 
-Tất cả các thử nghiệm được thực hiện trên GPU NVIDIA T4, đánh giá 100% dữ liệu kiểm thử thực tế và ở chế độ **`no-pp`** (không dùng hậu xử lý CRF ngoài) để đảm bảo đánh giá khách quan năng lực biểu diễn của mạng nơ-ron:
+Tất cả các thử nghiệm được thực hiện trên GPU NVIDIA (CUDA), đánh giá 100% dữ liệu kiểm thử thực tế và ở chế độ **`no-pp`** (không dùng hậu xử lý CRF ngoài) với cơ chế thích ứng **Softmax-Weighted Layer Fusion**:
 
-| Bộ dữ liệu (Miền kiểm thử) | Baseline Bài Báo (Table 4) | Thử nghiệm 3x3 của tác giả (Table 9a) | **Mô hình của bạn: Depthwise 3x3 + Softmax** | **Mô hình của bạn: Conv 1x1 + Softmax** | Đóng Góp & Vị Thế Khoa Học |
-| :--- | :---: | :---: | :---: | :---: | :--- |
-| **FSS-1000** *(Ảnh tự nhiên)* | 69.30% | 67.70% | **70.48%** 🏆 | — | **VƯỢT KỶ LỤC BÀI BÁO (+1.18% mIoU)** |
-| **ISIC 2018** *(Da liễu y tế)* | 41.80% | ~33.90% *(sụp đổ)* | **39.46%** *(cứu vãn +5.56%)* | **41.93%** 🏆 | **VƯỢT KỶ LỤC BÀI BÁO (+0.13% mIoU)** |
-| **SUIM** *(Ảnh dưới nước)* | 35.00% | *(giảm sâu)* | **34.23%** *(FB-IoU 54.41% > 54.20%)* | **35.34%** 🏆 | **VƯỢT KỶ LỤC BÀI BÁO (+0.34% mIoU)** |
-| **Lung / CXR** *(X-quang lồng ngực)* | 80.00% | 82.61% | **79.30%** *(FB-IoU 86.10%)* | — | **Ngang ngửa SOTA** *(vượt PATNet 66.6%, PMNet 70.4%)* |
-| **Deepglobe** *(Ảnh vệ tinh)* | 42.30% | 31.40% *(sụp đổ -8.3%)* | **38.43%** *(cứu vãn +7.03%)* | — | **Ngăn chặn triệt để sự sụp đổ của Conv 3x3** |
+| Bộ dữ liệu (Miền kiểm thử) | Số lượng Episodes | **Adapter Conv 1x1 (Baseline)**<br>mIoU / FB-IoU | **Adapter Depthwise 3x3 (Đề xuất)**<br>mIoU / FB-IoU | Phân tích Hiệu năng & Đặc trưng Miền |
+| :--- | :---: | :---: | :---: | :--- |
+| **FSS-1000** *(Ảnh tự nhiên)* | 2.400 | **51.01%** / 61.72% | **49.55%** / 60.07% | Conv 1x1 duy trì độ nét pixel tốt cho vật thể biên sắc |
+| **ISIC 2018** *(Da liễu y tế)* | 2.594 | **35.22%** / 46.94% | **33.04%** / 45.23% | Conv 1x1 tối ưu cho ranh giới vết sắc tố da |
+| **SUIM** *(Ảnh dưới nước)* | 3.859 | 28.91% / 41.17% | **29.32%** / **41.57%** 🏆 | **Depthwise 3x3 vượt trội (+0.41% mIoU)** nhờ lọc nhiễu tán xạ ánh sáng trong nước |
+| **Lung / CXR** *(X-quang ngực)* | 704 | 55.82% / 64.85% | **56.85%** / **65.89%** 🏆 | **Depthwise 3x3 vượt trội (+1.03% mIoU, +1.04% FB-IoU)** định hình rõ cấu trúc khung sườn |
+| **DeepGlobe** *(Ảnh vệ tinh)* | 1.833 | 42.01% / 45.08% | **42.23%** / **45.28%** 🏆 | **Depthwise 3x3 vượt trội (+0.22% mIoU)** mở rộng trường tiếp nhận cho địa hình rộng |
+
+> 📌 **Nhận xét cốt lõi**:
+> - Trên các miền dữ liệu phức tạp có nhiễu môi trường, độ tán xạ cao hoặc cấu trúc giải phẫu/địa lý liên tục (**SUIM, Lung CXR, DeepGlobe**), **Depthwise Separable 3x3 Adapter** phát huy ưu thế vượt trội khi bắt trọn ngữ cảnh không gian 8 lân cận mà không làm nổ tham số.
+> - Trên các miền vật thể nhân tạo/tự nhiên có đường biên phẳng (**FSS-1000, ISIC**), **Pointwise Conv 1x1** bảo toàn chi tiết điểm ảnh tối ưu. Việc hỗ trợ linh hoạt cả 2 kiến trúc Adapter mang lại khả năng tùy biến cao nhất cho từng bài toán thực tế.
 
 ---
 
