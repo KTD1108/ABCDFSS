@@ -7,8 +7,8 @@ class MetricTracker:
     - mIoU: Class-averaged foreground Intersection over Union
     - FB-IoU: Foreground vs Background IoU
     """
-    def __init__(self, class_ids: list):
-        self.class_ids = list(class_ids)
+    def __init__(self, class_ids: list = None):
+        self.class_ids = list(class_ids) if class_ids is not None else []
         self.class_inter = {cid: 0.0 for cid in self.class_ids}
         self.class_union = {cid: 0.0 for cid in self.class_ids}
         
@@ -36,6 +36,11 @@ class MetricTracker:
         bg_union = ((~pred) | (~gt)).sum().item()
 
         # Update class statistics
+        if class_id not in self.class_inter:
+            self.class_ids.append(class_id)
+            self.class_inter[class_id] = 0.0
+            self.class_union[class_id] = 0.0
+
         self.class_inter[class_id] += fg_inter
         self.class_union[class_id] += fg_union
 
