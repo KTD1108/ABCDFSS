@@ -57,73 +57,92 @@ class FSS1000Dataset(Dataset):
         if os.path.exists(self.base_path):
             sample_classes = {'bus', 'pizza', 'spiderman', 'egg', 'coin', 'fox'}
             found = False
-            for root, dirs, _ in os.walk(self.base_path):
+            for root, dirs, files in os.walk(self.base_path):
                 if any(c in dirs for c in sample_classes):
                     self.base_path = root
                     found = True
                     print(f"[*] FSS-1000 auto-detected base_path at: {self.base_path}")
                     break
+                if len(dirs) >= 10:
+                    sample_sub = dirs[0]
+                    sub_p = os.path.join(root, sample_sub)
+                    if os.path.isdir(sub_p):
+                        try:
+                            sub_files = os.listdir(sub_p)
+                            if any(f.endswith(('.jpg', '.png')) for f in sub_files):
+                                self.base_path = root
+                                found = True
+                                print(f"[*] FSS-1000 auto-detected base_path at: {self.base_path}")
+                                break
+                        except Exception:
+                            pass
+                if found:
+                    break
+
             if not found and os.path.exists(os.path.join(self.base_path, 'FSS-1000')):
                 self.base_path = os.path.join(self.base_path, 'FSS-1000')
 
-        # Find available classes
-        test_classes_on_disk = [c for c in FSS_TEST_CLASSES if os.path.isdir(os.path.join(self.base_path, c))]
-        if test_classes_on_disk:
-            self.classes = test_classes_on_disk
-        else:
-            # Fallback: any subdirectories containing .jpg files (e.g. numbered 1..1000 or custom names)
-            candidates = []
+        # Collect class mapping: {class_name: class_dir_path}
+        self.class_dirs = {}
+        for c in FSS_TEST_CLASSES:
+            cp = os.path.join(self.base_path, c)
+            if os.path.isdir(cp):
+                self.class_dirs[c] = cp
+
+        if not self.class_dirs and os.path.exists(self.base_path):
+            # Fallback: any subdirectories containing .jpg files
             for d in os.listdir(self.base_path):
                 dp = os.path.join(self.base_path, d)
                 if os.path.isdir(dp):
                     try:
-                        subfiles = os.listdir(dp)
-                        if any(f.endswith('.jpg') for f in subfiles):
-                            candidates.append(d)
+                        if any(f.endswith('.jpg') for f in os.listdir(dp)):
+                            self.class_dirs[d] = dp
                     except Exception:
                         pass
-            self.classes = sorted(candidates)
 
+        self.classes = sorted(list(self.class_dirs.keys()))
         self.class_ids = list(range(len(self.classes)))
 
-        # Build list of valid query images
+        # Build list of valid query images: (img_path, mask_path, class_name)
         self.img_metadata = []
-        for cat in self.classes:
-            cat_dir = os.path.join(self.base_path, cat)
+        for cat, cat_dir in self.class_dirs.items():
             for i in range(1, 11):
                 img_p = os.path.join(cat_dir, f"{i}.jpg")
-                if os.path.exists(img_p):
-                    self.img_metadata.append(img_p)
+                mask_p = os.path.join(cat_dir, f"{i}.png")
+                if os.path.exists(img_p) and os.path.exists(mask_p):
+                    self.img_metadata.append((img_p, mask_p, cat))
+
+        print(f"[*] FSS-1000 nạp thành công: {len(self.classes)} lớp, {len(self.img_metadata)} ảnh hợp lệ.")
 
     def __len__(self):
         return len(self.img_metadata) if self.img_metadata else len(self.classes)
 
     def __getitem__(self, idx):
         if self.img_metadata:
-            query_img_path = self.img_metadata[idx % len(self.img_metadata)]
-            class_name = os.path.basename(os.path.dirname(query_img_path))
+            q_img_path, q_mask_path, class_name = self.img_metadata[idx % len(self.img_metadata)]
             class_id = self.classes.index(class_name) if class_name in self.classes else 0
-            query_id = int(os.path.splitext(os.path.basename(query_img_path))[0])
+            query_id = int(os.path.splitext(os.path.basename(q_img_path))[0])
+            cat_dir = self.class_dirs[class_name]
 
             # Sample support IDs different from query
             all_support_candidates = [i for i in range(1, 11) if i != query_id]
             s_ids = np.random.choice(all_support_candidates, self.shot, replace=False)
-            class_dir = os.path.dirname(query_img_path)
+            support_img_paths = [os.path.join(cat_dir, f"{sid}.jpg") for sid in s_ids]
+            support_mask_paths = [os.path.join(cat_dir, f"{sid}.png") for sid in s_ids]
         else:
             class_name = self.classes[idx % len(self.classes)]
             class_id = idx % len(self.classes)
-            class_dir = os.path.join(self.base_path, class_name)
+            cat_dir = self.class_dirs[class_name]
             chosen = np.random.choice(range(1, 11), 1 + self.shot, replace=False)
             query_id, s_ids = chosen[0], chosen[1:]
-            query_img_path = os.path.join(class_dir, f"{query_id}.jpg")
-
-        query_mask_path = os.path.join(class_dir, f"{query_id}.png")
-        support_img_paths = [os.path.join(class_dir, f"{sid}.jpg") for sid in s_ids]
-        support_mask_paths = [os.path.join(class_dir, f"{sid}.png") for sid in s_ids]
+            q_img_path = os.path.join(cat_dir, f"{query_id}.jpg")
+            q_mask_path = os.path.join(cat_dir, f"{query_id}.png")
+            support_img_paths = [os.path.join(cat_dir, f"{sid}.jpg") for sid in s_ids]
+            support_mask_paths = [os.path.join(cat_dir, f"{sid}.png") for sid in s_ids]
 
         # Load query
-        q_img = Image.open(query_img_path).convert('RGB')
-        q_mask = torch.tensor(np.array(Image.open(query_mask_path).convert('L')) >= 128).float()
+        q_img = Image.open(q_img_path).convert('RGB')
+        q_mask = torch.tensor(np.array(Image.open(q_mask_path).convert('L')) >= 128).float()
 
         # Load supports
         s_imgs = [Image.open(p).convert('RGB') for p in support_img_paths]

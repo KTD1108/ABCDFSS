@@ -14,6 +14,19 @@ import json
 import subprocess
 from datetime import datetime
 
+def is_valid_fss_dir(path: str) -> bool:
+    """Kiểm tra thư mục FSS có tối thiểu 10 lớp và ảnh hợp lệ hay không."""
+    if not os.path.exists(path):
+        return False
+    valid_classes = 0
+    for root, dirs, files in os.walk(path):
+        jpgs = [f for f in files if f.lower().endswith(('.jpg', '.jpeg'))]
+        if len(jpgs) >= 2:
+            valid_classes += 1
+            if valid_classes >= 10:
+                return True
+    return False
+
 def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
     """Tự động tải trực tiếp từ internet nếu chưa có trong cache/thư mục cục bộ."""
     # 1. Kiểm tra cache Kaggle
@@ -30,7 +43,7 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
 
     # 2. Xử lý chuyên biệt cho FSS-1000
     if benchmark == 'fss':
-        # Kiểm tra xem đã có sẵn ảnh trong cache Kaggle hoặc cục bộ chưa
+        import shutil
         fss_check_dirs = [
             "/root/.cache/kagglehub/datasets/nikhilpandey360/fss-1000-a-1000-class-few-shot-segmentation/versions/1",
             "/root/.cache/kagglehub/datasets/itsahmad/fss-1000/versions/1",
@@ -38,11 +51,13 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
             "./datasets/fss"
         ]
         for cd in fss_check_dirs:
-            if os.path.exists(cd):
-                for root, dirs, files in os.walk(cd):
-                    if any(f.endswith('.jpg') for f in files) or any(d in ['bus', 'pizza', 'spiderman'] for d in dirs):
-                        print(f"[✓] Đã có sẵn FSS-1000 với đầy đủ ảnh tại: {root}")
-                        return root
+            if is_valid_fss_dir(cd):
+                print(f"[✓] Đã có sẵn FSS-1000 hợp lệ tại: {cd}")
+                return cd
+
+        # Nếu thư mục ./datasets/fss1000 bị rỗng hoặc lỗi, dọn dẹp để tải lại
+        if os.path.exists("./datasets/fss1000"):
+            shutil.rmtree("./datasets/fss1000", ignore_errors=True)
 
         print("[*] Đang tự động tải FSS-1000...")
         # Ưu tiên 1: Tải trực tiếp qua kagglehub (ổn định, không bị chặn link)
@@ -55,8 +70,9 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
                 print(f"[*] Đang tải FSS-1000 từ Kaggle ({slug})...")
                 import kagglehub
                 p = kagglehub.dataset_download(slug)
-                print(f"[✓] Tải thành công FSS-1000 từ Kaggle về: {p}")
-                return p
+                if is_valid_fss_dir(p):
+                    print(f"[✓] Tải thành công FSS-1000 từ Kaggle về: {p}")
+                    return p
             except Exception as ke:
                 print(f"[-] Không thể tải từ Kaggle ({slug}): {ke}")
 
@@ -78,8 +94,9 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
                     print("[*] Đang giải nén FSS-1000...")
                     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                         zip_ref.extractall(dest_dir)
-                    print(f"[✓] Tải và giải nén FSS-1000 thành công vào: {dest_dir}")
-                    return dest_dir
+                    if is_valid_fss_dir(dest_dir):
+                        print(f"[✓] Tải và giải nén FSS-1000 thành công vào: {dest_dir}")
+                        return dest_dir
             except Exception as gde:
                 print(f"[-] Lỗi với Google Drive ID {gid}: {gde}")
 
