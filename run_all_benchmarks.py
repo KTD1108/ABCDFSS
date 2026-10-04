@@ -150,22 +150,41 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
 
     return f"./datasets/{benchmark}"
 
+def parse_args():
+    import argparse
+    parser = argparse.ArgumentParser(description="Automated Runner for CD-FSS Benchmarks")
+    parser.add_argument('--adapt-to', type=str, default='every-episode',
+                        choices=['first-episode', 'every-episode'],
+                        help='Adaptation mode: every-episode (CVPR 2024 exact protocol) or first-episode (quick-infer)')
+    parser.add_argument('--episodes', type=int, default=1000,
+                        help='Number of episodes per benchmark (default: 1000 standard CVPR episodes)')
+    parser.add_argument('--benchmarks', nargs='+', default=['isic', 'suim', 'lung', 'fss', 'deepglobe'],
+                        help='List of benchmarks to run')
+    parser.add_argument('--device', type=str, default='cuda',
+                        help='Compute device: cuda or cpu')
+    return parser.parse_args()
+
 def main():
+    args = parse_args()
     print("=" * 80)
-    print("      QUY TRÌNH CHẠY TỰ ĐỘNG TOÀN BỘ 5 BỘ DỮ LIỆU CD-FSS (1-SHOT, NO-PP)")
+    print(f"      QUY TRÌNH CHẠY CD-FSS: {args.adapt_to.upper()} ({args.episodes} EPISODES)")
     print("=" * 80)
 
-    # 1. Xác định đường dẫn cho cả 5 bộ dữ liệu
-    dataset_paths = {
-        'isic': check_or_download_dataset('isic', kaggle_slug='heyoujue/isic2018-classwise'),
-        'suim': check_or_download_dataset('suim', kaggle_slug='heyoujue/suim-merged'),
-        'lung': check_or_download_dataset('lung', kaggle_slug='heyoujue/lungsegmentation'),
-        'fss': check_or_download_dataset('fss'),
-        'deepglobe': check_or_download_dataset('deepglobe', kaggle_slug='heyoujue/deepglobe')
+    # 1. Xác định đường dẫn cho các bộ dữ liệu được chọn
+    all_slugs = {
+        'isic': 'heyoujue/isic2018-classwise',
+        'suim': 'heyoujue/suim-merged',
+        'lung': 'heyoujue/lungsegmentation',
+        'fss': None,
+        'deepglobe': 'heyoujue/deepglobe'
     }
+    dataset_paths = {}
+    for b in args.benchmarks:
+        if b in all_slugs:
+            dataset_paths[b] = check_or_download_dataset(b, kaggle_slug=all_slugs[b])
 
-    # 2. Danh sách 10 thử nghiệm đối sánh toàn diện (Conv1x1 vs Depthwise 3x3, No-PP, 1-shot)
-    experiments = [
+    # 2. Danh sách thử nghiệm đối sánh toàn diện
+    all_experiments = [
         # Domain 1: Natural Objects (FSS-1000)
         {
             'name': 'FSS-1000 (Adapter Conv1x1 - Baseline)',
@@ -262,6 +281,8 @@ def main():
             'nshot': 1
         },
     ]
+    # Lọc thử nghiệm theo danh sách benchmarks được chỉ định
+    experiments = [e for e in all_experiments if e['benchmark'] in args.benchmarks]
 
     log_dir = "./logs"
     os.makedirs(log_dir, exist_ok=True)
@@ -282,8 +303,10 @@ def main():
             "--nshot", str(exp['nshot']),
             "--adapter", exp['adapter'],
             "--fusion", exp['fusion'],
+            "--adapt-to", args.adapt_to,
+            "--episodes", str(args.episodes),
             "--logpath", log_dir,
-            "--device", "cuda"
+            "--device", args.device
         ]
 
         print(f"[*] Thực thi lệnh: {' '.join(cmd)}")
