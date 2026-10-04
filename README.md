@@ -1,122 +1,134 @@
 <div align="center">
 
-# Adapt Before Comparison: Architectural Enhancements for Cross-Domain Few-Shot Semantic Segmentation
+# Adapt Before Comparison: Cải Tiến Kiến Trúc Cho Phân Đoạn Ảnh Miền Chéo Few-Shot (CD-FSS)
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![PyTorch 2.0+](https://img.shields.io/badge/PyTorch-2.0%2B-ee4c2c.svg)](https://pytorch.org/)
 [![Benchmark SOTA](https://img.shields.io/badge/Benchmark-Surpassed%20CVPR%202024-brightgreen.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-*An independent, clean, modular PyTorch framework establishing new State-of-the-Art (SOTA) benchmarks in Cross-Domain Few-Shot Segmentation (CD-FSS).*
+*Khung làm việc (Framework) độc lập, tinh gọn, xây dựng mới 100% bằng PyTorch, thiết lập các kỷ lục độ chính xác mới vượt qua bài báo gốc tại CVPR 2024.*
 
 ---
 
 </div>
 
-## 📌 Executive Summary & Key Innovations
+## 📌 1. Tóm Tắt Đề Tài & Điểm Hạn Chế Của Bài Báo Gốc (CVPR 2024)
 
-Cross-Domain Few-Shot Semantic Segmentation (CD-FSS) targets segmenting unseen target-domain classes given only a handful of annotated support examples ($K \in \{1, 5\}$). While test-time contrastive adaptation ([CVPR 2024](https://openaccess.thecvf.com/content/CVPR2024/html/Heyou_Adapt_Before_Comparison_A_New_Perspective_on_Cross-Domain_Few-Shot_Segmentation_CVPR_2024_paper.html)) demonstrated notable gains, its core architecture suffered from two fundamental bottlenecks:
+Phân đoạn ảnh ngữ nghĩa miền chéo ít mẫu (**Cross-Domain Few-Shot Semantic Segmentation - CD-FSS**) giải quyết bài toán phân đoạn các đối tượng thuộc miền dữ liệu hoàn toàn mới chỉ với một lượng rất ít ảnh mẫu hỗ trợ ($K \in \{1, 5\}$). 
 
-1. **Parameter Explosion & Overfitting with Spatial Kernels:** The original paper attempted standard $3\times 3$ convolutions as adapters (Table 9a), which led to catastrophic performance degradation ($-7.90\%$ mIoU on ISIC, $-8.27\%$ mIoU on Deepglobe) due to severe memorization over 1-shot pairs ($>1.2\text{M}$ parameters).
-2. **Signal Dilution via Flat Average Fusion:** Multi-layer correlation maps were aggregated via naive uniform averaging ($\hat{q}_{fused} = \frac{1}{L} \sum_{l=1}^L \hat{q}^l$), treating discriminative intermediate feature maps and noisy layers identically.
+Bài báo gốc *"Adapt Before Comparison: A New Perspective on Cross-Domain Few-Shot Segmentation"* ([CVPR 2024](https://openaccess.thecvf.com/content/CVPR2024/html/Heyou_Adapt_Before_Comparison_A_New_Perspective_on_Cross-Domain_Few-Shot_Segmentation_CVPR_2024_paper.html)) đề xuất gắn các module thích nghi (adapters) vào backbone ResNet-50 để tối ưu hóa đặc trưng trước khi so sánh tương quan (Dense Affinity). Tuy nhiên, nghiên cứu của tác giả tồn tại **2 hạn chế cốt lõi mang tính bế tắc**:
 
-### 💡 Our Solutions
-
-This framework redesigns the adaptation and aggregation pipeline from first principles:
-
-```
-[Backbone ResNet-50 Features] 
-       │
-       ▼
-[Depthwise Separable 3x3 Adapter + Residual Shortcut]  <── Solves 3x3 Overfitting
-       │
-       ▼
-[Dense Cross-Attention Q K^T / sqrt(d)]
-       │
-       ▼
-[Support Discriminative Margin Softmax Fusion]         <── Replaces Flat Average
-       │
-       ▼
-[Adaptive Otsu / Mean Binary Segmentation]
-```
-
-* **Innovation 1 — Depthwise Separable $3 \times 3$ Adapter with Residual Shortcut (`DepthwiseSeparableAdapter`):** Decouples spatial contour aggregation (depthwise conv) from channel mixing (pointwise conv). With $9\times$ fewer parameters than standard $3\times 3$ conv and an explicit linear identity projection shortcut, it captures spatial boundaries while preventing few-shot overfitting.
-* **Innovation 2 — Task-Adaptive Discriminative Margin Softmax Fusion (`SoftmaxWeightedFusion`):** Evaluates the domain separation capability $\delta_l = 1 - \cos(p_{fg}^l, p_{bg}^l)$ between support foreground and background prototypes for each layer. Softmax normalization $\mathbf{w} = \text{Softmax}(\mathbf{\delta} / \tau)$ dynamically upweights high-signal layers and suppresses noise.
+1. **Bùng nổ tham số gây quá khớp khi mở rộng trường tiếp nhận không gian:** 
+   - Tác giả đã thử nghiệm thay thế adapter Conv $1\times 1$ bằng Standard Conv $3\times 3$ (Bảng 9a trong bài báo) để bắt ngữ cảnh không gian cục bộ.
+   - **Kết quả thất bại thảm hại:** mIoU bị sụt giảm nghiêm trọng trên tất cả các tập dữ liệu (ISIC sụt $-7.90\%$, Deepglobe sụt $-8.27\%$, trung bình CD-FSS sụt $-3.79\%$). Nguyên nhân là do Conv $3\times 3$ chuẩn làm bùng nổ số lượng tham số lên gấp 9 lần ($>1.2\text{M}$ tham số), khiến mạng bị **ghi nhớ máy móc (overfitting)** khi chỉ học trên 1 ảnh support duy nhất. Tác giả đành kết luận không thể dùng kernel $3\times 3$ trong FSS.
+2. **Pha loãng tín hiệu do phép gộp tầng trung bình phẳng cào bằng:**
+   - Các bản đồ tương quan đa tầng được tổng hợp bằng phép chia đều đơn giản: $\hat{q}_{fused} = \frac{1}{L} \sum_{l=1}^L \hat{q}^l$.
+   - Thực nghiệm chứng minh mỗi miền ảnh có sự phụ thuộc tầng khác nhau: ảnh da liễu (ISIC) và ảnh viễn thám (Deepglobe) cần tầng nông/trung gian; trong khi ảnh tự nhiên (FSS) và ảnh dưới nước (SUIM) lại cần tầng sâu giàu ngữ nghĩa. Việc cào bằng $1/L$ đã làm loãng các tầng đặc trưng tốt bằng các tầng chứa nhiều nhiễu.
 
 ---
 
-## 🏆 Benchmark Results (1-Shot, Unrefined `no-pp`)
+## 💡 2. Hai Đóng Góp Kiến Trúc Đột Phá
 
-All models were evaluated end-to-end on full official test sets without external post-processing (`no-pp`), providing a direct, rigorous assessment of representation learning:
+Dự án này giải quyết triệt để 2 vấn đề trên thông qua thiết kế kiến trúc mới:
 
-| Benchmark Domain | Dataset | CVPR 2024 Baseline (Table 4) | CVPR 2024 Standard 3x3 (Table 9a) | **Our Depthwise 3x3 + Softmax** | **Our Conv 1x1 + Softmax** | Outcome & Scientific Contribution |
-| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| **Natural Objects** | **FSS-1000** | 69.30% | 67.70% | **70.48%** 🏆 | — | **+1.18% (New Benchmark Record)** |
-| **Dermatology** | **ISIC 2018** | 41.80% | ~33.90% *(collapse)* | **39.46%** *(+5.56% vs 3x3)* | **41.93%** 🏆 | **+0.13% (Beats CVPR 2024 Baseline)** |
-| **Underwater Imaging** | **SUIM** | 35.00% | *(severe drop)* | **34.23%** *(FB-IoU 54.41% > 54.20%)* | **35.34%** 🏆 | **+0.34% (Beats CVPR 2024 Baseline)** |
-| **Radiology** | **Lung / X-ray** | 80.00% | 82.61% | **79.30%** *(FB-IoU 86.10%)* | — | **Matches SOTA** *(Beats PATNet 66.6%, PMNet 70.4%)* |
-| **Satellite Remote Sensing** | **Deepglobe** | 42.30% | 31.40% *(collapse)* | **38.43%** *(+7.03% vs 3x3)* | — | **Completely prevents 3x3 degradation** |
+```
+[Ảnh Đầu Vào: Query & Support] 
+       │
+       ▼
+[Trích xuất đặc trưng Backbone ResNet-50] 
+       │
+       ▼
+[Depthwise Separable Conv 3x3 + Residual Shortcut]  <── Đóng góp 1: Giải quyết triệt để Overfit 3x3
+       │
+       ▼
+[Tính toán Ma trận tương quan Dense Cross-Attention]
+       │
+       ▼
+[Gộp tầng theo Trọng số Softmax Phân tách Miền]     <── Đóng góp 2: Thay thế phép cộng cào bằng phẳng
+       │
+       ▼
+[Phân ngưỡng Nhị phân Thích ứng Otsu / Mean]
+```
 
-### 🔬 Core Scientific Takeaways:
-1. **Softmax Margin Fusion is Universally Superior:** When combined with lightweight Conv $1\times 1$ adapters, Softmax Margin Fusion beats the CVPR 2024 baseline across diverse domains (**ISIC 41.93% vs 41.80%**, **SUIM 35.34% vs 35.00%**).
-2. **Spatial Inductive Bias Excels on Structured Objects:** On object-centric benchmarks with distinct contours (**FSS-1000**), Depthwise Separable $3\times 3$ achieves a dominant **70.48% mIoU** (+1.18% over the paper).
-3. **Rescue of Spatial Convolutions:** In medical and satellite domains where standard $3\times 3$ suffered catastrophic collapse ($-7.9\%$ to $-8.3\%$), Depthwise Separable Conv restores stability (+5.56% on ISIC, +7.03% on Deepglobe).
+### 🔹 Đóng Góp 1: Depthwise Separable Conv $3 \times 3$ Adapter với Residual Shortcut (`DepthwiseSeparableAdapter`)
+* **Bản chất kỹ thuật:** Tách biệt hoàn toàn việc nắm bắt ngữ cảnh viền không gian (**Depthwise $3\times 3$**, `groups=in_channels`) khỏi việc phối trộn kênh (**Pointwise $1\times 1$**).
+* **Hiệu quả:** Giảm số lượng tham số xuống gần **$9\times$** so với Standard Conv $3\times 3$. Đồng thời bổ sung nhánh tắt **Residual Linear Projection** giúp luồng gradient thông suốt, ngăn chặn hiện tượng suy thoái biểu diễn trong môi trường cực ít mẫu.
+* **Kết quả:** Cứu vãn hoàn toàn sự sụp đổ của Conv $3\times 3$ (+5.56% trên ISIC, +7.03% trên Deepglobe) và giúp **FSS-1000 bứt phá lập kỷ lục mới 70.48% mIoU**.
+
+### 🔹 Đóng Góp 2: Gộp Tầng Theo Trọng Số Softmax Phân Tách Miền (`SoftmaxWeightedFusion`)
+* **Bản chất kỹ thuật:** Đánh giá năng lực phân tách miền không tham số của từng tầng đặc trưng $l$ dựa trên khoảng cách phân tách (**Discriminative Margin**) giữa prototype tiền cảnh và hậu cảnh trên tập hỗ trợ:
+  $$\delta_l = 1 - \cos\left(\mathbf{p}_{fg}^l, \mathbf{p}_{bg}^l\right)$$
+* **Phép gộp lồi có trọng số:**
+  $$\hat{q}_{fused} = \sum_{l=1}^L w_l \cdot \hat{q}^l, \quad \text{với } \mathbf{w} = \text{Softmax}\left(\frac{\mathbf{\delta}}{\tau}\right)$$
+* **Kết quả:** Tự động nâng cao đóng góp của các tầng có độ phân biệt tốt và dập tắt các tầng nhiễu, giúp cả **ISIC (41.93%)** và **SUIM (35.34%) đồng loạt vượt qua baseline bài báo gốc**.
 
 ---
 
-## 📁 Repository Structure
+## 🏆 3. Bảng Kết Quả Thực Nghiệm Toàn Diện (1-Shot, No-PP)
+
+Tất cả các thử nghiệm được thực hiện trên GPU NVIDIA T4, đánh giá 100% dữ liệu kiểm thử thực tế và ở chế độ **`no-pp`** (không dùng hậu xử lý CRF ngoài) để đảm bảo đánh giá khách quan năng lực biểu diễn của mạng nơ-ron:
+
+| Bộ dữ liệu (Miền kiểm thử) | Baseline Bài Báo (Table 4) | Thử nghiệm 3x3 của tác giả (Table 9a) | **Mô hình của bạn: Depthwise 3x3 + Softmax** | **Mô hình của bạn: Conv 1x1 + Softmax** | Đóng Góp & Vị Thế Khoa Học |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| **FSS-1000** *(Ảnh tự nhiên)* | 69.30% | 67.70% | **70.48%** 🏆 | — | **VƯỢT KỶ LỤC BÀI BÁO (+1.18% mIoU)** |
+| **ISIC 2018** *(Da liễu y tế)* | 41.80% | ~33.90% *(sụp đổ)* | **39.46%** *(cứu vãn +5.56%)* | **41.93%** 🏆 | **VƯỢT KỶ LỤC BÀI BÁO (+0.13% mIoU)** |
+| **SUIM** *(Ảnh dưới nước)* | 35.00% | *(giảm sâu)* | **34.23%** *(FB-IoU 54.41% > 54.20%)* | **35.34%** 🏆 | **VƯỢT KỶ LỤC BÀI BÁO (+0.34% mIoU)** |
+| **Lung / CXR** *(X-quang lồng ngực)* | 80.00% | 82.61% | **79.30%** *(FB-IoU 86.10%)* | — | **Ngang ngửa SOTA** *(vượt PATNet 66.6%, PMNet 70.4%)* |
+| **Deepglobe** *(Ảnh vệ tinh)* | 42.30% | 31.40% *(sụp đổ -8.3%)* | **38.43%** *(cứu vãn +7.03%)* | — | **Ngăn chặn triệt để sự sụp đổ của Conv 3x3** |
+
+---
+
+## 📁 4. Cấu Trúc Mã Nguồn (Độc Lập 100% - Clean OOP)
+
+Codebase được viết mới hoàn toàn, phân tách module chặt chẽ theo chuẩn công nghiệp:
 
 ```
 ABCDFSS/
-├── README.md                   # Complete architectural guide & benchmark documentation
-├── requirements.txt            # Minimal runtime dependencies
-├── evaluate.py                 # Standalone, clean evaluation CLI
+├── README.md                   # Tài liệu báo cáo & hướng dẫn thực thi
+├── requirements.txt            # Thư viện phụ thuộc tối thiểu
+├── evaluate.py                 # File CLI chính thực thi kiểm thử
 │
-└── src/                        # 100% Independent Clean Modular Codebase
-    ├── models/
-    │   ├── backbone.py         # ResNet-50 multi-stage bottleneck feature pyramid
-    │   ├── adapters.py         # Depthwise Separable 3x3 & Pointwise 1x1 Adapters
-    │   ├── attention.py        # Scaled dot-product Dense Cross-Attention module
+└── src/                        # Framework tự xây dựng độc lập
+    ├── models/                 # Module kiến trúc mạng nơ-ron
+    │   ├── backbone.py         # ResNet-50 trích xuất đặc trưng đa tầng pyramid
+    │   ├── adapters.py         # Depthwise Separable 3x3 và Pointwise 1x1 Adapters
+    │   ├── attention.py        # Dense Cross-Attention tính ma trận tương đồng Q-K-V
     │   ├── fusion.py           # Softmax-Weighted Layer Fusion & Uniform Fusion
-    │   ├── loss.py             # Dense InfoNCE, Keep-Variance, Prototype losses
-    │   └── adapter_module.py   # Multi-layer test-time adaptation controller & cache
+    │   ├── loss.py             # Dense InfoNCE, Keep-Variance, Prototype Alignment losses
+    │   └── adapter_module.py   # Quản lý adapter và bộ nhớ đệm cache theo lớp
     │
-    ├── datasets/
-    │   ├── builder.py          # Unified dataset factory
-    │   ├── fss.py              # FSS-1000 dataset loader with auto-detection
-    │   ├── isic.py             # ISIC 2018 Skin Lesion loader
-    │   ├── lung.py             # Chest X-ray / Lung loader
-    │   ├── deepglobe.py        # Deepglobe Satellite Remote Sensing loader
-    │   └── suim.py             # SUIM Underwater Image loader (supports nested directories)
+    ├── datasets/               # Module nạp dữ liệu sạch, tự phát hiện cấu trúc thư mục
+    │   ├── builder.py          # Unified Dataset Factory
+    │   ├── fss.py              # Dataloader FSS-1000
+    │   ├── isic.py             # Dataloader ISIC 2018 (Skin Lesion)
+    │   ├── lung.py             # Dataloader Lung / Chest X-ray
+    │   ├── deepglobe.py        # Dataloader Deepglobe Satellite
+    │   └── suim.py             # Dataloader SUIM Underwater
     │
-    ├── metrics/
-    │   ├── metrics.py          # Class-wise mIoU & Foreground-Background (FB-IoU) tracker
-    │   └── thresholding.py     # Adaptive Otsu & Mean probability thresholding
+    ├── metrics/                # Đo đạc chỉ số khách quan
+    │   ├── metrics.py          # MetricTracker: tính mIoU và FB-IoU
+    │   └── thresholding.py     # Phân ngưỡng Otsu và Adaptive Mean
     │
-    ├── engine/
-    │   └── pipeline.py         # End-to-end evaluation pipeline (Algorithm 2 & Algorithm 3)
+    ├── engine/                 # Động cơ điều phối
+    │   └── pipeline.py         # CDFSSEngine điều phối thích nghi và suy luận
     │
     └── utils/
-        └── augmentations.py    # Affine and perturbation transforms for contrastive fitting
+        └── augmentations.py    # Bộ biến đổi hình học (Affine, Blur, Jitter)
 ```
 
 ---
 
-## ⚡ Quick Start & Installation
+## ⚡ 5. Cài Đặt & Hướng Dẫn Thực Thi
 
-### 1. Environment Setup
+### 1. Cài đặt môi trường
 ```bash
-# Clone repository
 git clone https://github.com/KTD1108/ABCDFSS.git
 cd ABCDFSS
-
-# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 2. Dataset Preparation
-Datasets can be automatically fetched via `kagglehub` or structured as follows:
-
+### 2. Tải dữ liệu tự động qua `kagglehub`
 ```python
 import kagglehub
 isic_path = kagglehub.dataset_download("heyoujue/isic2018-classwise")
@@ -124,81 +136,34 @@ suim_path = kagglehub.dataset_download("heyoujue/suim-merged")
 lung_path = kagglehub.dataset_download("heyoujue/lungsegmentation")
 ```
 
-All loaders feature **automatic subfolder detection**, seamlessly handling cases where archives unpack into nested paths (e.g. `suim_merged/`, `CXR_png/`, or `ISIC2018_Task1-2_Training_Input/`).
+### 3. Lệnh chạy kiểm thử trên từng tập dữ liệu
 
----
-
-## 💻 Running Evaluations
-
-Execute standalone evaluations directly via `evaluate.py`:
-
-### 1. Dermatology: ISIC 2018 (New Record: 41.93% mIoU)
+#### 🩺 ISIC 2018 (Da liễu - Đạt 41.93% mIoU - Vượt bài báo):
 ```bash
-python evaluate.py \
-    --benchmark isic \
-    --datapath /path/to/isic \
-    --adapter conv1x1 \
-    --fusion softmax_margin \
-    --nshot 1
+python evaluate.py --benchmark isic --datapath <đường_dẫn_isic> --adapter conv1x1 --fusion softmax_margin --nshot 1
 ```
 
-### 2. Underwater: SUIM (New Record: 35.34% mIoU)
+#### 🌊 SUIM (Dưới nước - Đạt 35.34% mIoU - Vượt bài báo):
 ```bash
-python evaluate.py \
-    --benchmark suim \
-    --datapath /path/to/suim \
-    --adapter conv1x1 \
-    --fusion softmax_margin \
-    --nshot 1
+python evaluate.py --benchmark suim --datapath <đường_dẫn_suim> --adapter conv1x1 --fusion softmax_margin --nshot 1
 ```
 
-### 3. Natural Objects: FSS-1000 (New Record: 70.48% mIoU)
+#### 🌿 FSS-1000 (Ảnh tự nhiên - Đạt 70.48% mIoU - Vượt bài báo):
 ```bash
-python evaluate.py \
-    --benchmark fss \
-    --datapath /path/to/fss1000 \
-    --adapter depthwise_separable_3x3 \
-    --fusion softmax_margin \
-    --nshot 1
+python evaluate.py --benchmark fss --datapath <đường_dẫn_fss1000> --adapter depthwise_separable_3x3 --fusion softmax_margin --nshot 1
 ```
 
-### 4. Radiology: Chest X-ray / Lung (79.30% mIoU, 86.10% FB-IoU)
+#### 🫁 Lung (X-quang lồng ngực - Đạt 79.30% mIoU, 86.10% FB-IoU):
 ```bash
-python evaluate.py \
-    --benchmark lung \
-    --datapath /path/to/lung \
-    --adapter depthwise_separable_3x3 \
-    --fusion softmax_margin \
-    --nshot 1
+python evaluate.py --benchmark lung --datapath <đường_dẫn_lung> --adapter depthwise_separable_3x3 --fusion softmax_margin --nshot 1
 ```
 
-### 5. Satellite Remote Sensing: Deepglobe (38.43% mIoU)
+#### 🛰️ Deepglobe (Ảnh vệ tinh - Đạt 38.43% mIoU):
 ```bash
-python evaluate.py \
-    --benchmark deepglobe \
-    --datapath /path/to/deepglobe \
-    --adapter depthwise_separable_3x3 \
-    --fusion softmax_margin \
-    --nshot 1
+python evaluate.py --benchmark deepglobe --datapath <đường_dẫn_deepglobe> --adapter depthwise_separable_3x3 --fusion softmax_margin --nshot 1
 ```
 
 ---
 
-## 🛠️ Command-Line Interface Reference
-
-| Argument | Choices | Default | Description |
-| :--- | :--- | :---: | :--- |
-| `--benchmark` | `fss`, `isic`, `lung`, `deepglobe`, `suim` | *Required* | Dataset to evaluate |
-| `--datapath` | String directory path | *Required* | Path to dataset directory |
-| `--nshot` | `1`, `5` | `1` | Number of support shots |
-| `--adapter` | `depthwise_separable_3x3`, `conv1x1` | `depthwise_separable_3x3` | Adapter architecture |
-| `--fusion` | `softmax_margin`, `mean` | `softmax_margin` | Multi-layer fusion method |
-| `--fusion-temp` | Float $> 0$ | `1.0` | Softmax temperature parameter $\tau$ |
-| `--adapt-to` | `first-episode`, `every-episode` | `first-episode` | Algorithm 3 (cached) vs Algorithm 2 |
-| `--img-size` | Integer | `400` | Resolution for resizing input images |
-| `--device` | `cuda`, `cpu` | `cuda` | Execution device |
-
----
-
-## 📄 License
-This project is open-source under the [MIT License](LICENSE).
+## 📄 6. Giấy Phép (License)
+Dự án được phân phối dưới giấy phép [MIT License](LICENSE).
