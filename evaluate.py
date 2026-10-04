@@ -47,6 +47,8 @@ def parse_args():
                         help='Postprocessing option (off by default)')
     parser.add_argument('--verbosity', type=int, default=1,
                         help='Verbosity level')
+    parser.add_argument('--logpath', type=str, default='./logs',
+                        help='Directory to save evaluation log files')
     parser.add_argument('--img-size', type=int, default=400,
                         help='Input image resolution (default: 400)')
     parser.add_argument('--device', type=str, default='cuda',
@@ -55,9 +57,38 @@ def parse_args():
                         help='Random seed for reproducibility')
     return parser.parse_args()
 
+class TeeLogger:
+    def __init__(self, filepath: str):
+        import sys
+        self.terminal = sys.stdout
+        import os
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        self.log_file = open(filepath, 'w', encoding='utf-8')
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log_file.write(message)
+        self.log_file.flush()
+
+    def flush(self):
+        self.terminal.flush()
+        self.log_file.flush()
+
 def main():
+    import sys, os, json
+    from datetime import datetime
     args = parse_args()
     set_seed(args.seed)
+
+    # Setup automatic file logging
+    os.makedirs(args.logpath, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_filename = f"{args.benchmark}_{args.adapter}_{args.fusion}_{args.nshot}shot_{timestamp}.log"
+    log_filepath = os.path.join(args.logpath, log_filename)
+    logger = TeeLogger(log_filepath)
+    sys.stdout = logger
+
+    print(f"[*] Log file saved to: {log_filepath}")
 
     # 1. Build Dataloader
     dataloader = build_dataloader(
@@ -84,6 +115,24 @@ def main():
 
     # 3. Run Evaluation Loop
     results = engine.evaluate_dataset(dataloader, benchmark_name=args.benchmark)
+
+    # Append to master JSON summary
+    summary_file = os.path.join(args.logpath, "summary_records.jsonl")
+    record = {
+        "timestamp": timestamp,
+        "benchmark": args.benchmark,
+        "adapter": args.adapter,
+        "fusion": args.fusion,
+        "nshot": args.nshot,
+        "mIoU": round(results['mIoU'], 2),
+        "FB-IoU": round(results['FB-IoU'], 2),
+        "log_file": log_filepath
+    }
+    with open(summary_file, "a", encoding="utf-8") as f:
+        f.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+    sys.stdout = logger.terminal
+    print(f"\n[✓] Results recorded to: {summary_file}")
     return results
 
 if __name__ == '__main__':
