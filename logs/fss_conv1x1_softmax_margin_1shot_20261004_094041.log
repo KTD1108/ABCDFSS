@@ -1,0 +1,71 @@
+[*] Log file saved to: ./logs/fss_conv1x1_softmax_margin_1shot_20261004_094041.log
+[*] FSS-1000 auto-detected base_path at: ./datasets/fewshot1000
+[*] FSS-1000 nạp thành công: 240 lớp, 2400 ảnh hợp lệ.
+
+:=========== CD-FSS Clean Framework Evaluation: FSS ===========
+| Device:         cuda
+| Adapter Type:   conv1x1
+| Fusion Mode:    softmax_margin (temp=1.0)
+| Adapt Mode:     first-episode
+| Total Episodes: 2400
+:========================================================================
+
+[Batch: 0001/2400]  mIoU: 82.50%  |  FB-IoU: 83.31%
+[Batch: 0050/2400]  mIoU: 56.86%  |  FB-IoU: 64.84%
+[Batch: 0100/2400]  mIoU: 56.37%  |  FB-IoU: 65.10%
+[Batch: 0150/2400]  mIoU: 54.57%  |  FB-IoU: 64.23%
+[Batch: 0200/2400]  mIoU: 53.87%  |  FB-IoU: 63.69%
+[Batch: 0250/2400]  mIoU: 54.11%  |  FB-IoU: 63.75%
+[Batch: 0300/2400]  mIoU: 53.53%  |  FB-IoU: 63.51%
+[Batch: 0350/2400]  mIoU: 53.58%  |  FB-IoU: 63.49%
+[Batch: 0400/2400]  mIoU: 53.02%  |  FB-IoU: 62.89%
+[Batch: 0450/2400]  mIoU: 52.70%  |  FB-IoU: 62.84%
+[Batch: 0500/2400]  mIoU: 52.77%  |  FB-IoU: 62.91%
+[Batch: 0550/2400]  mIoU: 53.75%  |  FB-IoU: 63.62%
+[Batch: 0600/2400]  mIoU: 53.28%  |  FB-IoU: 63.29%
+[Batch: 0650/2400]  mIoU: 52.76%  |  FB-IoU: 62.93%
+[Batch: 0700/2400]  mIoU: 52.76%  |  FB-IoU: 62.93%
+[Batch: 0750/2400]  mIoU: 53.24%  |  FB-IoU: 63.30%
+[Batch: 0800/2400]  mIoU: 52.18%  |  FB-IoU: 62.46%
+[Batch: 0850/2400]  mIoU: 52.18%  |  FB-IoU: 62.51%
+[Batch: 0900/2400]  mIoU: 51.45%  |  FB-IoU: 61.93%
+[Batch: 0950/2400]  mIoU: 51.77%  |  FB-IoU: 62.16%
+[Batch: 1000/2400]  mIoU: 51.79%  |  FB-IoU: 62.15%
+[Batch: 1050/2400]  mIoU: 52.00%  |  FB-IoU: 62.33%
+[Batch: 1100/2400]  mIoU: 51.93%  |  FB-IoU: 62.30%
+[Batch: 1150/2400]  mIoU: 52.27%  |  FB-IoU: 62.54%
+[Batch: 1200/2400]  mIoU: 52.64%  |  FB-IoU: 62.79%
+[Batch: 1250/2400]  mIoU: 52.62%  |  FB-IoU: 62.80%
+[Batch: 1300/2400]  mIoU: 52.44%  |  FB-IoU: 62.66%
+[Batch: 1350/2400]  mIoU: 52.59%  |  FB-IoU: 62.76%
+[Batch: 1400/2400]  mIoU: 52.69%  |  FB-IoU: 62.79%
+[Batch: 1450/2400]  mIoU: 52.76%  |  FB-IoU: 62.87%
+[Batch: 1500/2400]  mIoU: 52.60%  |  FB-IoU: 62.73%
+[Batch: 1550/2400]  mIoU: 52.35%  |  FB-IoU: 62.66%
+[Batch: 1600/2400]  mIoU: 52.14%  |  FB-IoU: 62.53%
+[Batch: 1650/2400]  mIoU: 52.10%  |  FB-IoU: 62.53%
+[Batch: 1700/2400]  mIoU: 52.13%  |  FB-IoU: 62.56%
+[Batch: 1750/2400]  mIoU: 52.25%  |  FB-IoU: 62.64%
+[Batch: 1800/2400]  mIoU: 52.28%  |  FB-IoU: 62.66%
+[Batch: 1850/2400]  mIoU: 52.00%  |  FB-IoU: 62.49%
+[Batch: 1900/2400]  mIoU: 51.80%  |  FB-IoU: 62.28%
+[Batch: 1950/2400]  mIoU: 51.69%  |  FB-IoU: 62.20%
+[Batch: 2000/2400]  mIoU: 51.30%  |  FB-IoU: 61.93%
+[Batch: 2050/2400]  mIoU: 51.46%  |  FB-IoU: 62.04%
+[Batch: 2100/2400]  mIoU: 51.31%  |  FB-IoU: 61.94%
+[Batch: 2150/2400]  mIoU: 51.00%  |  FB-IoU: 61.76%
+[Batch: 2200/2400]  mIoU: 51.13%  |  FB-IoU: 61.84%
+[Batch: 2250/2400]  mIoU: 50.91%  |  FB-IoU: 61.67%
+[Batch: 2300/2400]  mIoU: 50.68%  |  FB-IoU: 61.52%
+[Batch: 2350/2400]  mIoU: 50.77%  |  FB-IoU: 61.56%
+[Batch: 2400/2400]  mIoU: 51.01%  |  FB-IoU: 61.72%
+
+================ FINAL RESULTS ================
+Benchmark:   FSS
+Adapter:     conv1x1
+Fusion:      softmax_margin
+Final mIoU:   51.01%
+Final FB-IoU: 61.72%
+Elapsed Time: 859.54s (0.358s/episode)
+================================================
+

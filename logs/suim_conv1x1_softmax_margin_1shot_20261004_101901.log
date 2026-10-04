@@ -1,0 +1,100 @@
+[*] Log file saved to: ./logs/suim_conv1x1_softmax_margin_1shot_20261004_101901.log
+[*] SUIM auto-detected base_path at: /root/.cache/kagglehub/datasets/heyoujue/suim-merged/versions/2/suim_merged
+
+:=========== CD-FSS Clean Framework Evaluation: SUIM ===========
+| Device:         cuda
+| Adapter Type:   conv1x1
+| Fusion Mode:    softmax_margin (temp=1.0)
+| Adapt Mode:     first-episode
+| Total Episodes: 3859
+:========================================================================
+
+[Batch: 0001/3859]  mIoU:  1.64%  |  FB-IoU: 23.11%
+[Batch: 0050/3859]  mIoU: 32.38%  |  FB-IoU: 42.63%
+[Batch: 0100/3859]  mIoU: 31.20%  |  FB-IoU: 41.47%
+[Batch: 0150/3859]  mIoU: 31.55%  |  FB-IoU: 42.00%
+[Batch: 0200/3859]  mIoU: 31.10%  |  FB-IoU: 42.03%
+[Batch: 0250/3859]  mIoU: 30.96%  |  FB-IoU: 42.17%
+[Batch: 0300/3859]  mIoU: 30.05%  |  FB-IoU: 41.51%
+[Batch: 0350/3859]  mIoU: 30.08%  |  FB-IoU: 41.62%
+[Batch: 0400/3859]  mIoU: 30.09%  |  FB-IoU: 41.49%
+[Batch: 0450/3859]  mIoU: 29.54%  |  FB-IoU: 40.99%
+[Batch: 0500/3859]  mIoU: 29.50%  |  FB-IoU: 40.95%
+[Batch: 0550/3859]  mIoU: 29.43%  |  FB-IoU: 41.04%
+[Batch: 0600/3859]  mIoU: 29.45%  |  FB-IoU: 41.11%
+[Batch: 0650/3859]  mIoU: 29.63%  |  FB-IoU: 41.22%
+[Batch: 0700/3859]  mIoU: 29.36%  |  FB-IoU: 41.19%
+[Batch: 0750/3859]  mIoU: 29.21%  |  FB-IoU: 41.11%
+[Batch: 0800/3859]  mIoU: 29.34%  |  FB-IoU: 41.25%
+[Batch: 0850/3859]  mIoU: 29.41%  |  FB-IoU: 41.30%
+[Batch: 0900/3859]  mIoU: 29.52%  |  FB-IoU: 41.40%
+[Batch: 0950/3859]  mIoU: 29.30%  |  FB-IoU: 41.29%
+[Batch: 1000/3859]  mIoU: 29.25%  |  FB-IoU: 41.24%
+[Batch: 1050/3859]  mIoU: 29.34%  |  FB-IoU: 41.31%
+[Batch: 1100/3859]  mIoU: 29.08%  |  FB-IoU: 41.17%
+[Batch: 1150/3859]  mIoU: 29.13%  |  FB-IoU: 41.22%
+[Batch: 1200/3859]  mIoU: 29.06%  |  FB-IoU: 41.21%
+[Batch: 1250/3859]  mIoU: 28.99%  |  FB-IoU: 41.18%
+[Batch: 1300/3859]  mIoU: 29.04%  |  FB-IoU: 41.21%
+[Batch: 1350/3859]  mIoU: 29.04%  |  FB-IoU: 41.22%
+[Batch: 1400/3859]  mIoU: 28.94%  |  FB-IoU: 41.14%
+[Batch: 1450/3859]  mIoU: 29.10%  |  FB-IoU: 41.24%
+[Batch: 1500/3859]  mIoU: 28.94%  |  FB-IoU: 41.11%
+[Batch: 1550/3859]  mIoU: 28.82%  |  FB-IoU: 41.02%
+[Batch: 1600/3859]  mIoU: 28.89%  |  FB-IoU: 41.10%
+[Batch: 1650/3859]  mIoU: 28.91%  |  FB-IoU: 41.13%
+[Batch: 1700/3859]  mIoU: 28.98%  |  FB-IoU: 41.18%
+[Batch: 1750/3859]  mIoU: 28.93%  |  FB-IoU: 41.16%
+[Batch: 1800/3859]  mIoU: 28.90%  |  FB-IoU: 41.15%
+[Batch: 1850/3859]  mIoU: 28.88%  |  FB-IoU: 41.14%
+[Batch: 1900/3859]  mIoU: 28.75%  |  FB-IoU: 41.02%
+[Batch: 1950/3859]  mIoU: 28.74%  |  FB-IoU: 40.98%
+[Batch: 2000/3859]  mIoU: 28.64%  |  FB-IoU: 40.94%
+[Batch: 2050/3859]  mIoU: 28.65%  |  FB-IoU: 40.93%
+[Batch: 2100/3859]  mIoU: 28.77%  |  FB-IoU: 41.04%
+[Batch: 2150/3859]  mIoU: 28.70%  |  FB-IoU: 40.99%
+[Batch: 2200/3859]  mIoU: 28.62%  |  FB-IoU: 40.96%
+[Batch: 2250/3859]  mIoU: 28.73%  |  FB-IoU: 41.00%
+[Batch: 2300/3859]  mIoU: 28.69%  |  FB-IoU: 40.95%
+[Batch: 2350/3859]  mIoU: 28.64%  |  FB-IoU: 40.93%
+[Batch: 2400/3859]  mIoU: 28.77%  |  FB-IoU: 41.05%
+[Batch: 2450/3859]  mIoU: 28.76%  |  FB-IoU: 41.04%
+[Batch: 2500/3859]  mIoU: 28.66%  |  FB-IoU: 40.94%
+[Batch: 2550/3859]  mIoU: 28.63%  |  FB-IoU: 40.96%
+[Batch: 2600/3859]  mIoU: 28.72%  |  FB-IoU: 41.02%
+[Batch: 2650/3859]  mIoU: 28.72%  |  FB-IoU: 41.00%
+[Batch: 2700/3859]  mIoU: 28.74%  |  FB-IoU: 41.00%
+[Batch: 2750/3859]  mIoU: 28.70%  |  FB-IoU: 40.96%
+[Batch: 2800/3859]  mIoU: 28.74%  |  FB-IoU: 41.00%
+[Batch: 2850/3859]  mIoU: 28.78%  |  FB-IoU: 41.03%
+[Batch: 2900/3859]  mIoU: 28.88%  |  FB-IoU: 41.10%
+[Batch: 2950/3859]  mIoU: 28.94%  |  FB-IoU: 41.14%
+[Batch: 3000/3859]  mIoU: 28.90%  |  FB-IoU: 41.10%
+[Batch: 3050/3859]  mIoU: 28.94%  |  FB-IoU: 41.10%
+[Batch: 3100/3859]  mIoU: 28.92%  |  FB-IoU: 41.08%
+[Batch: 3150/3859]  mIoU: 28.96%  |  FB-IoU: 41.09%
+[Batch: 3200/3859]  mIoU: 28.86%  |  FB-IoU: 41.03%
+[Batch: 3250/3859]  mIoU: 28.76%  |  FB-IoU: 40.96%
+[Batch: 3300/3859]  mIoU: 28.69%  |  FB-IoU: 40.89%
+[Batch: 3350/3859]  mIoU: 28.71%  |  FB-IoU: 40.93%
+[Batch: 3400/3859]  mIoU: 28.74%  |  FB-IoU: 40.94%
+[Batch: 3450/3859]  mIoU: 28.71%  |  FB-IoU: 40.93%
+[Batch: 3500/3859]  mIoU: 28.73%  |  FB-IoU: 40.97%
+[Batch: 3550/3859]  mIoU: 28.77%  |  FB-IoU: 41.01%
+[Batch: 3600/3859]  mIoU: 28.84%  |  FB-IoU: 41.08%
+[Batch: 3650/3859]  mIoU: 28.84%  |  FB-IoU: 41.06%
+[Batch: 3700/3859]  mIoU: 28.88%  |  FB-IoU: 41.11%
+[Batch: 3750/3859]  mIoU: 28.87%  |  FB-IoU: 41.13%
+[Batch: 3800/3859]  mIoU: 28.93%  |  FB-IoU: 41.18%
+[Batch: 3850/3859]  mIoU: 28.92%  |  FB-IoU: 41.18%
+[Batch: 3859/3859]  mIoU: 28.91%  |  FB-IoU: 41.17%
+
+================ FINAL RESULTS ================
+Benchmark:   SUIM
+Adapter:     conv1x1
+Fusion:      softmax_margin
+Final mIoU:   28.91%
+Final FB-IoU: 41.17%
+Elapsed Time: 215.42s (0.056s/episode)
+================================================
+

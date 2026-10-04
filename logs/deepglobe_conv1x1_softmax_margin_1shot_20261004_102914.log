@@ -1,0 +1,59 @@
+[*] Log file saved to: ./logs/deepglobe_conv1x1_softmax_margin_1shot_20261004_102914.log
+[*] Deepglobe auto-detected base_path at: /root/.cache/kagglehub/datasets/heyoujue/deepglobe/versions/7
+
+:=========== CD-FSS Clean Framework Evaluation: DEEPGLOBE ===========
+| Device:         cuda
+| Adapter Type:   conv1x1
+| Fusion Mode:    softmax_margin (temp=1.0)
+| Adapt Mode:     first-episode
+| Total Episodes: 1833
+:========================================================================
+
+[Batch: 0001/1833]  mIoU: 29.68%  |  FB-IoU: 46.77%
+[Batch: 0050/1833]  mIoU: 46.15%  |  FB-IoU: 46.47%
+[Batch: 0100/1833]  mIoU: 47.41%  |  FB-IoU: 47.66%
+[Batch: 0150/1833]  mIoU: 45.30%  |  FB-IoU: 46.53%
+[Batch: 0200/1833]  mIoU: 44.36%  |  FB-IoU: 46.06%
+[Batch: 0250/1833]  mIoU: 44.37%  |  FB-IoU: 46.39%
+[Batch: 0300/1833]  mIoU: 43.72%  |  FB-IoU: 45.98%
+[Batch: 0350/1833]  mIoU: 43.38%  |  FB-IoU: 45.59%
+[Batch: 0400/1833]  mIoU: 43.73%  |  FB-IoU: 45.52%
+[Batch: 0450/1833]  mIoU: 43.65%  |  FB-IoU: 45.73%
+[Batch: 0500/1833]  mIoU: 43.04%  |  FB-IoU: 45.34%
+[Batch: 0550/1833]  mIoU: 43.20%  |  FB-IoU: 45.33%
+[Batch: 0600/1833]  mIoU: 43.28%  |  FB-IoU: 45.47%
+[Batch: 0650/1833]  mIoU: 42.95%  |  FB-IoU: 45.14%
+[Batch: 0700/1833]  mIoU: 42.91%  |  FB-IoU: 45.17%
+[Batch: 0750/1833]  mIoU: 42.84%  |  FB-IoU: 45.17%
+[Batch: 0800/1833]  mIoU: 42.73%  |  FB-IoU: 45.07%
+[Batch: 0850/1833]  mIoU: 42.92%  |  FB-IoU: 45.25%
+[Batch: 0900/1833]  mIoU: 42.79%  |  FB-IoU: 45.21%
+[Batch: 0950/1833]  mIoU: 42.50%  |  FB-IoU: 45.07%
+[Batch: 1000/1833]  mIoU: 42.45%  |  FB-IoU: 45.03%
+[Batch: 1050/1833]  mIoU: 42.43%  |  FB-IoU: 45.03%
+[Batch: 1100/1833]  mIoU: 42.58%  |  FB-IoU: 45.18%
+[Batch: 1150/1833]  mIoU: 42.43%  |  FB-IoU: 45.15%
+[Batch: 1200/1833]  mIoU: 42.34%  |  FB-IoU: 45.20%
+[Batch: 1250/1833]  mIoU: 42.34%  |  FB-IoU: 45.27%
+[Batch: 1300/1833]  mIoU: 42.21%  |  FB-IoU: 45.14%
+[Batch: 1350/1833]  mIoU: 42.16%  |  FB-IoU: 45.11%
+[Batch: 1400/1833]  mIoU: 41.94%  |  FB-IoU: 44.87%
+[Batch: 1450/1833]  mIoU: 41.86%  |  FB-IoU: 44.84%
+[Batch: 1500/1833]  mIoU: 41.91%  |  FB-IoU: 44.87%
+[Batch: 1550/1833]  mIoU: 41.71%  |  FB-IoU: 44.74%
+[Batch: 1600/1833]  mIoU: 41.87%  |  FB-IoU: 44.85%
+[Batch: 1650/1833]  mIoU: 41.94%  |  FB-IoU: 44.88%
+[Batch: 1700/1833]  mIoU: 42.00%  |  FB-IoU: 44.93%
+[Batch: 1750/1833]  mIoU: 42.14%  |  FB-IoU: 45.09%
+[Batch: 1800/1833]  mIoU: 42.10%  |  FB-IoU: 45.10%
+[Batch: 1833/1833]  mIoU: 42.01%  |  FB-IoU: 45.08%
+
+================ FINAL RESULTS ================
+Benchmark:   DEEPGLOBE
+Adapter:     conv1x1
+Fusion:      softmax_margin
+Final mIoU:   42.01%
+Final FB-IoU: 45.08%
+Elapsed Time: 108.23s (0.059s/episode)
+================================================
+
