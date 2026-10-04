@@ -79,6 +79,7 @@ class TaskAdaptedHead(nn.Module):
         Fits a single layer adapter using SGD optimization on InfoNCE + Variance regularization.
         """
         adapter = self.adapters[layer_idx]
+        adapter.train()
         optimizer = torch.optim.SGD(adapter.parameters(), lr=lr)
 
         # q_feat: [B, C, H, W], q_feat_aug: [B, aug, C, H, W]
@@ -91,22 +92,25 @@ class TaskAdaptedHead(nn.Module):
         s_orig_expanded = s_feat.unsqueeze(2).expand(B, K, aug, C, H, W).reshape(B * K * aug, C, H, W)
         s_aug_flat = s_feat_aug.reshape(B * K * aug, C, H, W)
 
-        for _ in range(num_epochs):
-            optimizer.zero_grad()
+        with torch.enable_grad():
+            for _ in range(num_epochs):
+                optimizer.zero_grad()
 
-            # Query forward pass
-            q_orig_adapted = F.normalize(adapter(q_orig_expanded), p=2, dim=1)
-            q_aug_adapted = F.normalize(adapter(q_aug_flat), p=2, dim=1)
-            loss_q = self.info_nce_loss(q_orig_adapted, q_aug_adapted) + self.keep_var_loss(q_orig_adapted, q_aug_adapted)
+                # Query forward pass
+                q_orig_adapted = F.normalize(adapter(q_orig_expanded), p=2, dim=1)
+                q_aug_adapted = F.normalize(adapter(q_aug_flat), p=2, dim=1)
+                loss_q = self.info_nce_loss(q_orig_adapted, q_aug_adapted) + self.keep_var_loss(q_orig_adapted, q_aug_adapted)
 
-            # Support forward pass
-            s_orig_adapted = F.normalize(adapter(s_orig_expanded), p=2, dim=1)
-            s_aug_adapted = F.normalize(adapter(s_aug_flat), p=2, dim=1)
-            loss_s = self.info_nce_loss(s_orig_adapted, s_aug_adapted) + self.keep_var_loss(s_orig_adapted, s_aug_adapted)
+                # Support forward pass
+                s_orig_adapted = F.normalize(adapter(s_orig_expanded), p=2, dim=1)
+                s_aug_adapted = F.normalize(adapter(s_aug_flat), p=2, dim=1)
+                loss_s = self.info_nce_loss(s_orig_adapted, s_aug_adapted) + self.keep_var_loss(s_orig_adapted, s_aug_adapted)
 
-            total_loss = loss_q + loss_s
-            total_loss.backward()
-            optimizer.step()
+                total_loss = loss_q + loss_s
+                total_loss.backward()
+                optimizer.step()
+
+        adapter.eval()
 
     def fit(
         self,

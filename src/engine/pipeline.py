@@ -108,7 +108,6 @@ class CDFSSEngine:
 
         return adapter_head
 
-    @torch.no_grad()
     def evaluate_episode(self, batch: dict) -> tuple[torch.Tensor, torch.Tensor, float]:
         """
         Processes a single few-shot segmentation episode.
@@ -123,37 +122,40 @@ class CDFSSEngine:
         B, C, H_img, W_img = q_img.shape
         _, K, _, _, _ = s_imgs.shape
 
-        # 1. Extract base backbone features
-        q_feats = self.backbone.extract_features(q_img)
-        s_feats = self.backbone.extract_features(s_imgs.view(B * K, C, H_img, W_img))
-        s_feats = [f.view(B, K, *f.shape[1:]) for f in s_feats]
+        # 1. Extract base backbone features (no grad needed for backbone)
+        with torch.no_grad():
+            q_feats = self.backbone.extract_features(q_img)
+            s_feats = self.backbone.extract_features(s_imgs.view(B * K, C, H_img, W_img))
+            s_feats = [f.view(B, K, *f.shape[1:]) for f in s_feats]
 
-        # 2. Get or adapt attached adapters
+        # 2. Get or adapt attached adapters (requires gradients for adapter weights)
         adapter_head = self._get_or_fit_adapter(class_id, q_img, s_imgs, s_masks, q_feats, s_feats)
 
-        # 3. Project features through adapters
-        q_feats_adapted = adapter_head.get_adapted_features(q_feats)
-        s_feats_adapted = adapter_head.get_adapted_features(s_feats)
+        # 3. Evaluation inference (no grad needed)
+        with torch.no_grad():
+            # Project features through adapters
+            q_feats_adapted = adapter_head.get_adapted_features(q_feats)
+            s_feats_adapted = adapter_head.get_adapted_features(s_feats)
 
-        # 4. Dense Cross-Attention per layer
-        layer_predictions = []
-        for l_idx in range(self.l0, 16):
-            q_l = q_feats_adapted[l_idx]
-            s_l = s_feats_adapted[l_idx]
-            # Coarse query prediction [B, Hq, Wq]
-            q_coarse = self.cross_attention(q_l, s_l, s_masks)
-            # Upsample to image resolution
-            q_coarse_up = F.interpolate(q_coarse.unsqueeze(1), size=(H_img, W_img), mode='bilinear', align_corners=False).squeeze(1)
-            layer_predictions.append(q_coarse_up)
+            # 4. Dense Cross-Attention per layer
+            layer_predictions = []
+            for l_idx in range(self.l0, 16):
+                q_l = q_feats_adapted[l_idx]
+                s_l = s_feats_adapted[l_idx]
+                # Coarse query prediction [B, Hq, Wq]
+                q_coarse = self.cross_attention(q_l, s_l, s_masks)
+                # Upsample to image resolution
+                q_coarse_up = F.interpolate(q_coarse.unsqueeze(1), size=(H_img, W_img), mode='bilinear', align_corners=False).squeeze(1)
+                layer_predictions.append(q_coarse_up)
 
-        # Stack predictions across all L layers: [B, L, H_img, W_img]
-        q_coarses_stacked = torch.stack(layer_predictions, dim=1)
+            # Stack predictions across all L layers: [B, L, H_img, W_img]
+            q_coarses_stacked = torch.stack(layer_predictions, dim=1)
 
-        # 5. Multi-layer fusion
-        q_fused = self.fusion_module(q_coarses_stacked, s_feats_adapted=s_feats_adapted, s_mask=s_masks, l0=self.l0)
+            # 5. Multi-layer fusion
+            q_fused = self.fusion_module(q_coarses_stacked, s_feats_adapted=s_feats_adapted, s_mask=s_masks, l0=self.l0)
 
-        # 6. Adaptive Thresholding
-        _, pred_mask = apply_adaptive_threshold(q_fused, s_mask=s_masks, method='pred_mean')
+            # 6. Adaptive Thresholding
+            _, pred_mask = apply_adaptive_threshold(q_fused, s_mask=s_masks, method='pred_mean')
 
         return pred_mask, q_mask, class_id
 

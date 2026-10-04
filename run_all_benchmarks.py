@@ -28,7 +28,44 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
                 print(f"[✓] Đã có sẵn '{benchmark}' trong cache: {c}")
                 return c
 
-    # 2. Kiểm tra thư mục cục bộ ./datasets
+    # 2. Xử lý chuyên biệt cho FSS-1000
+    if benchmark == 'fss':
+        # Kiểm tra xem đã giải nén có ảnh chưa
+        for local_dir in ["./datasets/fss1000", "./datasets/fss", "/root/.cache/kagglehub/datasets/itsahmad/fss-1000/versions/1"]:
+            if os.path.exists(local_dir):
+                for root, dirs, files in os.walk(local_dir):
+                    if any(f.endswith('.jpg') for f in files) or any(d in ['bus', 'pizza', 'spiderman'] for d in dirs):
+                        print(f"[✓] Đã có sẵn FSS-1000 với đầy đủ ảnh tại: {root}")
+                        return root
+
+        print("[*] Đang tự động tải FSS-1000...")
+        os.makedirs("./datasets", exist_ok=True)
+        zip_path = "./datasets/fss1000.zip"
+        dest_dir = "./datasets/fss1000"
+
+        # Thử tải từ Google Drive qua gdown
+        try:
+            import gdown, zipfile
+            if not os.path.exists(zip_path) or os.path.getsize(zip_path) < 1000000:
+                print("[*] Đang tải fss1000.zip từ Google Drive...")
+                gdown.download(id="1tt3dkdASjXt58t-2A9zeucZ397ZRF7In", output=zip_path, quiet=False)
+            print("[*] Đang giải nén FSS-1000...")
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(dest_dir)
+            print(f"[✓] Tải và giải nén FSS-1000 thành công vào: {dest_dir}")
+            return dest_dir
+        except Exception as e:
+            print(f"[!] Lỗi Google Drive ({e}), chuyển sang tải từ Kaggle (itsahmad/fss-1000)...")
+            try:
+                import kagglehub
+                path = kagglehub.dataset_download("itsahmad/fss-1000")
+                print(f"[✓] Tải thành công FSS-1000 từ Kaggle về: {path}")
+                return path
+            except Exception as ke:
+                print(f"[!] Không thể tải FSS-1000: {ke}")
+                return dest_dir
+
+    # 3. Kiểm tra thư mục cục bộ ./datasets
     local_candidates = [
         f"./datasets/{benchmark}",
         f"./datasets/{benchmark}1000"
@@ -37,25 +74,6 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
         if os.path.exists(lc) and len(os.listdir(lc)) > 0:
             print(f"[✓] Đã có sẵn '{benchmark}' tại thư mục cục bộ: {lc}")
             return lc
-
-    # 3. Tải tự động FSS-1000 từ Google Drive
-    if benchmark == 'fss':
-        print("[*] Đang tự động tải FSS-1000 từ Google Drive...")
-        os.makedirs("./datasets", exist_ok=True)
-        try:
-            import gdown, zipfile
-            zip_path = "./datasets/fss1000.zip"
-            dest_dir = "./datasets/fss1000"
-            if not os.path.exists(zip_path):
-                gdown.download(id="1tt3dkdASjXt58t-2A9zeucZ397ZRF7In", output=zip_path, quiet=False)
-            print("[*] Đang giải nén FSS-1000...")
-            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                zip_ref.extractall(dest_dir)
-            print(f"[✓] Tải và giải nén FSS-1000 thành công vào: {dest_dir}")
-            return dest_dir
-        except Exception as e:
-            print(f"[!] Lỗi khi tải FSS-1000: {e}")
-            return "./datasets/fss1000"
 
     # 4. Tải tự động từ Kaggle qua kagglehub
     if kaggle_slug:

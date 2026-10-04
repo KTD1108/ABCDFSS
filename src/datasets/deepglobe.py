@@ -7,42 +7,77 @@ from PIL import Image
 import numpy as np
 
 class DeepglobeDataset(Dataset):
-    """Clean Deepglobe Satellite Remote Sensing Dataset loader with auto-detection."""
+    """
+    Clean Deepglobe Satellite Remote Sensing Few-Shot Segmentation Dataset loader.
+    Supports standard CD-FSS episodic structure (classes '1'..'6' under test/origin and test/groundtruth).
+    """
     def __init__(self, datapath: str, transform, shot: int = 1, split: str = 'test'):
         self.shot = shot
         self.split = split
         self.transform = transform
         self.base_path = datapath
 
-        # Auto-detect nested Deepglobe directory
-        if os.path.exists(self.base_path) and not (os.path.exists(os.path.join(self.base_path, 'urban')) or os.path.exists(os.path.join(self.base_path, 'rangeland'))):
-            for root, dirs, files in os.walk(self.base_path):
-                if 'urban' in dirs or 'rangeland' in dirs:
-                    self.base_path = root
-                    print(f"[*] Deepglobe auto-detected base_path at: {self.base_path}")
+        self.categories = ['1', '2', '3', '4', '5', '6']
+        self.class_ids = list(range(len(self.categories)))
+
+        # Auto-detect if categories '1'..'6' are in datapath or a nested subfolder
+        if os.path.exists(self.base_path):
+            found = False
+            for root, dirs, _ in os.walk(self.base_path):
+                if any(c in dirs for c in self.categories):
+                    # Check if category has test or origin inside
+                    for c in self.categories:
+                        if os.path.exists(os.path.join(root, c)):
+                            self.base_path = root
+                            found = True
+                            print(f"[*] Deepglobe auto-detected base_path at: {self.base_path}")
+                            break
+                if found:
                     break
 
-        self.categories = ['urban', 'agriculture', 'rangeland', 'forest', 'water', 'barren']
-        self.class_ids = list(range(len(self.categories)))
         self.img_metadata_classwise, self.num_images = self._build_metadata()
 
     def _build_metadata(self):
         metadata = {}
         total = 0
+
         for cat in self.categories:
+            metadata[cat] = []
             cat_dir = os.path.join(self.base_path, cat)
             if not os.path.exists(cat_dir):
-                metadata[cat] = []
                 continue
-            mask_paths = sorted(glob.glob(os.path.join(cat_dir, 'masks', '*.png')))
-            valid = []
-            for mp in mask_paths:
-                m = np.array(Image.open(mp).convert('L'))
-                if np.count_nonzero(m >= 128) > 0:
-                    valid.append(mp)
-            metadata[cat] = valid
-            total += len(valid)
+
+            # Candidate image locations:
+            # 1. <cat>/test/origin/*.jpg
+            # 2. <cat>/origin/*.jpg
+            # 3. <cat>/images/*.jpg
+            img_patterns = [
+                os.path.join(cat_dir, 'test', 'origin', '*.jpg'),
+                os.path.join(cat_dir, 'origin', '*.jpg'),
+                os.path.join(cat_dir, 'images', '*.jpg'),
+                os.path.join(cat_dir, '*.jpg')
+            ]
+
+            img_paths = []
+            for pat in img_patterns:
+                matched = sorted(glob.glob(pat))
+                if matched:
+                    img_paths = matched
+                    break
+
+            metadata[cat] = img_paths
+            total += len(img_paths)
+
         return metadata, total
+
+    def _to_mask_path(self, img_path: str) -> str:
+        """Finds matching mask path for given query/support image."""
+        if 'origin' in img_path:
+            return img_path.replace('origin', 'groundtruth').replace('.jpg', '.png')
+        elif 'images' in img_path:
+            return img_path.replace('images', 'masks').replace('.jpg', '.png')
+        else:
+            return img_path.replace('.jpg', '.png')
 
     def __len__(self):
         return self.num_images
@@ -52,17 +87,24 @@ class DeepglobeDataset(Dataset):
         cat_name = self.categories[cat_idx]
 
         candidates = self.img_metadata_classwise[cat_name]
-        chosen = np.random.choice(candidates, 1 + self.shot, replace=False)
-        q_mask_path, s_mask_paths = chosen[0], chosen[1:]
+        if len(candidates) < 1 + self.shot:
+            # Fallback if class has few images
+            chosen = np.random.choice(candidates, 1 + self.shot, replace=True)
+        else:
+            chosen = np.random.choice(candidates, 1 + self.shot, replace=False)
 
-        def mask_to_img(mp):
-            return mp.replace('masks', 'images').replace('.png', '.jpg')
+        q_img_path = chosen[0]
+        s_img_paths = chosen[1:]
 
-        q_img = Image.open(mask_to_img(q_mask_path)).convert('RGB')
+        q_mask_path = self._to_mask_path(q_img_path)
+        s_mask_paths = [self._to_mask_path(p) for p in s_img_paths]
+
+        # Load images
+        q_img = Image.open(q_img_path).convert('RGB')
         q_mask = torch.tensor(np.array(Image.open(q_mask_path).convert('L')) >= 128).float()
 
-        s_imgs = [Image.open(mask_to_img(smp)).convert('RGB') for smp in s_mask_paths]
-        s_masks = [torch.tensor(np.array(Image.open(smp).convert('L')) >= 128).float() for smp in s_mask_paths]
+        s_imgs = [Image.open(p).convert('RGB') for p in s_img_paths]
+        s_masks = [torch.tensor(np.array(Image.open(p).convert('L')) >= 128).float() for p in s_mask_paths]
 
         q_img_t = self.transform(q_img)
         q_mask_t = F.interpolate(q_mask.unsqueeze(0).unsqueeze(0), size=q_img_t.shape[-2:], mode='nearest').squeeze()
