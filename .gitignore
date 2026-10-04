@@ -1,8 +1,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
-datasets/
-data/datasets/
+/datasets/
+/data/datasets/
 .ipynb_checkpoints/
 .vscode/
 .idea/

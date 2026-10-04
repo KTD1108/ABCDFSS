@@ -14,53 +14,61 @@ import json
 import subprocess
 from datetime import datetime
 
-def check_or_download_dataset(benchmark: str, default_local_path: str = None, kaggle_slug: str = None) -> str:
-    """Finds existing dataset folder or downloads via kagglehub."""
-    if default_local_path and os.path.exists(default_local_path):
-        print(f"[✓] Tìm thấy '{benchmark}' tại thư mục cục bộ: {default_local_path}")
-        return default_local_path
+def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
+    """Tự động tải trực tiếp từ internet nếu chưa có trong cache/thư mục cục bộ."""
+    # 1. Kiểm tra cache Kaggle
+    if kaggle_slug:
+        candidates = [
+            f"/root/.cache/kagglehub/datasets/{kaggle_slug}/versions/7",
+            f"/root/.cache/kagglehub/datasets/{kaggle_slug}/versions/2",
+            f"/root/.cache/kagglehub/datasets/{kaggle_slug}/versions/1",
+        ]
+        for c in candidates:
+            if os.path.exists(c):
+                print(f"[✓] Đã có sẵn '{benchmark}' trong cache: {c}")
+                return c
 
-    # Try common local locations
-    candidates = [
+    # 2. Kiểm tra thư mục cục bộ ./datasets
+    local_candidates = [
         f"./datasets/{benchmark}",
-        f"./datasets/{benchmark}1000",
-        f"/root/.cache/kagglehub/datasets/{kaggle_slug}/versions/2" if kaggle_slug else None,
-        f"/root/.cache/kagglehub/datasets/{kaggle_slug}/versions/1" if kaggle_slug else None,
+        f"./datasets/{benchmark}1000"
     ]
-    for c in candidates:
-        if c and os.path.exists(c):
-            print(f"[✓] Tìm thấy '{benchmark}' tại cache: {c}")
-            return c
+    for lc in local_candidates:
+        if os.path.exists(lc) and len(os.listdir(lc)) > 0:
+            print(f"[✓] Đã có sẵn '{benchmark}' tại thư mục cục bộ: {lc}")
+            return lc
 
-    # Special fallback for FSS-1000 via Google Drive
-    if benchmark == 'fss' and not os.path.exists('./datasets/fss1000'):
-        print("[*] Đang tải FSS-1000 từ Google Drive qua gdown...")
+    # 3. Tải tự động FSS-1000 từ Google Drive
+    if benchmark == 'fss':
+        print("[*] Đang tự động tải FSS-1000 từ Google Drive...")
         os.makedirs("./datasets", exist_ok=True)
         try:
             import gdown, zipfile
             zip_path = "./datasets/fss1000.zip"
+            dest_dir = "./datasets/fss1000"
             if not os.path.exists(zip_path):
                 gdown.download(id="1tt3dkdASjXt58t-2A9zeucZ397ZRF7In", output=zip_path, quiet=False)
             print("[*] Đang giải nén FSS-1000...")
             with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                zip_ref.extractall("./datasets/fss1000")
-            print("[✓] Giải nén FSS-1000 thành công!")
-            return "./datasets/fss1000"
+                zip_ref.extractall(dest_dir)
+            print(f"[✓] Tải và giải nén FSS-1000 thành công vào: {dest_dir}")
+            return dest_dir
         except Exception as e:
             print(f"[!] Lỗi khi tải FSS-1000: {e}")
+            return "./datasets/fss1000"
 
-    # Download via kagglehub if available
+    # 4. Tải tự động từ Kaggle qua kagglehub
     if kaggle_slug:
-        print(f"[*] Đang tải '{benchmark}' từ Kaggle ({kaggle_slug})...")
+        print(f"[*] Đang tự động tải '{benchmark}' từ Kaggle ({kaggle_slug})...")
         try:
             import kagglehub
             path = kagglehub.dataset_download(kaggle_slug)
             print(f"[✓] Tải thành công '{benchmark}' về: {path}")
             return path
         except Exception as e:
-            print(f"[!] Không thể tải tự động từ kagglehub: {e}")
+            print(f"[!] Lỗi khi tải {benchmark} từ kagglehub: {e}")
 
-    return default_local_path or f"./datasets/{benchmark}"
+    return f"./datasets/{benchmark}"
 
 def main():
     print("=" * 80)
@@ -72,8 +80,8 @@ def main():
         'isic': check_or_download_dataset('isic', kaggle_slug='heyoujue/isic2018-classwise'),
         'suim': check_or_download_dataset('suim', kaggle_slug='heyoujue/suim-merged'),
         'lung': check_or_download_dataset('lung', kaggle_slug='heyoujue/lungsegmentation'),
-        'fss': check_or_download_dataset('fss', default_local_path='./datasets/fss1000', kaggle_slug='heyoujue/fss1000'),
-        'deepglobe': check_or_download_dataset('deepglobe', default_local_path='./datasets/deepglobe', kaggle_slug='heyoujue/deepglobe')
+        'fss': check_or_download_dataset('fss'),
+        'deepglobe': check_or_download_dataset('deepglobe', kaggle_slug='heyoujue/deepglobe')
     }
 
     # 2. Danh sách các thử nghiệm cần chạy
