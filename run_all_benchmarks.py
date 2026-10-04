@@ -30,40 +30,60 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
 
     # 2. Xử lý chuyên biệt cho FSS-1000
     if benchmark == 'fss':
-        # Kiểm tra xem đã giải nén có ảnh chưa
-        for local_dir in ["./datasets/fss1000", "./datasets/fss", "/root/.cache/kagglehub/datasets/itsahmad/fss-1000/versions/1"]:
-            if os.path.exists(local_dir):
-                for root, dirs, files in os.walk(local_dir):
+        # Kiểm tra xem đã có sẵn ảnh trong cache Kaggle hoặc cục bộ chưa
+        fss_check_dirs = [
+            "/root/.cache/kagglehub/datasets/nikhilpandey360/fss-1000-a-1000-class-few-shot-segmentation/versions/1",
+            "/root/.cache/kagglehub/datasets/itsahmad/fss-1000/versions/1",
+            "./datasets/fss1000",
+            "./datasets/fss"
+        ]
+        for cd in fss_check_dirs:
+            if os.path.exists(cd):
+                for root, dirs, files in os.walk(cd):
                     if any(f.endswith('.jpg') for f in files) or any(d in ['bus', 'pizza', 'spiderman'] for d in dirs):
                         print(f"[✓] Đã có sẵn FSS-1000 với đầy đủ ảnh tại: {root}")
                         return root
 
         print("[*] Đang tự động tải FSS-1000...")
+        # Ưu tiên 1: Tải trực tiếp qua kagglehub (ổn định, không bị chặn link)
+        kaggle_fss_slugs = [
+            "nikhilpandey360/fss-1000-a-1000-class-few-shot-segmentation",
+            "itsahmad/fss-1000"
+        ]
+        for slug in kaggle_fss_slugs:
+            try:
+                print(f"[*] Đang tải FSS-1000 từ Kaggle ({slug})...")
+                import kagglehub
+                p = kagglehub.dataset_download(slug)
+                print(f"[✓] Tải thành công FSS-1000 từ Kaggle về: {p}")
+                return p
+            except Exception as ke:
+                print(f"[-] Không thể tải từ Kaggle ({slug}): {ke}")
+
+        # Ưu tiên 2: Tải từ Google Drive qua gdown
         os.makedirs("./datasets", exist_ok=True)
         zip_path = "./datasets/fss1000.zip"
         dest_dir = "./datasets/fss1000"
+        gdrive_ids = ["16TgqOeI_0P41Eh3jWQlxlRXG9KIqtMgI", "1tt3dkdASjXt58t-2A9zeucZ397ZRF7In"]
 
-        # Thử tải từ Google Drive qua gdown
-        try:
-            import gdown, zipfile
-            if not os.path.exists(zip_path) or os.path.getsize(zip_path) < 1000000:
-                print("[*] Đang tải fss1000.zip từ Google Drive...")
-                gdown.download(id="1tt3dkdASjXt58t-2A9zeucZ397ZRF7In", output=zip_path, quiet=False)
-            print("[*] Đang giải nén FSS-1000...")
-            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                zip_ref.extractall(dest_dir)
-            print(f"[✓] Tải và giải nén FSS-1000 thành công vào: {dest_dir}")
-            return dest_dir
-        except Exception as e:
-            print(f"[!] Lỗi Google Drive ({e}), chuyển sang tải từ Kaggle (itsahmad/fss-1000)...")
+        for gid in gdrive_ids:
             try:
-                import kagglehub
-                path = kagglehub.dataset_download("itsahmad/fss-1000")
-                print(f"[✓] Tải thành công FSS-1000 từ Kaggle về: {path}")
-                return path
-            except Exception as ke:
-                print(f"[!] Không thể tải FSS-1000: {ke}")
-                return dest_dir
+                import gdown, zipfile
+                if os.path.exists(zip_path) and os.path.getsize(zip_path) < 10000000:
+                    os.remove(zip_path)
+                if not os.path.exists(zip_path):
+                    print(f"[*] Đang tải fss1000.zip từ Google Drive ID ({gid})...")
+                    gdown.download(id=gid, output=zip_path, quiet=False, fuzzy=True)
+                if os.path.exists(zip_path) and os.path.getsize(zip_path) > 10000000:
+                    print("[*] Đang giải nén FSS-1000...")
+                    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                        zip_ref.extractall(dest_dir)
+                    print(f"[✓] Tải và giải nén FSS-1000 thành công vào: {dest_dir}")
+                    return dest_dir
+            except Exception as gde:
+                print(f"[-] Lỗi với Google Drive ID {gid}: {gde}")
+
+        return dest_dir
 
     # 3. Kiểm tra thư mục cục bộ ./datasets
     local_candidates = [

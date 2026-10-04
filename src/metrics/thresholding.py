@@ -29,16 +29,21 @@ def compute_otsu_threshold(prob_map: torch.Tensor, n_bins: int = 256) -> float:
 def apply_adaptive_threshold(
     logit_mask: torch.Tensor,
     support_mask: torch.Tensor = None,
-    method: str = 'pred_mean'
+    method: str = 'pred_mean',
+    s_mask: torch.Tensor = None,
+    **kwargs
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """
     Computes threshold and binary prediction mask.
     Args:
         logit_mask: [B, H, W] Continuous fused prediction map
+        support_mask (or s_mask): [B, K, H, W] Optional support ground truth mask
     Returns:
         thresholds: [B] Optimal threshold value
         pred_mask: [B, H, W] Binary segmentation mask {0, 1}
     """
+    if support_mask is None and s_mask is not None:
+        support_mask = s_mask
     B = logit_mask.shape[0]
     pred_masks = []
     thresholds = []

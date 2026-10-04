@@ -71,11 +71,18 @@ class FSS1000Dataset(Dataset):
         if test_classes_on_disk:
             self.classes = test_classes_on_disk
         else:
-            # Fallback: any subdirectories that contain 1.jpg
-            self.classes = sorted([
-                d for d in os.listdir(self.base_path)
-                if os.path.isdir(os.path.join(self.base_path, d)) and os.path.exists(os.path.join(self.base_path, d, '1.jpg'))
-            ])
+            # Fallback: any subdirectories containing .jpg files (e.g. numbered 1..1000 or custom names)
+            candidates = []
+            for d in os.listdir(self.base_path):
+                dp = os.path.join(self.base_path, d)
+                if os.path.isdir(dp):
+                    try:
+                        subfiles = os.listdir(dp)
+                        if any(f.endswith('.jpg') for f in subfiles):
+                            candidates.append(d)
+                    except Exception:
+                        pass
+            self.classes = sorted(candidates)
 
         self.class_ids = list(range(len(self.classes)))
 

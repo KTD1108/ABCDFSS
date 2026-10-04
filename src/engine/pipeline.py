@@ -155,7 +155,7 @@ class CDFSSEngine:
             q_fused = self.fusion_module(q_coarses_stacked, s_feats_adapted=s_feats_adapted, s_mask=s_masks, l0=self.l0)
 
             # 6. Adaptive Thresholding
-            _, pred_mask = apply_adaptive_threshold(q_fused, s_mask=s_masks, method='pred_mean')
+            _, pred_mask = apply_adaptive_threshold(q_fused, support_mask=s_masks, method='pred_mean')
 
         return pred_mask, q_mask, class_id
 
