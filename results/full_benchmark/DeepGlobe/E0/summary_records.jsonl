@@ -1,0 +1,1 @@
+{"timestamp": "20261005_230101", "experiment": "E0", "benchmark": "deepglobe", "adapter": "conv1x1", "fusion": "mean", "nshot": 1, "episodes": 20, "seed": 42, "Mean_Episode_IoU": 51.68, "Cumulative_mIoU": 50.83, "FB-IoU": 52.2, "log_file": "results/full_benchmark/DeepGlobe/E0\\deepglobe_conv1x1_mean_1shot_E0_20261005_230101.log"}

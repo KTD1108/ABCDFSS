@@ -1,0 +1,1 @@
+{"timestamp": "20261006_001903", "experiment": "E2", "benchmark": "isic", "adapter": "conv1x1", "fusion": "softmax_margin", "nshot": 1, "episodes": 20, "seed": 42, "Mean_Episode_IoU": 48.24, "Cumulative_mIoU": 40.96, "FB-IoU": 55.77, "log_file": "D:\\xulyanhv2\\ABCDFSS\\results\\full_benchmark\\ISIC\\E2\\isic_conv1x1_softmax_margin_1shot_E2_20261006_001903.log"}

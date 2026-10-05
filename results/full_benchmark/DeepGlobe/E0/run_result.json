@@ -1,0 +1,73 @@
+{
+  "config": {
+    "experiment": "E0",
+    "benchmark": "deepglobe",
+    "adapter": "conv1x1",
+    "fusion": "mean",
+    "fusion_temp": 1.0,
+    "adapt_to": "every-episode",
+    "num_epochs": 25,
+    "lr": 0.01,
+    "l0": 3,
+    "img_size": 400,
+    "seed": 42,
+    "nshot": 1,
+    "manifest_path": null
+  },
+  "seed": 42,
+  "dataset": "deepglobe",
+  "experiment": "E0",
+  "episode_count": 20,
+  "metric": {
+    "Mean_Episode_IoU": 51.68,
+    "Cumulative_mIoU": 50.83,
+    "FB-IoU": 52.2,
+    "class_ious": {
+      "0": 49.02098639575351,
+      "1": 45.707965366469075,
+      "2": 53.05245000958283,
+      "3": 69.25619952986973,
+      "4": 59.79558608234022,
+      "5": 28.12631863216703
+    }
+  },
+  "raw_result": {
+    "episode_ious": [
+      50.82,
+      16.79,
+      49.86,
+      85.19,
+      89.58,
+      51.87,
+      57.5,
+      77.84,
+      38.12,
+      64.11,
+      66.59,
+      3.0,
+      80.61,
+      26.95,
+      65.41,
+      63.36,
+      38.36,
+      31.74,
+      11.05,
+      64.78
+    ]
+  },
+  "summary": {
+    "timestamp": "20261005_230101",
+    "experiment": "E0",
+    "benchmark": "deepglobe",
+    "adapter": "conv1x1",
+    "fusion": "mean",
+    "nshot": 1,
+    "episodes": 20,
+    "seed": 42,
+    "Mean_Episode_IoU": 51.68,
+    "Cumulative_mIoU": 50.83,
+    "FB-IoU": 52.2,
+    "log_file": "results/full_benchmark/DeepGlobe/E0\\deepglobe_conv1x1_mean_1shot_E0_20261005_230101.log"
+  },
+  "log": "results/full_benchmark/DeepGlobe/E0\\deepglobe_conv1x1_mean_1shot_E0_20261005_230101.log"
+}

@@ -1,0 +1,68 @@
+{
+  "config": {
+    "experiment": "E1",
+    "benchmark": "lung",
+    "adapter": "depthwise_separable_3x3",
+    "fusion": "mean",
+    "fusion_temp": 1.0,
+    "adapt_to": "every-episode",
+    "num_epochs": 25,
+    "lr": 0.01,
+    "l0": 3,
+    "img_size": 400,
+    "seed": 42,
+    "nshot": 1,
+    "manifest_path": "D:\\xulyanhv2\\ABCDFSS\\experiments\\episodes\\lung_seed42_20episodes.json"
+  },
+  "seed": 42,
+  "dataset": "lung",
+  "experiment": "E1",
+  "episode_count": 20,
+  "metric": {
+    "Mean_Episode_IoU": 78.23,
+    "Cumulative_mIoU": 78.84,
+    "FB-IoU": 85.72,
+    "class_ious": {
+      "0": 78.8410885742539
+    }
+  },
+  "raw_result": {
+    "episode_ious": [
+      85.19,
+      69.99,
+      71.38,
+      84.22,
+      68.42,
+      76.55,
+      73.72,
+      78.89,
+      86.02,
+      85.27,
+      85.19,
+      65.98,
+      85.58,
+      83.88,
+      82.18,
+      67.95,
+      75.46,
+      86.29,
+      80.76,
+      71.59
+    ]
+  },
+  "summary": {
+    "timestamp": "20261006_015730",
+    "experiment": "E1",
+    "benchmark": "lung",
+    "adapter": "depthwise_separable_3x3",
+    "fusion": "mean",
+    "nshot": 1,
+    "episodes": 20,
+    "seed": 42,
+    "Mean_Episode_IoU": 78.23,
+    "Cumulative_mIoU": 78.84,
+    "FB-IoU": 85.72,
+    "log_file": "D:\\xulyanhv2\\ABCDFSS\\results\\full_benchmark\\Lung\\E1\\lung_depthwise_separable_3x3_mean_1shot_E1_20261006_015730.log"
+  },
+  "log": "D:\\xulyanhv2\\ABCDFSS\\results\\full_benchmark\\Lung\\E1\\lung_depthwise_separable_3x3_mean_1shot_E1_20261006_015730.log"
+}

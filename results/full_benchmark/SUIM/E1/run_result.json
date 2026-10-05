@@ -1,0 +1,74 @@
+{
+  "config": {
+    "experiment": "E1",
+    "benchmark": "suim",
+    "adapter": "depthwise_separable_3x3",
+    "fusion": "mean",
+    "fusion_temp": 1.0,
+    "adapt_to": "every-episode",
+    "num_epochs": 25,
+    "lr": 0.01,
+    "l0": 3,
+    "img_size": 400,
+    "seed": 42,
+    "nshot": 1,
+    "manifest_path": null
+  },
+  "seed": 42,
+  "dataset": "suim",
+  "experiment": "E1",
+  "episode_count": 20,
+  "metric": {
+    "Mean_Episode_IoU": 33.11,
+    "Cumulative_mIoU": 35.03,
+    "FB-IoU": 53.06,
+    "class_ious": {
+      "0": 27.9991727115891,
+      "1": 12.261556688368858,
+      "2": 11.261224056353317,
+      "3": 31.350453252518808,
+      "4": 34.58479972060285,
+      "5": 48.836766087205106,
+      "6": 78.93604297262951
+    }
+  },
+  "raw_result": {
+    "episode_ious": [
+      2.55,
+      6.41,
+      19.0,
+      42.68,
+      52.19,
+      61.76,
+      80.75,
+      70.98,
+      12.53,
+      0.0,
+      33.67,
+      10.84,
+      62.08,
+      76.21,
+      2.69,
+      21.81,
+      6.7,
+      15.84,
+      56.72,
+      26.84
+    ]
+  },
+  "summary": {
+    "timestamp": "20261006_032824",
+    "experiment": "E1",
+    "benchmark": "suim",
+    "adapter": "depthwise_separable_3x3",
+    "fusion": "mean",
+    "nshot": 1,
+    "episodes": 20,
+    "seed": 42,
+    "Mean_Episode_IoU": 33.11,
+    "Cumulative_mIoU": 35.03,
+    "FB-IoU": 53.06,
+    "log_file": "D:\\xulyanhv2\\ABCDFSS\\results\\full_benchmark\\SUIM\\E1\\suim_depthwise_separable_3x3_mean_1shot_E1_20261006_032824.log"
+  },
+  "log": "D:\\xulyanhv2\\ABCDFSS\\results\\full_benchmark\\SUIM\\E1\\suim_depthwise_separable_3x3_mean_1shot_E1_20261006_032824.log"
+}
