@@ -51,9 +51,9 @@ def parse_args():
                         help='Multi-layer fusion method: mean (baseline) or softmax_margin (proposed)')
     parser.add_argument('--fusion-temp', type=float, default=1.0,
                         help='Softmax temperature scaling factor')
-    parser.add_argument('--adapt-to', type=str, default='first-episode',
+    parser.add_argument('--adapt-to', type=str, default='every-episode',
                         choices=['first-episode', 'every-episode'],
-                        help='Adaptation mode: first-episode (quick-infer) or every-episode')
+                        help='Adaptation mode: every-episode (standard CVPR Algorithm 2) or first-episode (quick-infer)')
     parser.add_argument('--episodes', type=int, default=None,
                         help='Maximum number of episodes to evaluate (e.g. 1000 for standard CVPR benchmark)')
     parser.add_argument('--manifest', type=str, default=None,

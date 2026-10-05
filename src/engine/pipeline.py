@@ -38,7 +38,7 @@ class CDFSSEngine:
         adapter_type: str = 'conv1x1',
         fusion_mode: str = 'mean',
         fusion_temp: float = 1.0,
-        adapt_mode: str = 'first-episode',
+        adapt_mode: str = 'every-episode',
         num_epochs: int = 25,
         lr: float = 1e-2,
         l0: int = 3,

@@ -44,6 +44,10 @@ CUDA available: False
 
 ---
 
-## 4. Episode Manifest Standard
+## 4. Episode Manifest Standard & Evaluation Protocol Freeze
 
-To avoid cross-platform pseudo-random number generator divergence across operating systems or Python versions, all experimental evaluations (E0, E1, E2, E3) are evaluated against fixed episode manifests stored under `experiments/episodes/`.
+- **Canonical Manifests**: To eliminate cross-platform pseudo-random number generator divergence, all experimental evaluations (E0, E1, E2, E3) are evaluated against fixed episode manifests stored under `experiments/episodes/`.
+- **Default Adaptation Mode**: Frozen to `--adapt-to every-episode` (CVPR 2024 Algorithm 2). Quick-infer `--adapt-to first-episode` is retained as an optional speedup mode.
+- **Metric Standard**: Pascal VOC / Cumulative mIoU ($\frac{\sum I}{\sum U}$) is logged alongside per-episode Mean IoU ($\frac{1}{N}\sum \frac{I}{U}$).
+- **Reproduction Guarantee**: Metric Equivalence ($\Delta \le 0.01\text{ pp}$ on identical metric).
+

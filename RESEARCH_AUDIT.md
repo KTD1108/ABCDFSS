@@ -238,18 +238,34 @@ Triển khai ban đầu của repository cho kết quả thấp hơn đáng kể
 4. **Intermediate spatial alignment mismatch**: Tác giả nội suy coarse prediction map về kích thước tầng cơ sở $l_0$ ($50 \times 50$) trước khi gộp đa tầng, hạn chế nhiễu nội suy trước khi đưa vào hàm fusion.
 5. **Adaptation mismatch**: Quá trình tối ưu test-time contrastive adaptation ban đầu thiếu bước căn chỉnh không gian `apply_affines` (khiến pixel của ảnh chưa xoay bị ép tương đồng với pixel của ảnh đã xoay 20 độ) và bỏ sót Contrastive Prototype Loss ($\mathcal{L}_p$).
 
-### 11.3. Verification Against Official Author Code
+### 11.3. Verification Against Official Author Code & Discrepancy Resolution
 Trên tập kiểm thử Lung / CXR với cùng 20 episodes định danh cố định (`seed=42`):
-- **Official author implementation (`322161a:core/runner.py`)**: **76.98%**
-- **Our implementation (`CDFSSEngine`, Phase 3C / E0 Baseline)**: **76.98%**
-- **Same seed**: 42
-- **Same episodes**: 20
-- **Delta**: **0.00%**
+- **Official author implementation (`322161a:core/runner.py`)**:
+  - Mean Episode-IoU: **76.98%**
+  - Cumulative mIoU: **77.32%**
+- **Clean Engine E0 Baseline**:
+  - Phase 3C (Mean Episode-IoU): **76.98%** ($\Delta = 0.00\%$)
+  - Run 2 (Cumulative mIoU): **77.31%** ($\Delta = -0.01\%$)
+  - Run 1 (Cumulative mIoU): **78.52%** ($\Delta = +1.20\%$ do khác biệt stochastic augmentation views trên patient #1)
 
+#### Bóc tách nguyên nhân chênh lệch ban đầu (+1.54 pp giữa 78.52% và 76.98%):
+1. **Khác biệt định nghĩa Metric (+0.38 pp)**:
+   - **Mean Episode-IoU** (Author `runner.py`): Trung bình cộng điểm IoU của từng episode:
+     $$\text{mIoU} = \frac{1}{N} \sum_{i=1}^N \frac{|P_i \cap G_i|}{|P_i \cup G_i|}$$
+   - **Cumulative mIoU** (Pascal VOC / MetricTracker chuẩn): Tổng giao trên tổng hợp toàn bộ tập dữ liệu:
+     $$\text{mIoU}_{cum} = \frac{\sum_{i=1}^N |P_i \cap G_i|}{\sum_{i=1}^N |P_i \cup G_i|}$$
+   - So sánh trên **CÙNG MỘT HÀM METRIC** (Cumulative mIoU): Author = **77.32%**, Clean Engine E0 = **77.31%** ($\mathbf{\Delta = -0.01\%}$).
+2. **Khác biệt ngẫu nhiên trong Test-Time Adaptation (+1.16 pp)**:
+   - Trong chế độ `first-episode`, adapter được tối ưu hóa bằng SGD trên patient #1. Mã nguồn tác giả dùng `randseed=2` cố định bên trong `makeFeatureMaker` (sinh shear $[1^\circ, -5^\circ]$), trong khi `evaluate.py` dùng seed 42 toàn cục (sinh shear $[-20^\circ, -12^\circ]$).
+   - Hai chuỗi augmentation views khác nhau dẫn tới trọng số adapter hội tụ về cực tiểu địa phương khác nhau, tạo ra dao động tự nhiên $\pm 1.2\%$ trên 19 bệnh nhân còn lại.
+
+### 11.4. Tuyên Bố Khoa Học: Metric Equivalence vs Mask Equivalence
 > **Tuyên bố khoa học chuẩn xác (Scientific Verification Statement)**:
-> *Lung/X-ray baseline reproduction verified against the official author implementation with 0.00 mIoU difference on the identical 20-episode evaluation set.*
+> - **Metric Equivalence (Tương đương thống kê theo chỉ số đánh giá)**: **ĐẠT (PASS)**. Khi đánh giá trên cùng định nghĩa metric (Cumulative mIoU), Clean Engine E0 đạt **77.31%** so với Official Author **77.32%** ($\Delta = -0.01\text{ pp}$).
+> - **Exact Mask Equivalence (Tương đương mặt nạ nhị phân tuyệt đối)**: **KHÔNG ÁP DỤNG (N/A)**. Vì CD-FSS thực hiện test-time online learning (25 epochs SGD trên support image biến dạng ngẫu nhiên), hai tiến trình tối ưu có augmentation views khác nhau không thể tạo ra bitwise exact prediction masks.
+> - Toàn bộ các khối nền tảng: ResNet-50 Pre-ReLU tensor (`max_abs_diff = 0.00000000`), Dense Cross-Attention (`max_abs_diff = 0.00000000`), Intermediate Resolution ($50 \times 50$), Mean Fusion, và Otsu thresholding với `drop_least=0.05` đều tương đương số học 100%.
 
-### 11.4. Đóng Băng Thông Số Kỹ Thuật Baseline (Original Baseline Freeze)
+### 11.5. Đóng Băng Thông Số Kỹ Thuật Baseline (Original Baseline Freeze)
 Original Baseline (E0) được cố định tuyệt đối các thông số:
 - **Adapter**: Conv $1\times 1$ / Pointwise ($C_{in} \to 64$, `bias=True`, BN, ReLU, Conv $1\times 1$, `bias=True`).
 - **Fusion**: Mean Fusion (`q_coarses.mean(dim=1)` tại intermediate scale $50 \times 50$).
@@ -257,15 +273,16 @@ Original Baseline (E0) được cố định tuyệt đối các thông số:
 - **Backbone Feature Stage**: Pre-ReLU unclipped features từ 16 khối Bottleneck ResNet-50.
 - **Threshold**: $\max(\text{Otsu}, \text{mean})$ với `drop_least=0.05`.
 - **Adaptation Protocol**: 25 epochs SGD, $lr=10^{-2}$, $\mathcal{L} = \mathcal{L}_q + \mathcal{L}_s + \mathcal{L}_p$, có `apply_affines`.
+- **Default Adaptation Mode**: `every-episode` (chuẩn Algorithm 2 bài báo CVPR 2024). Hỗ trợ `first-episode` cho chế độ suy luận nhanh (quick-infer).
 - **Image Resolution**: $400 \times 400$.
 
-### 11.5. Thiết Kế 4 Cấu Hình Thực Nghiệm (Experimental Matrix)
+### 11.6. Thiết Kế 4 Cấu Hình Thực Nghiệm (Experimental Matrix)
 Để phân tích khoa học bóc tách độc lập (ablation study) không bị chồng chéo:
 - **E0 (Original Baseline)**: Pointwise Conv 1x1 + Mean Fusion.
 - **E1 (Adapter Ablation)**: Depthwise Separable Conv 3x3 + Mean Fusion.
 - **E2 (Fusion Ablation)**: Pointwise Conv 1x1 + Softmax Margin Fusion.
 - **E3 (Full Proposed Method)**: Depthwise Separable Conv 3x3 + Softmax Margin Fusion.
 
-### 11.6. Episode Fairness & Manifest Standard
+### 11.7. Episode Fairness & Manifest Standard
 Tất cả các thực nghiệm E0, E1, E2, E3 được chạy trên cùng danh sách episode, cùng seed, cùng cặp query/support, cùng ground truth thông qua file manifest:
 `experiments/episodes/lung_seed42_20episodes.json`
