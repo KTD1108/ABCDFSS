@@ -184,23 +184,65 @@ def main():
     # 3. Run Evaluation Loop
     results = engine.evaluate_dataset(dataloader, benchmark_name=args.benchmark, max_episodes=args.episodes)
 
-    # Append to master JSON summary
+    # Append to master JSON summary and save comprehensive run result
     summary_file = os.path.join(args.logpath, "summary_records.jsonl")
     record = {
         "timestamp": timestamp,
+        "experiment": args.experiment if args.experiment else f"{args.adapter}_{args.fusion}",
         "benchmark": args.benchmark,
         "adapter": args.adapter,
         "fusion": args.fusion,
         "nshot": args.nshot,
-        "mIoU": round(results['mIoU'], 2),
+        "episodes": len(results.get('episode_ious', [])),
+        "seed": args.seed,
+        "Mean_Episode_IoU": round(results.get('Mean_Episode_IoU', results['mIoU']), 2),
+        "Cumulative_mIoU": round(results.get('Cumulative_mIoU', results['mIoU']), 2),
         "FB-IoU": round(results['FB-IoU'], 2),
         "log_file": log_filepath
     }
     with open(summary_file, "a", encoding="utf-8") as f:
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
+    # Save detailed run report JSON inside experiment directory
+    detailed_result_file = os.path.join(args.logpath, "run_result.json")
+    full_artifact = {
+        "config": {
+            "experiment": args.experiment,
+            "benchmark": args.benchmark,
+            "adapter": args.adapter,
+            "fusion": args.fusion,
+            "fusion_temp": args.fusion_temp,
+            "adapt_to": args.adapt_to,
+            "num_epochs": 25,
+            "lr": 0.01,
+            "l0": 3,
+            "img_size": args.img_size,
+            "seed": args.seed,
+            "nshot": args.nshot,
+            "manifest_path": args.manifest
+        },
+        "seed": args.seed,
+        "dataset": args.benchmark,
+        "experiment": args.experiment if args.experiment else f"{args.adapter}_{args.fusion}",
+        "episode_count": len(results.get('episode_ious', [])),
+        "metric": {
+            "Mean_Episode_IoU": round(results.get('Mean_Episode_IoU', results['mIoU']), 2),
+            "Cumulative_mIoU": round(results.get('Cumulative_mIoU', results['mIoU']), 2),
+            "FB-IoU": round(results['FB-IoU'], 2),
+            "class_ious": results.get('class_ious', {})
+        },
+        "raw_result": {
+            "episode_ious": results.get('episode_ious', [])
+        },
+        "summary": record,
+        "log": log_filepath
+    }
+    with open(detailed_result_file, "w", encoding="utf-8") as f:
+        json.dump(full_artifact, f, indent=2, ensure_ascii=False)
+
     sys.stdout = logger.terminal
     print(f"\n[OK] Results recorded to: {summary_file}")
+    print(f"[OK] Full artifact saved to: {detailed_result_file}")
     return results
 
 if __name__ == '__main__':

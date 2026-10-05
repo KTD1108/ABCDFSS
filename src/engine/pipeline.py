@@ -224,9 +224,10 @@ class CDFSSEngine:
         print(f"Benchmark:   {benchmark_name.upper()}")
         print(f"Adapter:     {self.adapter_type}")
         print(f"Fusion:      {self.fusion_mode}")
-        print(f"Final mIoU:   {final_metrics['mIoU']:5.2f}%")
-        print(f"Final FB-IoU: {final_metrics['FB-IoU']:5.2f}%")
-        print(f"Elapsed Time: {total_time:.2f}s ({total_time / len(dataloader):.3f}s/episode)")
+        print(f"Final mIoU (Cumulative): {final_metrics['mIoU']:5.2f}%")
+        print(f"Mean Episode-IoU:       {final_metrics.get('Mean_Episode_IoU', final_metrics['mIoU']):5.2f}%")
+        print(f"Final FB-IoU:           {final_metrics['FB-IoU']:5.2f}%")
+        print(f"Elapsed Time:           {total_time:.2f}s ({total_time / total_episodes:.3f}s/episode)")
         print(f"================================================\n")
 
         return final_metrics

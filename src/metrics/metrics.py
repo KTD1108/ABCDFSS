@@ -16,6 +16,7 @@ class MetricTracker:
         self.total_fg_union = 0.0
         self.total_bg_inter = 0.0
         self.total_bg_union = 0.0
+        self.episode_ious = []
 
     @torch.no_grad()
     def update(self, pred_mask: torch.Tensor, gt_mask: torch.Tensor, class_id: int):
@@ -34,6 +35,10 @@ class MetricTracker:
         # Background
         bg_inter = ((~pred) & (~gt)).sum().item()
         bg_union = ((~pred) | (~gt)).sum().item()
+
+        # Track per-episode IoU
+        ep_iou = (fg_inter / fg_union) if fg_union > 0 else 1.0
+        self.episode_ious.append(ep_iou)
 
         # Update class statistics
         if class_id not in self.class_inter:
@@ -58,15 +63,19 @@ class MetricTracker:
             if u > 0:
                 class_ious.append(self.class_inter[cid] / u)
 
-        miou = np.mean(class_ious) * 100.0 if len(class_ious) > 0 else 0.0
+        miou = float(np.mean(class_ious) * 100.0) if len(class_ious) > 0 else 0.0
+        mean_episode_iou = float(np.mean(self.episode_ious) * 100.0) if self.episode_ious else 0.0
 
         # FB-IoU
         fg_iou = self.total_fg_inter / max(self.total_fg_union, 1e-6)
         bg_iou = self.total_bg_inter / max(self.total_bg_union, 1e-6)
-        fb_iou = ((fg_iou + bg_iou) / 2.0) * 100.0
+        fb_iou = float(((fg_iou + bg_iou) / 2.0) * 100.0)
 
         return {
             'mIoU': miou,
+            'Cumulative_mIoU': miou,
+            'Mean_Episode_IoU': mean_episode_iou,
             'FB-IoU': fb_iou,
-            'class_ious': {cid: (self.class_inter[cid] / max(self.class_union[cid], 1e-6)) * 100.0 for cid in self.class_ids}
+            'class_ious': {cid: float((self.class_inter[cid] / max(self.class_union[cid], 1e-6)) * 100.0) for cid in self.class_ids},
+            'episode_ious': [round(x * 100.0, 2) for x in self.episode_ious]
         }
