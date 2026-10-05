@@ -112,7 +112,7 @@ class FSS1000Dataset(Dataset):
                 if os.path.exists(img_p) and os.path.exists(mask_p):
                     self.img_metadata.append((img_p, mask_p, cat))
 
-        print(f"[*] FSS-1000 nạp thành công: {len(self.classes)} lớp, {len(self.img_metadata)} ảnh hợp lệ.")
+        print(f"[*] FSS-1000 loaded successfully: {len(self.classes)} classes, {len(self.img_metadata)} images.")
 
     def __len__(self):
         return len(self.img_metadata) if self.img_metadata else len(self.classes)
