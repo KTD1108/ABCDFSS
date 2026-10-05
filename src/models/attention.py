@@ -27,9 +27,9 @@ class DenseCrossAttention(nn.Module):
         # Concatenate K support shots along spatial width: [B, C, Hs, Ws * K]
         s_feat_concat = torch.cat(s_feat.unbind(dim=1), dim=-1)
         
-        # Downsample support masks to match support feature spatial size
+        # Downsample support masks to match support feature spatial size (matching author segutils.downsample_mask)
         s_masks_down = [
-            F.interpolate(m.unsqueeze(1).float(), size=(Hs, Ws), mode='nearest').squeeze(1)
+            F.interpolate(m.unsqueeze(1).float(), size=(Hs, Ws), mode='bilinear', align_corners=False).squeeze(1)
             for m in s_mask.unbind(dim=1)
         ]
         s_mask_concat = torch.cat(s_masks_down, dim=-1)  # [B, Hs, Ws * K]

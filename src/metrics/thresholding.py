@@ -1,29 +1,28 @@
 import torch
+import cv2
+import numpy as np
 
-def compute_otsu_threshold(prob_map: torch.Tensor, n_bins: int = 256) -> float:
+def compute_otsu_threshold(prob_map: torch.Tensor, drop_least: float = 0.05) -> float:
     """
-    Otsu thresholding directly computed on PyTorch tensor probability map.
-    Finds the optimal threshold that minimizes intra-class variance.
+    Otsu thresholding matching paper implementation (segutils.otsus).
+    Scales to uint8 [0, 255], truncates lowest drop_least percentiles,
+    and applies cv2.THRESH_OTSU.
     """
-    flat = prob_map.float().view(-1)
-    min_val, max_val = flat.min().item(), flat.max().item()
-    if max_val - min_val < 1e-5:
-        return (min_val + max_val) / 2.0
+    numpy_image = prob_map.detach().cpu().numpy().astype(np.float32)
+    npmin, npmax = float(numpy_image.min()), float(numpy_image.max())
+    if npmax - npmin < 1e-6:
+        return (npmin + npmax) / 2.0
 
-    # Histogram of probabilities
-    hist = torch.histc(flat, bins=n_bins, min=min_val, max=max_val)
-    prob = hist / hist.sum()
+    normed = ((numpy_image - npmin) / (npmax - npmin + 1e-8) * 255.0).astype(np.uint8)
+    truncated_vals = normed[normed >= int(255 * drop_least)]
 
-    omega = torch.cumsum(prob, dim=0)
-    mu = torch.cumsum(prob * torch.arange(n_bins, device=prob.device), dim=0)
-    mu_t = mu[-1]
+    if len(truncated_vals) == 0:
+        thresh_value = 128
+    else:
+        thresh_value, _ = cv2.threshold(truncated_vals, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-    # Between-class variance
-    sigma_b_squared = (mu_t * omega - mu) ** 2 / (omega * (1.0 - omega) + 1e-7)
-    max_idx = torch.argmax(sigma_b_squared).item()
-
-    thresh = min_val + (max_idx / n_bins) * (max_val - min_val)
-    return float(thresh)
+    denorm_thresh = float(thresh_value / 255.0 * (npmax - npmin) + npmin)
+    return denorm_thresh
 
 
 def apply_adaptive_threshold(
@@ -35,6 +34,8 @@ def apply_adaptive_threshold(
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """
     Computes threshold and binary prediction mask.
+    Matches paper protocol (runner.calcthresh):
+        method == 'pred_mean': thresh = max(otsu_thresh, fused_pred.mean())
     Args:
         logit_mask: [B, H, W] Continuous fused prediction map
         support_mask (or s_mask): [B, K, H, W] Optional support ground truth mask
@@ -50,9 +51,13 @@ def apply_adaptive_threshold(
 
     for b in range(B):
         sample_logits = logit_mask[b]
-        if method == 'otsu':
-            th = compute_otsu_threshold(sample_logits)
-        elif method == 'pred_mean':
+        if method == 'pred_mean':
+            otsu_th = compute_otsu_threshold(sample_logits, drop_least=0.05)
+            mean_val = sample_logits.mean().item()
+            th = max(otsu_th, mean_val)
+        elif method == 'otsu':
+            th = compute_otsu_threshold(sample_logits, drop_least=0.05)
+        elif method == 'raw_mean':
             th = sample_logits.mean().item()
         else:
             th = 0.5

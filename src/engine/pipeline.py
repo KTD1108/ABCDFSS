@@ -70,19 +70,27 @@ class CDFSSEngine:
             num_layers=16
         ).to(self.device)
 
-        # Generate augmented views
-        # q_img: [B, 3, H, W] -> [B, aug, 3, H, W]
-        q_aug = self.augmentator.augment(q_img)
+        # Generate augmented views using consistent episode-level transforms
+        self.augmentator.setup_transforms()
+        q_aug = self.augmentator.augment(q_img, reuse_transforms=True)
         
         # s_img: [B, K, 3, H, W] -> treat B*K as batch
         B, K, C, H, W = s_img.shape
         s_img_flat = s_img.view(B * K, C, H, W)
         s_mask_flat = s_mask.view(B * K, H, W)
-        s_aug_flat, s_mask_aug_flat = self.augmentator.augment(s_img_flat, s_mask_flat)
+        s_aug_flat, s_mask_aug_flat = self.augmentator.augment(s_img_flat, s_mask_flat, reuse_transforms=True)
         
         aug = q_aug.shape[1]
         s_aug = s_aug_flat.view(B, K, aug, C, H, W)
         s_mask_aug = s_mask_aug_flat.view(B, K, aug, H, W)
+
+        # Precompute affine-mapped features to maintain spatial correspondence (applyAffines)
+        mapped_q_feats = [self.augmentator.apply_affines(f) for f in q_feats]
+        mapped_s_feats = []
+        for f in s_feats:
+            B_f, K_f, C_f, H_f, W_f = f.shape
+            m_s = torch.stack([self.augmentator.apply_affines(f[:, k]) for k in range(K_f)], dim=1)
+            mapped_s_feats.append(m_s)
 
         # Extract features for augmented views
         with torch.no_grad():
@@ -100,7 +108,9 @@ class CDFSSEngine:
             s_feats_aug=s_feats_aug,
             s_masks_aug=s_mask_aug,
             num_epochs=self.num_epochs,
-            lr=self.lr
+            lr=self.lr,
+            mapped_q_feats=mapped_q_feats[self.l0:],
+            mapped_s_feats=mapped_s_feats[self.l0:]
         )
 
         if self.adapt_mode == 'first-episode':
@@ -138,21 +148,26 @@ class CDFSSEngine:
             s_feats_adapted = adapter_head.get_adapted_features(s_feats)
 
             # 4. Dense Cross-Attention per layer
+            # Intermediate spatial scale of layer l0 (e.g. 50x50 for 400x400 input, matching core/denseaffinity.py)
+            h0, w0 = q_feats_adapted[self.l0].shape[-2:]
             layer_predictions = []
             for l_idx in range(self.l0, 16):
                 q_l = q_feats_adapted[l_idx]
                 s_l = s_feats_adapted[l_idx]
                 # Coarse query prediction [B, Hq, Wq]
                 q_coarse = self.cross_attention(q_l, s_l, s_masks)
-                # Upsample to image resolution
-                q_coarse_up = F.interpolate(q_coarse.unsqueeze(1), size=(H_img, W_img), mode='bilinear', align_corners=False).squeeze(1)
+                # Upsample to base layer l0 resolution (50x50)
+                q_coarse_up = F.interpolate(q_coarse.unsqueeze(1), size=(h0, w0), mode='bilinear', align_corners=False).squeeze(1)
                 layer_predictions.append(q_coarse_up)
 
-            # Stack predictions across all L layers: [B, L, H_img, W_img]
+            # Stack predictions across all L layers: [B, L, h0, w0]
             q_coarses_stacked = torch.stack(layer_predictions, dim=1)
 
-            # 5. Multi-layer fusion
-            q_fused = self.fusion_module(q_coarses_stacked, s_feats_adapted=s_feats_adapted, s_mask=s_masks, l0=self.l0)
+            # 5. Multi-layer fusion at intermediate feature scale
+            q_fused_coarse = self.fusion_module(q_coarses_stacked, s_feats_adapted=s_feats_adapted, s_mask=s_masks, l0=self.l0)
+
+            # Upsample fused prediction map to full image resolution
+            q_fused = F.interpolate(q_fused_coarse.unsqueeze(1), size=(H_img, W_img), mode='bilinear', align_corners=False).squeeze(1)
 
             # 6. Adaptive Thresholding
             _, pred_mask = apply_adaptive_threshold(q_fused, support_mask=s_masks, method='pred_mean')

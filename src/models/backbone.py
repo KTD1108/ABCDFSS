@@ -41,8 +41,27 @@ class ResNetBackbone(nn.Module):
         features = []
         for stage in self.stages:
             for block in stage:
-                x = block(x)
-                features.append(x.clone())
+                identity = x
+                if block.downsample is not None:
+                    identity = block.downsample(x)
+                
+                out = block.conv1(x)
+                out = block.bn1(out)
+                out = block.relu(out)
+
+                out = block.conv2(out)
+                out = block.bn2(out)
+                out = block.relu(out)
+
+                out = block.conv3(out)
+                out = block.bn3(out)
+
+                out += identity
+                # Capture unclipped Pre-ReLU feature for rich directional representations
+                features.append(out.clone())
+
+                # Feed forward post-ReLU for subsequent blocks
+                x = block.relu(out)
 
         return features
 

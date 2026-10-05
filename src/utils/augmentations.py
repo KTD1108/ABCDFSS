@@ -41,15 +41,27 @@ class TaskAugmentator:
         self.blur_kernel_size = blur_kernel_size
         self.max_shear = max_shear
 
-    def build_transforms(self):
-        transforms = []
+    def setup_transforms(self):
+        """Set up consistent transformations for the current episode."""
+        self.transforms = []
         for _ in range(self.num_transforms):
             blur = T.GaussianBlur(kernel_size=self.blur_kernel_size) if self.blur_kernel_size > 1 else (lambda x: x)
             affine = RandomAffineProxy(max_shear=self.max_shear)
-            transforms.append((blur, affine))
-        return transforms
+            self.transforms.append((blur, affine))
+        return self.transforms
 
-    def augment(self, image: torch.Tensor, mask: torch.Tensor = None):
+    def apply_affines(self, feat_vol: torch.Tensor) -> torch.Tensor:
+        """
+        Applies episode affine transformations to feature tensor to maintain spatial alignment.
+        feat_vol: [B, C, H, W]
+        Returns: [B, num_transforms, C, H, W]
+        """
+        if not hasattr(self, 'transforms') or not self.transforms:
+            self.setup_transforms()
+        transformed = [affine.apply(feat_vol) for _, affine in self.transforms]
+        return torch.stack(transformed, dim=1)
+
+    def augment(self, image: torch.Tensor, mask: torch.Tensor = None, reuse_transforms: bool = False):
         """
         image: [B, 3, H, W]
         mask: [B, H, W] or [B, K, H, W]
@@ -57,11 +69,13 @@ class TaskAugmentator:
             aug_images: [B, num_transforms, 3, H, W]
             aug_masks: [B, num_transforms, H, W] (if mask provided)
         """
-        transforms = self.build_transforms()
+        if not reuse_transforms or not hasattr(self, 'transforms') or not self.transforms:
+            self.setup_transforms()
+
         transformed_images = []
         transformed_masks = []
 
-        for blur, affine in transforms:
+        for blur, affine in self.transforms:
             t_img = blur(image)
             t_img = affine.apply(t_img)
             transformed_images.append(t_img)

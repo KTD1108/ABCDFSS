@@ -9,10 +9,10 @@ class PointwiseAdapter(nn.Module):
     """
     def __init__(self, in_channels: int, out_channels: int = 64):
         super(PointwiseAdapter, self).__init__()
-        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False)
+        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=True)
         self.bn = nn.BatchNorm2d(out_channels)
         self.relu = nn.ReLU(inplace=True)
-        self.proj = nn.Conv2d(out_channels, out_channels, kernel_size=1)
+        self.proj = nn.Conv2d(out_channels, out_channels, kernel_size=1, bias=True)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         out = self.conv(x)
