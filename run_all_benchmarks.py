@@ -38,7 +38,7 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
         ]
         for c in candidates:
             if os.path.exists(c):
-                print(f"[✓] Đã có sẵn '{benchmark}' trong cache: {c}")
+                print(f"[OK] Đã có sẵn '{benchmark}' trong cache: {c}")
                 return c
 
     # 2. Xử lý chuyên biệt cho FSS-1000
@@ -62,11 +62,11 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
                         if os.path.isdir(sub_p):
                             try:
                                 if any(f.endswith('.jpg') for f in os.listdir(sub_p)):
-                                    print(f"[✓] Đã có sẵn FSS-1000 hợp lệ tại: {root}")
+                                    print(f"[OK] Đã có sẵn FSS-1000 hợp lệ tại: {root}")
                                     return root
                             except Exception:
                                 pass
-                print(f"[✓] Đã có sẵn FSS-1000 hợp lệ tại: {cd}")
+                print(f"[OK] Đã có sẵn FSS-1000 hợp lệ tại: {cd}")
                 return cd
 
         # Dọn dẹp thư mục lỗi trước khi tải mới
@@ -98,7 +98,7 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
                     zip_ref.extractall("./datasets")
                 for root, dirs, files in os.walk("./datasets"):
                     if is_valid_fss_dir(root):
-                        print(f"[✓] Tải và giải nén FSS-1000 thành công vào: {root}")
+                        print(f"[OK] Tải và giải nén FSS-1000 thành công vào: {root}")
                         return root
         except Exception as hf_err:
             print(f"[-] Lỗi tải Hugging Face ({hf_err}), chuyển sang Google Drive...")
@@ -119,7 +119,7 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
                         zip_ref.extractall("./datasets/fss1000")
                     for root, dirs, files in os.walk("./datasets/fss1000"):
                         if is_valid_fss_dir(root):
-                            print(f"[✓] Tải và giải nén FSS-1000 thành công vào: {root}")
+                            print(f"[OK] Tải và giải nén FSS-1000 thành công vào: {root}")
                             return root
             except Exception as gde:
                 print(f"[-] Lỗi với Google Drive ID {gid}: {gde}")
@@ -134,7 +134,7 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
     ]
     for lc in local_candidates:
         if os.path.exists(lc) and len(os.listdir(lc)) > 0:
-            print(f"[✓] Đã có sẵn '{benchmark}' tại thư mục cục bộ: {lc}")
+            print(f"[OK] Đã có sẵn '{benchmark}' tại thư mục cục bộ: {lc}")
             return lc
 
     # 4. Tải tự động từ Kaggle qua kagglehub
@@ -143,7 +143,7 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
         try:
             import kagglehub
             path = kagglehub.dataset_download(kaggle_slug)
-            print(f"[✓] Tải thành công '{benchmark}' về: {path}")
+            print(f"[OK] Tải thành công '{benchmark}' về: {path}")
             return path
         except Exception as e:
             print(f"[!] Lỗi khi tải {benchmark} từ kagglehub: {e}")
@@ -158,6 +158,9 @@ def parse_args():
                         help='Adaptation mode: every-episode (CVPR 2024 exact protocol) or first-episode (quick-infer)')
     parser.add_argument('--episodes', type=int, default=1000,
                         help='Number of episodes per benchmark (default: 1000 standard CVPR episodes)')
+    parser.add_argument('--experiments', nargs='+', default=['E0'],
+                        choices=['E0', 'E1', 'E2', 'E3', 'all'],
+                        help="Experiments to run: E0 (baseline: conv1x1+mean), E1 (dw3x3+mean), E2 (conv1x1+softmax), E3 (dw3x3+softmax), or all (default: E0)")
     parser.add_argument('--benchmarks', nargs='+', default=['isic', 'suim', 'lung', 'fss', 'deepglobe'],
                         help='List of benchmarks to run')
     parser.add_argument('--device', type=str, default='cuda',
@@ -168,6 +171,7 @@ def main():
     args = parse_args()
     print("=" * 80)
     print(f"      QUY TRÌNH CHẠY CD-FSS: {args.adapt_to.upper()} ({args.episodes} EPISODES)")
+    print(f"      EXPERIMENTS: {args.experiments}")
     print("=" * 80)
 
     # 1. Xác định đường dẫn cho các bộ dữ liệu được chọn
@@ -183,106 +187,31 @@ def main():
         if b in all_slugs:
             dataset_paths[b] = check_or_download_dataset(b, kaggle_slug=all_slugs[b])
 
-    # 2. Danh sách thử nghiệm đối sánh toàn diện
-    all_experiments = [
-        # Domain 1: Natural Objects (FSS-1000)
-        {
-            'name': 'FSS-1000 (Adapter Conv1x1 - Baseline)',
-            'benchmark': 'fss',
-            'domain': 'Vật thể tự nhiên',
-            'datapath': dataset_paths['fss'],
-            'adapter': 'conv1x1',
-            'fusion': 'softmax_margin',
-            'nshot': 1
-        },
-        {
-            'name': 'FSS-1000 (Adapter Depthwise 3x3 - Đề xuất)',
-            'benchmark': 'fss',
-            'domain': 'Vật thể tự nhiên',
-            'datapath': dataset_paths['fss'],
-            'adapter': 'depthwise_separable_3x3',
-            'fusion': 'softmax_margin',
-            'nshot': 1
-        },
-        # Domain 2: Dermatology (ISIC 2018)
-        {
-            'name': 'ISIC (Adapter Conv1x1 - Baseline)',
-            'benchmark': 'isic',
-            'domain': 'Da liễu (Y tế)',
-            'datapath': dataset_paths['isic'],
-            'adapter': 'conv1x1',
-            'fusion': 'softmax_margin',
-            'nshot': 1
-        },
-        {
-            'name': 'ISIC (Adapter Depthwise 3x3 - Đề xuất)',
-            'benchmark': 'isic',
-            'domain': 'Da liễu (Y tế)',
-            'datapath': dataset_paths['isic'],
-            'adapter': 'depthwise_separable_3x3',
-            'fusion': 'softmax_margin',
-            'nshot': 1
-        },
-        # Domain 3: Underwater (SUIM)
-        {
-            'name': 'SUIM (Adapter Conv1x1 - Baseline)',
-            'benchmark': 'suim',
-            'domain': 'Dưới nước',
-            'datapath': dataset_paths['suim'],
-            'adapter': 'conv1x1',
-            'fusion': 'softmax_margin',
-            'nshot': 1
-        },
-        {
-            'name': 'SUIM (Adapter Depthwise 3x3 - Đề xuất)',
-            'benchmark': 'suim',
-            'domain': 'Dưới nước',
-            'datapath': dataset_paths['suim'],
-            'adapter': 'depthwise_separable_3x3',
-            'fusion': 'softmax_margin',
-            'nshot': 1
-        },
-        # Domain 4: Radiology (Lung / CXR)
-        {
-            'name': 'Lung / CXR (Adapter Conv1x1 - Baseline)',
-            'benchmark': 'lung',
-            'domain': 'X-quang lồng ngực',
-            'datapath': dataset_paths['lung'],
-            'adapter': 'conv1x1',
-            'fusion': 'softmax_margin',
-            'nshot': 1
-        },
-        {
-            'name': 'Lung / CXR (Adapter Depthwise 3x3 - Đề xuất)',
-            'benchmark': 'lung',
-            'domain': 'X-quang lồng ngực',
-            'datapath': dataset_paths['lung'],
-            'adapter': 'depthwise_separable_3x3',
-            'fusion': 'softmax_margin',
-            'nshot': 1
-        },
-        # Domain 5: Satellite (DeepGlobe)
-        {
-            'name': 'Deepglobe (Adapter Conv1x1 - Baseline)',
-            'benchmark': 'deepglobe',
-            'domain': 'Vệ tinh viễn thám',
-            'datapath': dataset_paths['deepglobe'],
-            'adapter': 'conv1x1',
-            'fusion': 'softmax_margin',
-            'nshot': 1
-        },
-        {
-            'name': 'Deepglobe (Adapter Depthwise 3x3 - Đề xuất)',
-            'benchmark': 'deepglobe',
-            'domain': 'Vệ tinh viễn thám',
-            'datapath': dataset_paths['deepglobe'],
-            'adapter': 'depthwise_separable_3x3',
-            'fusion': 'softmax_margin',
-            'nshot': 1
-        },
-    ]
-    # Lọc thử nghiệm theo danh sách benchmarks được chỉ định
-    experiments = [e for e in all_experiments if e['benchmark'] in args.benchmarks]
+    # 2. Xây dựng ma trận 4 thử nghiệm chuẩn E0/E1/E2/E3
+    exp_definitions = {
+        'E0': {'name': 'E0 — Original ABCDFSS Baseline', 'adapter': 'conv1x1', 'fusion': 'mean'},
+        'E1': {'name': 'E1 — Adapter Ablation (DW3x3 + Mean)', 'adapter': 'depthwise_separable_3x3', 'fusion': 'mean'},
+        'E2': {'name': 'E2 — Fusion Ablation (Conv1x1 + Softmax)', 'adapter': 'conv1x1', 'fusion': 'softmax_margin'},
+        'E3': {'name': 'E3 — Full Proposed Method (DW3x3 + Softmax)', 'adapter': 'depthwise_separable_3x3', 'fusion': 'softmax_margin'},
+    }
+
+    selected_exp_keys = ['E0', 'E1', 'E2', 'E3'] if 'all' in args.experiments else args.experiments
+
+    experiments = []
+    for b in args.benchmarks:
+        if b not in dataset_paths or not dataset_paths[b]:
+            continue
+        for ek in selected_exp_keys:
+            ed = exp_definitions[ek]
+            experiments.append({
+                'id': ek,
+                'name': f"{b.upper()} [{ed['name']}]",
+                'benchmark': b,
+                'datapath': dataset_paths[b],
+                'adapter': ed['adapter'],
+                'fusion': ed['fusion'],
+                'nshot': 1
+            })
 
     log_dir = "./logs"
     os.makedirs(log_dir, exist_ok=True)
@@ -301,6 +230,7 @@ def main():
             "--benchmark", exp['benchmark'],
             "--datapath", exp['datapath'],
             "--nshot", str(exp['nshot']),
+            "--experiment", exp['id'],
             "--adapter", exp['adapter'],
             "--fusion", exp['fusion'],
             "--adapt-to", args.adapt_to,
@@ -342,7 +272,7 @@ def main():
         output_md_file = os.path.join(log_dir, "verified_benchmark_summary.md")
         with open(output_md_file, "w", encoding="utf-8") as f:
             f.write("# BẢNG TỔNG HỢP KẾT QUẢ THỰC NGHIỆM ĐÃ KIỂM CHỨNG TỪ LOG\n\n" + table_str + "\n")
-        print(f"\n[✓] Đã xuất file tóm tắt ra: {output_md_file}")
+        print(f"\n[OK] Đã xuất file tóm tắt ra: {output_md_file}")
 
 if __name__ == '__main__':
     main()

@@ -28,7 +28,7 @@ class SoftmaxWeightedFusion(nn.Module):
 
             # Downsample support mask to match feature map resolution
             smask_down = [
-                F.interpolate(m.unsqueeze(1).float(), size=(Hs, Ws), mode='nearest').squeeze(1)
+                F.interpolate(m.unsqueeze(1).float(), size=(Hs, Ws), mode='bilinear', align_corners=False).squeeze(1)
                 for m in s_mask.unbind(dim=1)
             ]
             smask_cat = torch.stack(smask_down, dim=1).reshape(B * K, 1, Hs * Ws)

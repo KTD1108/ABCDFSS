@@ -220,6 +220,52 @@ Thực nghiệm kiểm chứng trên cùng 20 episodes nhằm xác định chín
    - Sai lệch thứ hai (+5.90% mIoU) là dùng nội suy `nearest` làm đứt gãy nhãn hỗ trợ ở các tầng sâu thay vì `bilinear`.
    - Sai lệch thứ ba (-7.29% khi adapt) là do đưa feature chưa xoay/shear vào InfoNCE và bỏ sót $\mathcal{L}_p$.
 3. **Q3: Sau khi sửa, baseline đạt bao nhiêu?**
-   - Trên tập Lung/X-ray, baseline đạt **77.83%** (không adapt) và **76.98% / 80.38%** (với full author adaptation), khớp trọn vẹn kết quả paper công bố (~80.0%).
-4. **Q4: Đã đủ điều kiện đóng băng baseline chưa?**
-   - **Đã đủ điều kiện**. Mọi thành phần baseline (Backbone, Attention, Fusion, Threshold, Adaptation) đã được chứng minh bằng thực nghiệm kiểm soát đơn biến. Sẵn sàng tiến hành Full Benchmark trên cả 5 datasets.
+   - Trên tập Lung/X-ray, baseline đạt **77.83%** (không adapt) và **76.98%** (với full author adaptation trên 20 episodes cố định seed 42), khớp hoàn toàn với pipeline chính thức của tác giả ($\Delta = 0.00\%$).
+4. **Q4: Trạng thái kiểm chứng baseline?**
+   - **Lung/X-ray baseline reproduction verified against the official author implementation with 0.00 mIoU difference on the identical 20-episode evaluation set.** Việc xác nhận trên toàn bộ 5 datasets sẽ được thực hiện tại Full Benchmark sau khi freeze baseline.
+
+---
+
+## 11. Phase 4 — Baseline Freeze (Chuẩn Hóa và Đóng Băng Baseline Gốc)
+
+### 11.1. Initial Problem (Vấn đề Ban Đầu)
+Triển khai ban đầu của repository cho kết quả thấp hơn đáng kể so với bài báo gốc CVPR 2024 (trên Lung đạt ~52–56% thay vì ~80%), đồng thời tồn tại sự nhập nhằng giữa Baseline gốc và Phương pháp đề xuất (Proposed Method: Depthwise Separable Conv 3x3 và Softmax Margin Fusion).
+
+### 11.2. Root Causes (5 Nguyên Nhân Gốc Đã Được Xác Minh)
+1. **Threshold mismatch**: Code ban đầu tính ngưỡng nhị phân bằng `sample_logits.mean()` thuần túy, trong khi tác giả dùng $\max(\text{Otsu}, \text{mean})$ với bộ lọc 5% percentile thấp (`drop_least=0.05`). Lỗi này gây bùng nổ False Positives trên ảnh y tế (đóng góp tới +9.41% mIoU khi sửa).
+2. **Support mask interpolation mismatch**: Code ban đầu dùng nội suy `nearest` khi thu nhỏ support mask về kích thước feature map các tầng sâu, làm đứt gãy các vùng chi tiết; tác giả dùng `bilinear` với `align_corners=False` (đóng góp +5.90% mIoU khi sửa).
+3. **Pre-ReLU feature extraction mismatch**: Code ban đầu trích xuất đặc trưng sau `block.relu(out)` làm mất 50% tính định hướng của vector âm/dương trong không gian Cosine Similarity; tác giả trích xuất đặc trưng unclipped Pre-ReLU (`out += identity; feats.append(out.clone())`).
+4. **Intermediate spatial alignment mismatch**: Tác giả nội suy coarse prediction map về kích thước tầng cơ sở $l_0$ ($50 \times 50$) trước khi gộp đa tầng, hạn chế nhiễu nội suy trước khi đưa vào hàm fusion.
+5. **Adaptation mismatch**: Quá trình tối ưu test-time contrastive adaptation ban đầu thiếu bước căn chỉnh không gian `apply_affines` (khiến pixel của ảnh chưa xoay bị ép tương đồng với pixel của ảnh đã xoay 20 độ) và bỏ sót Contrastive Prototype Loss ($\mathcal{L}_p$).
+
+### 11.3. Verification Against Official Author Code
+Trên tập kiểm thử Lung / CXR với cùng 20 episodes định danh cố định (`seed=42`):
+- **Official author implementation (`322161a:core/runner.py`)**: **76.98%**
+- **Our implementation (`CDFSSEngine`, Phase 3C / E0 Baseline)**: **76.98%**
+- **Same seed**: 42
+- **Same episodes**: 20
+- **Delta**: **0.00%**
+
+> **Tuyên bố khoa học chuẩn xác (Scientific Verification Statement)**:
+> *Lung/X-ray baseline reproduction verified against the official author implementation with 0.00 mIoU difference on the identical 20-episode evaluation set.*
+
+### 11.4. Đóng Băng Thông Số Kỹ Thuật Baseline (Original Baseline Freeze)
+Original Baseline (E0) được cố định tuyệt đối các thông số:
+- **Adapter**: Conv $1\times 1$ / Pointwise ($C_{in} \to 64$, `bias=True`, BN, ReLU, Conv $1\times 1$, `bias=True`).
+- **Fusion**: Mean Fusion (`q_coarses.mean(dim=1)` tại intermediate scale $50 \times 50$).
+- **Support Mask Interpolation**: Bilinear (`mode='bilinear', align_corners=False`).
+- **Backbone Feature Stage**: Pre-ReLU unclipped features từ 16 khối Bottleneck ResNet-50.
+- **Threshold**: $\max(\text{Otsu}, \text{mean})$ với `drop_least=0.05`.
+- **Adaptation Protocol**: 25 epochs SGD, $lr=10^{-2}$, $\mathcal{L} = \mathcal{L}_q + \mathcal{L}_s + \mathcal{L}_p$, có `apply_affines`.
+- **Image Resolution**: $400 \times 400$.
+
+### 11.5. Thiết Kế 4 Cấu Hình Thực Nghiệm (Experimental Matrix)
+Để phân tích khoa học bóc tách độc lập (ablation study) không bị chồng chéo:
+- **E0 (Original Baseline)**: Pointwise Conv 1x1 + Mean Fusion.
+- **E1 (Adapter Ablation)**: Depthwise Separable Conv 3x3 + Mean Fusion.
+- **E2 (Fusion Ablation)**: Pointwise Conv 1x1 + Softmax Margin Fusion.
+- **E3 (Full Proposed Method)**: Depthwise Separable Conv 3x3 + Softmax Margin Fusion.
+
+### 11.6. Episode Fairness & Manifest Standard
+Tất cả các thực nghiệm E0, E1, E2, E3 được chạy trên cùng danh sách episode, cùng seed, cùng cặp query/support, cùng ground truth thông qua file manifest:
+`experiments/episodes/lung_seed42_20episodes.json`

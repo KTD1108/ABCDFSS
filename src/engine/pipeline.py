@@ -10,6 +10,21 @@ from ..utils.augmentations import TaskAugmentator
 from ..metrics.metrics import MetricTracker
 from ..metrics.thresholding import apply_adaptive_threshold
 
+EXPERIMENT_CONFIGS = {
+    'E0': {'adapter': 'conv1x1', 'fusion': 'mean', 'name': 'Original ABCDFSS Baseline'},
+    'E1': {'adapter': 'depthwise_separable_3x3', 'fusion': 'mean', 'name': 'Adapter Ablation'},
+    'E2': {'adapter': 'conv1x1', 'fusion': 'softmax_margin', 'name': 'Fusion Ablation'},
+    'E3': {'adapter': 'depthwise_separable_3x3', 'fusion': 'softmax_margin', 'name': 'Full Proposed Method'},
+}
+
+def resolve_experiment(exp_id: str) -> tuple[str, str]:
+    """Resolves standard experiment ID (E0/E1/E2/E3) into (adapter, fusion) configuration."""
+    key = exp_id.upper()
+    if key not in EXPERIMENT_CONFIGS:
+        raise ValueError(f"Unknown experiment ID: '{exp_id}'. Available: {list(EXPERIMENT_CONFIGS.keys())}")
+    cfg = EXPERIMENT_CONFIGS[key]
+    return cfg['adapter'], cfg['fusion']
+
 class CDFSSEngine:
     """
     Unified, clean execution engine for Cross-Domain Few-Shot Segmentation.
@@ -20,8 +35,8 @@ class CDFSSEngine:
     """
     def __init__(
         self,
-        adapter_type: str = 'depthwise_separable_3x3',
-        fusion_mode: str = 'softmax_margin',
+        adapter_type: str = 'conv1x1',
+        fusion_mode: str = 'mean',
         fusion_temp: float = 1.0,
         adapt_mode: str = 'first-episode',
         num_epochs: int = 25,

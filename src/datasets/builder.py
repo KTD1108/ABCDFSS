@@ -24,10 +24,12 @@ def build_dataloader(
     img_size: int = 400,
     bsz: int = 1,
     nworker: int = 0,
-    split: str = 'test'
+    split: str = 'test',
+    manifest_path: str = None
 ) -> DataLoader:
     """
     Unified dataset builder returning a standard PyTorch DataLoader.
+    Supports optional pre-generated episode manifests for exact cross-experiment fairness.
     """
     key = benchmark.lower()
     if key not in DATASET_REGISTRY:
@@ -40,7 +42,10 @@ def build_dataloader(
     ])
 
     dataset_cls = DATASET_REGISTRY[key]
-    dataset = dataset_cls(datapath=datapath, transform=transform, shot=shot, split=split)
+    try:
+        dataset = dataset_cls(datapath=datapath, transform=transform, shot=shot, split=split, manifest_path=manifest_path)
+    except TypeError:
+        dataset = dataset_cls(datapath=datapath, transform=transform, shot=shot, split=split)
 
     if len(dataset) == 0:
         raise RuntimeError(

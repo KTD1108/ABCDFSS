@@ -14,3 +14,5 @@
 {"timestamp": "20261004_102804", "benchmark": "lung", "adapter": "depthwise_separable_3x3", "fusion": "softmax_margin", "nshot": 1, "mIoU": 56.85, "FB-IoU": 65.89, "log_file": "./logs/lung_depthwise_separable_3x3_softmax_margin_1shot_20261004_102804.log"}
 {"timestamp": "20261004_102914", "benchmark": "deepglobe", "adapter": "conv1x1", "fusion": "softmax_margin", "nshot": 1, "mIoU": 42.01, "FB-IoU": 45.08, "log_file": "./logs/deepglobe_conv1x1_softmax_margin_1shot_20261004_102914.log"}
 {"timestamp": "20261004_103108", "benchmark": "deepglobe", "adapter": "depthwise_separable_3x3", "fusion": "softmax_margin", "nshot": 1, "mIoU": 42.23, "FB-IoU": 45.28, "log_file": "./logs/deepglobe_depthwise_separable_3x3_softmax_margin_1shot_20261004_103108.log"}
+{"timestamp": "20261005_213314", "benchmark": "lung", "adapter": "conv1x1", "fusion": "mean", "nshot": 1, "mIoU": 78.52, "FB-IoU": 85.73, "log_file": "./logs\\lung_conv1x1_mean_1shot_E0_20261005_213314.log"}
+{"timestamp": "20261005_213624", "benchmark": "lung", "adapter": "conv1x1", "fusion": "mean", "nshot": 1, "mIoU": 78.52, "FB-IoU": 85.73, "log_file": "./logs\\lung_conv1x1_mean_1shot_E0_20261005_213624.log"}

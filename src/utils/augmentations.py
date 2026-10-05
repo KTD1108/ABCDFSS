@@ -17,7 +17,7 @@ class RandomAffineProxy:
             translate=[0, 0],
             scale=self.scale,
             shear=self.shear,
-            interpolation=TF.InterpolationMode.BILINEAR
+            interpolation=TF.InterpolationMode.NEAREST
         )
 
     def apply_mask(self, mask_tensor: torch.Tensor) -> torch.Tensor:

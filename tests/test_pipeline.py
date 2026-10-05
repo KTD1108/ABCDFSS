@@ -16,7 +16,7 @@ from src.models.loss import DenseInfoNCELoss, KeepVarianceLoss, ContrastiveProto
 from src.metrics.thresholding import compute_otsu_threshold, apply_adaptive_threshold
 from src.metrics.metrics import MetricTracker
 from src.utils.augmentations import TaskAugmentator
-from src.engine.pipeline import CDFSSEngine
+from src.engine.pipeline import CDFSSEngine, resolve_experiment, EXPERIMENT_CONFIGS
 
 class TestCDFSSToolkit(unittest.TestCase):
     @classmethod
@@ -138,6 +138,52 @@ class TestCDFSSToolkit(unittest.TestCase):
             self.assertEqual(pred.shape, (1, H, W))
             self.assertEqual(gt.shape, (1, H, W))
             self.assertEqual(cid, 0)
+
+    def test_mean_fusion_output_equals_mean(self):
+        """Test 1: Mean fusion output == mean(layer_predictions)."""
+        fusion_mean = build_fusion('mean').to(self.device)
+        q_stacked = torch.randn(2, 13, 50, 50, device=self.device)
+        out = fusion_mean(q_stacked)
+        expected = q_stacked.mean(dim=1)
+        self.assertTrue(torch.allclose(out, expected, atol=1e-6))
+
+    def test_softmax_fusion_weights_sum_to_one(self):
+        """Test 2: Softmax margin fusion weights sum to 1."""
+        fusion_softmax = build_fusion('softmax_margin', num_layers=13, temperature=1.0).to(self.device)
+        s_feats = [torch.randn(1, 1, 64, 50, 50, device=self.device) for _ in range(16)]
+        s_mask = torch.zeros(1, 1, 400, 400, device=self.device)
+        s_mask[:, :, 50:150, 50:150] = 1.0
+        margins = fusion_softmax.compute_layer_margins(s_feats, s_mask, l0=3)
+        weights = torch.softmax(margins / fusion_softmax.temperature, dim=0)
+        self.assertAlmostEqual(weights.sum().item(), 1.0, places=5)
+
+    def test_changing_fusion_does_not_change_adapter(self):
+        """Test 3: Changing fusion does not change adapter configuration."""
+        e_mean = CDFSSEngine(adapter_type='conv1x1', fusion_mode='mean', device=str(self.device))
+        e_soft = CDFSSEngine(adapter_type='conv1x1', fusion_mode='softmax_margin', device=str(self.device))
+        self.assertEqual(e_mean.adapter_type, 'conv1x1')
+        self.assertEqual(e_soft.adapter_type, 'conv1x1')
+        self.assertEqual(type(e_mean.class_adapter_cache), type(e_soft.class_adapter_cache))
+
+    def test_changing_adapter_does_not_change_fusion(self):
+        """Test 4: Changing adapter does not change fusion."""
+        e_dw = CDFSSEngine(adapter_type='depthwise_separable_3x3', fusion_mode='mean', device=str(self.device))
+        e_pw = CDFSSEngine(adapter_type='conv1x1', fusion_mode='mean', device=str(self.device))
+        self.assertEqual(e_dw.fusion_mode, 'mean')
+        self.assertEqual(e_pw.fusion_mode, 'mean')
+        self.assertEqual(type(e_dw.fusion_module), type(e_pw.fusion_module))
+
+    def test_e0_configuration_resolves_to_pointwise_plus_mean(self):
+        """Test 5: E0 configuration resolves to: pointwise/conv1x1 + mean."""
+        adapter, fusion = resolve_experiment('E0')
+        self.assertIn(adapter, ['conv1x1', 'pointwise'])
+        self.assertEqual(fusion, 'mean')
+
+    def test_e3_configuration_resolves_to_depthwise_plus_softmax(self):
+        """Test 6: E3 resolves to: depthwise + softmax."""
+        adapter, fusion = resolve_experiment('E3')
+        self.assertEqual(adapter, 'depthwise_separable_3x3')
+        self.assertEqual(fusion, 'softmax_margin')
 
 if __name__ == '__main__':
     unittest.main()
