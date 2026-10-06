@@ -96,9 +96,7 @@ class TeeLogger:
         self.terminal.flush()
         self.log_file.flush()
 
-def main():
-    args = parse_args()
-
+def evaluate_pipeline(args):
     # Resolve explicit standard experiment configurations
     if args.experiment == 'E0':
         args.adapter = 'conv1x1'
@@ -298,6 +296,10 @@ def main():
     print(f"\n[OK] Results recorded to: {summary_file}")
     print(f"[OK] Full artifact saved to: {detailed_result_file}")
     return results
+
+def main():
+    args = parse_args()
+    return evaluate_pipeline(args)
 
 if __name__ == '__main__':
     main()

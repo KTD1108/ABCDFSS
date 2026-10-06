@@ -142,7 +142,7 @@ Từ kết quả thực nghiệm 20 runs, chúng tôi rút ra 4 kết luận kho
 
 ## 📁 5. Cấu Trúc Thư Mục Dự Án
 
-Mã nguồn được cấu trúc theo chuẩn mô-đun hướng đối tượng (OOP), độc lập và không chứa các tệp thừa:
+Mã nguồn được tổ chức tinh gọn, chuẩn mực tương tự cấu trúc tác giả gốc nhưng áp dụng mô-đun hóa hiện đại:
 
 ```
 d:/xulyanhv2/ABCDFSS/
@@ -175,26 +175,29 @@ d:/xulyanhv2/ABCDFSS/
 │   ├── check_reproducibility.py       # Công cụ kiểm tra sai số số học & tính tái lập
 │   └── generate_manifests.py          # Script sinh manifest tất định từ seed
 │
-├── results/                           # Kết quả benchmark chính thức
+├── results/                           # Kết quả benchmark 100-episode chính thức
 │   ├── deepglobe/                     # Kết quả 100ep E0-E3 DeepGlobe (JSON + logs)
 │   ├── isic/                          # Kết quả 100ep E0-E3 ISIC (JSON + logs)
 │   ├── lung/                          # Kết quả 100ep E0-E3 Lung (JSON + logs)
 │   ├── fss/                           # Kết quả 100ep E0-E3 FSS-1000 (JSON + logs)
-│   ├── suim/                          # Kết quả 100ep E0-E3 SUIM (JSON + logs)
-│   └── full_benchmark/                # Kết quả chuẩn hóa lịch sử 20ep
+│   └── suim/                          # Kết quả 100ep E0-E3 SUIM (JSON + logs)
 │
-├── tests/                             # Bộ kiểm thử đơn vị (Unit Tests)
+├── tests/                             # Bộ kiểm thử đơn vị (34 unit tests hoàn chỉnh)
 │   ├── test_pipeline.py               # Test kiến trúc, loss, adapters, thresholding
 │   └── test_reproducibility.py        # Test manifest, protocol signature, sai số
 │
-├── evaluate.py                        # Điểm vào thực thi đơn lẻ (Single-run CLI)
+├── docs/                              # Tài liệu báo cáo nghiên cứu & đặc tả môi trường
+│   ├── BASELINE_FREEZE_REPORT.md      # Báo cáo đóng băng baseline E0 chính thức
+│   ├── FULL_BENCHMARK_REPORT.md       # Báo cáo tổng hợp khoa học 20 runs chi tiết
+│   └── ENVIRONMENT.md                 # Đặc tả môi trường phần cứng, phần mềm, CUDA
+│
+├── scripts/                           # Công cụ phụ trợ tổng hợp báo cáo
+│   └── generate_full_benchmark_report.py # Script tổng hợp báo cáo FULL_BENCHMARK_REPORT.md
+│
+├── main.py                            # Điểm vào chuẩn tác giả gốc CVPR 2024
+├── evaluate.py                        # Điểm vào thực thi chi tiết (Single-run CLI)
 ├── run_all_benchmarks.py              # Master runner điều phối toàn bộ suite 20 runs
 ├── modal_runner.py                    # Runner không máy chủ trên Modal Cloud GPU (Tesla T4)
-├── generate_full_benchmark_report.py  # Trình tổng hợp báo cáo FULL_BENCHMARK_REPORT.md
-│
-├── BASELINE_FREEZE_REPORT.md          # Báo cáo đóng băng baseline E0 chính thức
-├── ENVIRONMENT.md                     # Đặc tả môi trường phần cứng, phần mềm, CUDA
-├── FULL_BENCHMARK_REPORT.md           # Báo cáo tổng hợp khoa học 20 runs chi tiết
 ├── requirements.txt                   # Danh sách gói phụ thuộc Python
 └── README.md                          # Tài liệu hướng dẫn chính của dự án
 ```
@@ -217,22 +220,19 @@ pip install -r requirements.txt
 
 ```bash
 python -m unittest discover tests
-# Kết quả mong đợi: Ran 34 tests in ~30s — OK
+# Kết quả mong đợi: Ran 34 tests in ~28s — OK
 ```
 
 ### 6.3. Chạy Một Thực Nghiệm Đơn Lẻ (Single Benchmark)
 
-Chạy thực nghiệm E3 trên tập dữ liệu ISIC quy mô 100 episodes:
+Dự án hỗ trợ 2 cách gọi:
 
 ```bash
-python evaluate.py \
-    --benchmark isic \
-    --experiment E3 \
-    --episodes 100 \
-    --seed 42 \
-    --nshot 1 \
-    --adapt-to every-episode \
-    --device cuda
+# Cách 1: Chuẩn giao diện bài báo gốc tác giả CVPR 2024 (main.py)
+python main.py --benchmark isic --datapath ./datasets/isic --nshot 1
+
+# Cách 2: Mở rộng với cấu hình thử nghiệm E0-E3 và episodes manifest (main.py hoặc evaluate.py)
+python main.py --benchmark isic --experiment E3 --episodes 100 --seed 42 --device cuda
 ```
 
 ### 6.4. Chạy Toàn Bộ Bộ Đối Chuẩn (Full 20-Run Suite Locally)
@@ -265,12 +265,12 @@ modal run modal_runner.py --benchmark all --experiment all --episodes 100
 
 ### 6.6. Kiểm Tra Tính Tái Lập Số Học (Audit Cross-Device Reproducibility)
 
-Để thẩm định tính nhất quán số học giữa 2 tệp kết quả (ví dụ: Local vs Modal, hoặc Run 1 vs Run 2) với ngưỡng sai số nghiêm ngặt ($\Delta_{\text{mean}} \le 0.15\%$, $\Delta_{\text{max}} \le 0.50\%$):
+Để thẩm định tính nhất quán số học giữa 2 tệp kết quả với ngưỡng sai số nghiêm ngặt ($\Delta_{\text{mean}} \le 0.15\%$, $\Delta_{\text{max}} \le 0.50\%$):
 
 ```bash
 python experiments/check_reproducibility.py \
     --run1 results/isic/E0_100ep_seed42/run_result.json \
-    --run2 results/full_benchmark/ISIC/E0/run_result.json \
+    --run2 results/isic/E1_100ep_seed42/run_result.json \
     --tolerance-mean 0.15 \
     --tolerance-max 0.50
 ```
@@ -278,8 +278,8 @@ python experiments/check_reproducibility.py \
 ### 6.7. Tái Tạo Báo Cáo Đối Chuẩn (Generate Official Benchmark Report)
 
 ```bash
-python generate_full_benchmark_report.py
-# Cập nhật trực tiếp kết quả vào FULL_BENCHMARK_REPORT.md
+python scripts/generate_full_benchmark_report.py
+# Cập nhật trực tiếp kết quả vào docs/FULL_BENCHMARK_REPORT.md
 ```
 
 ---
@@ -298,9 +298,9 @@ python generate_full_benchmark_report.py
 | **Môi Trường Tính Toán (Hardware Environment)** | NVIDIA Tesla T4 GPU (16GB VRAM), Debian Slim, PyTorch 2.1.2 + CUDA 12.1 |
 
 Chi tiết toàn văn các báo cáo thẩm định được lưu trữ tại:
-- 📄 [Báo Cáo Đóng Băng Baseline (BASELINE_FREEZE_REPORT.md)](BASELINE_FREEZE_REPORT.md)
-- 📄 [Báo Cáo Đối Chuẩn Đầy Đủ (FULL_BENCHMARK_REPORT.md)](FULL_BENCHMARK_REPORT.md)
-- 📄 [Đặc Tả Môi Trường Kỹ Thuật (ENVIRONMENT.md)](ENVIRONMENT.md)
+- 📄 [Báo Cáo Đóng Băng Baseline (docs/BASELINE_FREEZE_REPORT.md)](docs/BASELINE_FREEZE_REPORT.md)
+- 📄 [Báo Cáo Đối Chuẩn Đầy Đủ (docs/FULL_BENCHMARK_REPORT.md)](docs/FULL_BENCHMARK_REPORT.md)
+- 📄 [Đặc Tả Môi Trường Kỹ Thuật (docs/ENVIRONMENT.md)](docs/ENVIRONMENT.md)
 
 ---
 

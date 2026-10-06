@@ -8,8 +8,8 @@ import os
 import json
 import numpy as np
 
-PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-RESULTS_DIR = os.path.join(PROJECT_ROOT, "results", "full_benchmark")
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RESULTS_DIR = os.path.join(PROJECT_ROOT, "results")
 
 DATASETS = ['DeepGlobe', 'ISIC', 'Lung', 'FSS1000', 'SUIM']
 EXPERIMENTS = ['E0', 'E1', 'E2', 'E3']
@@ -297,7 +297,7 @@ def generate_report():
     lines.append("  3. Toàn bộ mã nguồn, trọng số và episode manifests được công khai minh bạch tại kho lưu trữ KTD1108/ABCDFSS.")
 
     report_content = "\n".join(lines) + "\n"
-    out_path = os.path.join(PROJECT_ROOT, "FULL_BENCHMARK_REPORT.md")
+    out_path = os.path.join(PROJECT_ROOT, "docs", "FULL_BENCHMARK_REPORT.md")
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(report_content)
     print(f"[OK] Report written to: {out_path}")

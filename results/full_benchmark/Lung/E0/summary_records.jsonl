@@ -1,1 +1,0 @@
-{"timestamp": "20261006_014611", "experiment": "E0", "benchmark": "lung", "adapter": "conv1x1", "fusion": "mean", "nshot": 1, "episodes": 20, "seed": 42, "Mean_Episode_IoU": 78.34, "Cumulative_mIoU": 78.69, "FB-IoU": 85.86, "log_file": "D:\\xulyanhv2\\ABCDFSS\\results\\full_benchmark\\Lung\\E0\\lung_conv1x1_mean_1shot_E0_20261006_014611.log"}
