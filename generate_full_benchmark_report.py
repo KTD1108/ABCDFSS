@@ -57,17 +57,17 @@ def generate_report():
     # 1. Protocol & Execution Environment
     lines.append("## 1. Experimental Protocol (Quy Trình Thực Nghiệm Chuẩn Hóa)\n")
     lines.append("Toàn bộ 20 thử nghiệm (5 datasets × 4 cấu hình) được thực thi nghiêm ngặt theo đúng protocol cố định:")
+    lines.append("Each configuration was evaluated on 20 seed-controlled episodes per dataset using seed=42. The Lung benchmark additionally used an explicit episode manifest to ensure a fixed episode set.\n")
     lines.append("```yaml")
     lines.append("seed: 42")
     lines.append("nshot: 1")
     lines.append("image_size: 400x400")
-    lines.append("adapt_to: every-episode (Algorithm 2: Test-Time Online SGD)")
-    lines.append("num_epochs: 25")
+    lines.append("adapt_to: every-episode (Algorithm 2: Test-Time Online SGD, 25 epochs)")
     lines.append("learning_rate: 0.01")
     lines.append("out_channels: 64")
     lines.append("l0: 3 (Intermediate resolution 50x50)")
     lines.append("threshold: max(Otsu, mean) with drop_least=0.05")
-    lines.append("episodes_per_run: 20 fixed episodes")
+    lines.append("episodes_per_run: 20 seed-controlled episodes (Lung: explicit manifest; others: seed-controlled runtime sampling)")
     lines.append("backbone: ResNet-50 (Pre-ReLU unclipped features, ImageNet weights frozen)")
     lines.append("```\n")
 
@@ -82,7 +82,10 @@ def generate_report():
 
     # 3. Main Results Table: Cumulative mIoU
     lines.append("## 3. Benchmark Results — Cumulative mIoU (%)\n")
-    lines.append("$$\\text{mIoU}_{cum} = \\frac{\\sum_{i=1}^N |P_i \\cap G_i|}{\\sum_{i=1}^N |P_i \\cup G_i|}$$\n")
+    lines.append("Cumulative mIoU denotes the mean IoU computed after aggregating class-wise intersection and union statistics across the evaluated episodes:")
+    lines.append("$$\\text{IoU}_c = \\frac{\\sum_{i \\in \\mathcal{E}_c} |P_i \\cap G_i|}{\\sum_{i \\in \\mathcal{E}_c} |P_i \\cup G_i|}, \\quad \\text{Cumulative mIoU} = \\frac{1}{|C|} \\sum_{c \\in C} \\text{IoU}_c$$\n")
+    lines.append("> [!NOTE]")
+    lines.append("> For single-class target domains (Lung, ISIC), this corresponds to the aggregated foreground ratio $\\frac{\\sum |P_i \\cap G_i|}{\\sum |P_i \\cup G_i|}$. For multi-class benchmarks (DeepGlobe, FSS-1000, SUIM), intersection and union are aggregated per semantic class $c$ before computing the macro-average.\n")
     lines.append("| Dataset | E0 (Base) | E1 (Adp) | $\\Delta$ Adapter | E2 (Fus) | $\\Delta$ Fusion | E3 (Prop) | $\\Delta$ Combined |")
     lines.append("| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |")
 
@@ -135,7 +138,10 @@ def generate_report():
 
     # 4. Main Results Table: Mean Episode-IoU
     lines.append("## 4. Benchmark Results — Mean Episode-IoU (%)\n")
-    lines.append("$$\\text{mIoU}_{ep} = \\frac{1}{N} \\sum_{i=1}^N \\frac{|P_i \\cap G_i|}{|P_i \\cup G_i|}$$\n")
+    lines.append("Mean Episode-IoU denotes the unweighted average of individual episode IoU values:")
+    lines.append("$$\\text{Mean Episode-IoU} = \\frac{1}{N} \\sum_{i=1}^N \\frac{|P_i \\cap G_i|}{|P_i \\cup G_i|}$$\n")
+    lines.append("*(Reference Foreground-Background IoU metric)*:")
+    lines.append("$$FB\\text{-IoU} = \\frac{1}{2} \\left( \\frac{\\sum_{i=1}^N |P_{fg, i} \\cap G_{fg, i}|}{\\sum_{i=1}^N |P_{fg, i} \\cup G_{fg, i}|} + \\frac{\\sum_{i=1}^N |P_{bg, i} \\cap G_{bg, i}|}{\\sum_{i=1}^N |P_{bg, i} \\cup G_{bg, i}|} \\right)$$\n")
     lines.append("| Dataset | E0 (Base) | E1 (Adp) | $\\Delta$ Adapter | E2 (Fus) | $\\Delta$ Fusion | E3 (Prop) | $\\Delta$ Combined |")
     lines.append("| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |")
 
@@ -189,10 +195,9 @@ def generate_report():
     # 5. Reference Comparison with CVPR 2024 Paper
     lines.append("## 5. Comparison with Published Paper Reference Values\n")
     lines.append("> [!NOTE]")
-    lines.append("> Paper values are reference values reported across 1,000 episodes on GPU cluster.")
-    lines.append("> They are not treated as exact reproduction targets on a 20-episode fixed evaluation set,")
-    lines.append("> but provide an empirical anchor for domain difficulty and relative ranking.\n")
-    lines.append("| Dataset | Published Paper | E0 (Base) | E1 (Adp) | E2 (Fus) | E3 (Prop) |")
+    lines.append("> Paper reference values are reported from the original CVPR 2024 publication (evaluated over 1,000 episodes on GPU cluster).")
+    lines.append("> They serve as an empirical reference point for domain difficulty, and are not treated as exact reproduction targets under the 20-episode seed-controlled evaluation protocol.\n")
+    lines.append("| Dataset | Published Paper Reference | E0 (Base) | E1 (Adp) | E2 (Fus) | E3 (Prop) |")
     lines.append("| :--- | :---: | :---: | :---: | :---: | :---: |")
 
     for ds in DATASETS:
@@ -206,72 +211,69 @@ def generate_report():
     lines.append("\n---\n")
 
     # 6. Scientific Analysis (Giải Đáp 4 Câu Hỏi Khoa Học)
-    lines.append("## 6. Scientific Analysis (Giải Đáp 4 Câu Hỏi Khoa Học Chi Tiết)\n")
+    lines.append("## 6. Scientific Analysis (Phân Tích Khoa Học & Giải Đáp 4 Câu Hỏi Trọng Tâm)\n")
     
     # Q1
     lines.append("### Q1: Adapter cải tiến (Depthwise Separable 3×3) có thực sự hiệu quả không?")
     avg_adp_cum = np.mean(d_adp_cums) if d_adp_cums else 0
     avg_adp_ep = np.mean(d_adp_eps) if d_adp_eps else 0
-    lines.append(f"- **Kết quả định lượng tổng quát**: Biến thiên trung bình Cumulative mIoU là **{avg_adp_cum:+.2f} pp** (Mean Episode-IoU: **{avg_adp_ep:+.2f} pp**).")
-    lines.append("- **Phân hóa theo đặc thù miền dữ liệu (Domain Sensitivity)**:")
-    lines.append("  - *Cấu trúc không gian cứng / Giải phẫu rõ ràng (Lung & DeepGlobe)*: DW3×3 thể hiện ưu thế khi tăng cường receptive field cục bộ:")
-    lines.append("    + **Lung**: Cumulative mIoU tăng **+0.15 pp** (78.69% -> 78.84%).")
-    lines.append("    + **DeepGlobe**: Mean Episode-IoU tăng **+0.40 pp** (51.68% -> 52.08%), hỗ trợ bảo toàn tính liên tục của địa hình/đường xá.")
-    lines.append("  - *Biên mềm / Nhiễu tán xạ cao (ISIC & SUIM)*: DW3×3 chịu sự suy giảm hiệu năng:")
-    lines.append("    + **ISIC**: Cumulative mIoU giảm **-1.46 pp** (41.17% -> 39.71%). Quá trình 1-shot online SGD với kernel 3×3 có xu hướng overfit vào các đốm sắc tố nhiễu thay vì khái quát hóa ranh giới tổn thương.")
-    lines.append("    + **SUIM**: Cumulative mIoU giảm **-3.21 pp** (38.24% -> 35.03%) do ảnh chụp dưới nước có độ tương phản thấp và hiện tượng tán xạ ánh sáng mạnh.")
-    lines.append("- **Kết luận Q1**: Adapter DW3×3 *không phải là cải tiến universally superior*, mà phụ thuộc mật thiết vào inductive bias không gian của domain đích: hiệu quả trên miền có cấu trúc biên rõ nét, nhưng nhạy cảm với overfitting trên miền ảnh nhiễu/biên mềm.")
+    lines.append(f"- **Quan sát định lượng (Quantitative Observation)**: Biến thiên trung bình Cumulative mIoU là **{avg_adp_cum:+.2f} pp** (Mean Episode-IoU: **{avg_adp_ep:+.2f} pp**).")
+    lines.append("- **Chi tiết theo từng miền dữ liệu**:")
+    lines.append("  - *Lung*: Cumulative mIoU tăng nhẹ **+0.15 pp** (78.69% -> 78.84%), trong khi Mean Episode-IoU biến thiên -0.11 pp (78.34% -> 78.23%).")
+    lines.append("  - *DeepGlobe*: Cumulative mIoU giữ nguyên (+0.00 pp, 50.83%), trong khi Mean Episode-IoU tăng **+0.40 pp** (51.68% -> 52.08%).")
+    lines.append("  - *FSS-1000*: Cumulative mIoU giảm nhẹ -0.13 pp (80.08% -> 79.95%), Mean Episode-IoU giảm -0.11 pp (80.21% -> 80.10%).")
+    lines.append("  - *ISIC*: DW3×3 cho kết quả thấp hơn baseline: Cumulative mIoU giảm **-1.46 pp** (41.17% -> 39.71%), Mean Episode-IoU giảm **-1.51 pp** (48.50% -> 46.99%).")
+    lines.append("  - *SUIM*: DW3×3 cho kết quả thấp hơn baseline: Cumulative mIoU giảm **-3.21 pp** (38.24% -> 35.03%), Mean Episode-IoU giảm **-5.54 pp** (38.65% -> 33.11%).")
+    lines.append("- **Diễn giải & Giả thuyết (Interpretation & Hypothesis)**: Inductive bias mở rộng receptive field từ 1×1 sang 3×3 không mang lại cải thiện đồng đều trên mọi miền dữ liệu. Một giả thuyết khả dĩ là kernel 3×3 với receptive field lớn hơn có thể hữu ích ở các miền có cấu trúc biên rõ (như ảnh giải phẫu hoặc đường sá), nhưng kém phù hợp hơn trên các miền có biên độ tương phản thấp hoặc nhiễu tán xạ cao (như ISIC và SUIM) dưới điều kiện 1-shot SGD trực tuyến. Tuy nhiên, giả thuyết này cần thêm các thực nghiệm kiểm chứng có kiểm soát.")
 
     # Q2
     lines.append("\n### Q2: Fusion cải tiến (Softmax Margin Fusion) có thực sự hiệu quả không?")
     avg_fus_cum = np.mean(d_fus_cums) if d_fus_cums else 0
     avg_fus_ep = np.mean(d_fus_eps) if d_fus_eps else 0
-    lines.append(f"- **Kết quả định lượng tổng quát**: Biến thiên trung bình Cumulative mIoU là **{avg_fus_cum:+.2f} pp** (Mean Episode-IoU: **{avg_fus_ep:+.2f} pp**).")
-    lines.append("- **Phân tích cơ chế hoạt động**:")
-    lines.append("  - Softmax Margin Fusion tính toán khoảng cách cosine giữa foreground và background prototype tại từng tầng đặc trưng thích ứng để phân bổ trọng số tự thích ứng.")
-    lines.append("  - **Cải thiện rõ nét nhất trên Medical Domain (Lung)**:")
-    lines.append("    + Cumulative mIoU tăng **+0.63 pp** (78.69% -> 79.32%).")
-    lines.append("    + Mean Episode-IoU tăng **+0.61 pp** (78.34% -> 78.95%).")
-    lines.append("    + Cơ chế này giúp tự động giảm trọng số của các shallow layers có margin phân biệt thấp và tập trung vào các deep semantic layers có độ phân tách phổi sắc nét.")
-    lines.append("  - **Tính an toàn và ổn định trên các domain khác**:")
-    lines.append("    + **FSS-1000**: Tăng nhẹ **+0.11 pp** (80.08% -> 80.19%).")
-    lines.append("    + **DeepGlobe**: Biến thiên không đáng kể **-0.07 pp** (50.83% -> 50.76%).")
-    lines.append("    + **ISIC**: Duy trì ổn định **-0.21 pp** (41.17% -> 40.96%).")
-    lines.append("    + **SUIM**: Giảm nhẹ **-0.57 pp** (38.24% -> 37.67%).")
-    lines.append("- **Kết luận Q2**: Softmax Margin Fusion là một cơ chế thích ứng *rất an toàn (low-risk, highly consistent)*, đặc biệt có lợi thế phân tách rõ ràng trên miền y tế chuyên sâu.")
+    lines.append(f"- **Quan sát định lượng (Quantitative Observation)**: Biến thiên trung bình Cumulative mIoU là **{avg_fus_cum:+.2f} pp** (Mean Episode-IoU: **{avg_fus_ep:+.2f} pp**).")
+    lines.append("- **Chi tiết theo từng miền dữ liệu**:")
+    lines.append("  - *Lung*: Ghi nhận mức cải thiện rõ nét nhất: Cumulative mIoU tăng **+0.63 pp** (78.69% -> 79.32%), Mean Episode-IoU tăng **+0.61 pp** (78.34% -> 78.95%).")
+    lines.append("  - *FSS-1000*: Cumulative mIoU tăng nhẹ **+0.11 pp** (80.08% -> 80.19%), Mean Episode-IoU tăng **+0.14 pp** (80.35% vs 80.21%).")
+    lines.append("  - *DeepGlobe*: Cumulative mIoU biến thiên -0.07 pp (50.83% -> 50.76%), Mean Episode-IoU biến thiên -0.24 pp (51.68% -> 51.44%).")
+    lines.append("  - *ISIC*: Cumulative mIoU biến thiên -0.21 pp (41.17% -> 40.96%), Mean Episode-IoU biến thiên -0.26 pp (48.50% -> 48.24%).")
+    lines.append("  - *SUIM*: Cumulative mIoU biến thiên -0.57 pp (38.24% -> 37.67%), Mean Episode-IoU biến thiên -0.30 pp (38.65% -> 38.35%).")
+    lines.append("- **Diễn giải & Giả thuyết (Interpretation & Hypothesis)**: Softmax Margin Fusion điều chỉnh trọng số tầng dựa trên khoảng cách prototype giữa foreground và background. Trên miền Lung, cơ chế này giúp tăng tỷ trọng của các tầng có độ phân tách hình học cao. Trên 4 miền còn lại, kết quả dao động sát mức baseline (biến thiên trung bình toàn benchmark là -0.02 pp).")
 
     # Q3
     lines.append("\n### Q3: Phương pháp đề xuất kết hợp (E3: DW3×3 + Softmax Margin) có hiệu quả không?")
     avg_comb_cum = np.mean(d_comb_cums) if d_comb_cums else 0
     avg_comb_ep = np.mean(d_comb_eps) if d_comb_eps else 0
-    lines.append(f"- **Kết quả định lượng tổng quát**: Biến thiên trung bình Cumulative mIoU là **{avg_comb_cum:+.2f} pp** (Mean Episode-IoU: **{avg_comb_ep:+.2f} pp**).")
-    lines.append("- **Thành tựu nổi bật trên Benchmark Phổi (Lung / X-ray)**:")
-    lines.append("  - **E3 đạt 80.09% Cumulative mIoU** (tăng **+1.40 pp** so với E0 78.69%).")
-    lines.append("  - **E3 đạt 79.41% Mean Episode-IoU** (tăng **+1.07 pp** so với E0 78.34%).")
-    lines.append("  - Điểm số **80.09%** chính thức bắt kịp và tái lập mốc tham chiếu công bố của bài báo gốc (**80.0%**), chứng minh cấu trúc kết hợp Proposed Method đạt đỉnh hiệu năng phân đoạn trên ảnh X-quang phổi.")
-    lines.append("- **Đánh giá trên các domain còn lại**:")
-    lines.append("  - Trên FSS-1000 (79.60%), DeepGlobe (50.29%), ISIC (40.52%), và SUIM (34.75%), sự suy giảm của kernel 3×3 trên một số episode nhiễu kéo tụt hiệu năng kết hợp.")
-    lines.append("- **Kết luận Q3**: Phương pháp kết hợp E3 mang lại bước đột phá rõ ràng trên miền mục tiêu giải phẫu y tế chuyên biệt (Lung đạt 80.09%), nhưng cần cơ chế điều tiết receptive field thích ứng để duy trì độ khái quát hóa trên miền ảnh mờ/nhiễu.")
+    lines.append(f"- **Quan sát định lượng (Quantitative Observation)**: Biến thiên trung bình Cumulative mIoU là **{avg_comb_cum:+.2f} pp** (Mean Episode-IoU: **{avg_comb_ep:+.2f} pp**).")
+    lines.append("- **Chi tiết theo từng miền dữ liệu**:")
+    lines.append("  - *Lung*: Cấu hình kết hợp E3 đạt **80.09% Cumulative mIoU** (+1.40 pp so với E0 78.69%) và **79.41% Mean Episode-IoU** (+1.07 pp so với E0 78.34%). Con số 80.09% nằm sát mốc tham chiếu 80.0% được công bố trong bài báo gốc.")
+    lines.append("  - *DeepGlobe*: Cumulative mIoU đạt 50.29% (-0.54 pp so với E0), Mean Episode-IoU đạt 51.51% (-0.17 pp so với E0).")
+    lines.append("  - *FSS-1000*: Cumulative mIoU đạt 79.60% (-0.48 pp so với E0), Mean Episode-IoU đạt 79.73% (-0.48 pp so với E0).")
+    lines.append("  - *ISIC*: Cumulative mIoU đạt 40.52% (-0.65 pp so với E0), Mean Episode-IoU đạt 47.78% (-0.72 pp so với E0).")
+    lines.append("  - *SUIM*: Cumulative mIoU đạt 34.75% (-3.49 pp so với E0), Mean Episode-IoU đạt 32.97% (-5.68 pp so với E0).")
+    lines.append("- **Kết luận Q3**: Cấu hình kết hợp E3 cải thiện kết quả rõ ràng trên miền Lung (+1.40 pp Cumulative mIoU), nhưng không đem lại cải thiện đồng đều trên toàn bộ 5 benchmark. Hiệu năng trung bình của E3 trên 5 dataset thấp hơn E0 (-0.75 pp Cumulative mIoU, -1.20 pp Mean Episode-IoU), cho thấy hiệu quả của phương pháp kết hợp mang tính phụ thuộc miền (domain-dependent) thay vì ưu việt phổ quát.")
 
     # Q4
     lines.append("\n### Q4: Có tương tác (interaction) giữa Adapter và Fusion không?")
     if len(d_comb_cums) == len(d_adp_cums) and len(d_comb_cums) > 0:
         diff_interaction = [c - (a + f) for c, a, f in zip(d_comb_cums, d_adp_cums, d_fus_cums)]
         avg_interaction = np.mean(diff_interaction)
-        lines.append(f"- $\\Delta_{{Combined}} - (\\Delta_{{Adapter}} + \\Delta_{{Fusion}})$ = **{avg_interaction:+.2f} pp** (Cumulative mIoU).")
-        lines.append("  - **Trên Lung**: $\\Delta_{Combined} (+1.40\\text{ pp}) > \\Delta_{Adapter} (+0.15\\text{ pp}) + \\Delta_{Fusion} (+0.63\\text{ pp}) = +0.78\\text{ pp}$.")
-        lines.append("    -> Xuất hiện **hiệu ứng cộng hưởng tương hỗ (Super-additive / Synergistic effect, +0.62 pp)**: Adapter DW3×3 tạo ra các biểu diễn không gian sắc nét hơn ở các tầng phân tách tốt, cho phép Softmax Margin Fusion khai thác tối đa trọng số hội tụ.")
-        lines.append("  - **Trên các domain còn lại**: Tương tác dao động quanh mức cộng tính (additive), không ghi nhận hiện tượng xung đột gradient hay triệt tiêu lẫn nhau giữa Adapter và Fusion module.")
+        lines.append(f"- **Định lượng tương tác**: Giá trị $\\Delta_{{Combined}} - (\\Delta_{{Adapter}} + \\Delta_{{Fusion}})$ trung bình là **{avg_interaction:+.2f} pp** (Cumulative mIoU).")
+        lines.append("  - *Trên Lung*: $\\Delta_{Combined} (+1.40\\text{ pp}) > \\Delta_{Adapter} (+0.15\\text{ pp}) + \\Delta_{Fusion} (+0.63\\text{ pp}) = +0.78\\text{ pp}$. Tương tác quan sát được là **+0.62 pp**, cho thấy kết quả kết hợp trên tập đánh giá này có dạng super-additive.")
+        lines.append("  - *Trên các miền còn lại*: Giá trị tương tác dao động: DeepGlobe (-0.47 pp), ISIC (+1.02 pp), FSS-1000 (-0.46 pp), SUIM (+0.29 pp).")
+        lines.append("- **Kết luận Q4**: Các kết quả quan sát cho thấy có sự tương tác giữa hai thành phần trên từng tập dữ liệu cụ thể (đặc biệt là Lung), nhưng để khẳng định hiệu ứng cộng hưởng (synergy) có ý nghĩa thống kê tổng quát thì cần mở rộng thêm các thực nghiệm đa seed.")
     else:
         lines.append("- *Đang cập nhật dữ liệu...*")
 
     lines.append("\n---\n")
 
     # 7. Reproducibility & Limitations
-    lines.append("## 7. Reproducibility & Limitations\n")
-    lines.append("- **Protocol Determinism**: Tất cả các run sử dụng `seed=42`, `every-episode` adaptation 25 epochs SGD.")
-    lines.append("- **Zero Tuning**: Tuyệt đối không thay đổi bất kỳ siêu tham số nào sau khi bắt đầu benchmark.")
-    lines.append("- **Artifact Transparency**: Toàn bộ raw prediction IoUs cho từng episode được lưu trữ độc lập tại `results/full_benchmark/{Dataset}/{Experiment}/run_result.json`.")
+    lines.append("## 7. Protocol Transparency & Limitations\n")
+    lines.append("- **Protocol Control**: Toàn bộ thử nghiệm thực thi cố định với `seed=42`, `nshot=1`, 25 epochs online SGD per episode. Dataset Lung sử dụng manifest 20 episode cố định; 4 dataset còn lại sử dụng runtime sampling có kiểm soát seed.")
+    lines.append("- **Zero Tuning**: Các siêu tham số (learning rate 0.01, l0=3, temperature 1.0, threshold max_otsu_mean) được giữ nguyên hoàn toàn xuyên suốt 20 runs.")
+    lines.append("- **Limitations**: ")
+    lines.append("  1. Quy mô đánh giá gồm 20 episode cho mỗi dataset (do hạn chế tính toán trên CPU), không thay thế cho đánh giá 1.000 episode quy mô lớn trên GPU cluster.")
+    lines.append("  2. Thực nghiệm thực hiện trên 1 seed duy nhất (seed=42), chưa đủ để thực hiện kiểm định ý nghĩa thống kê (t-test / ANOVA).")
+    lines.append("  3. Các nhận định về nguyên nhân vật lý/hình ảnh (ví dụ: tán xạ dưới nước, sắc tố da) hiện dừng ở mức giả thuyết khoa học hợp lý, cần thêm kiểm chứng phân rã lỗi (error visual breakdown).")
 
     report_content = "\n".join(lines) + "\n"
     out_path = os.path.join(PROJECT_ROOT, "FULL_BENCHMARK_REPORT.md")
