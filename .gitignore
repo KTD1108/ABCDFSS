@@ -8,3 +8,5 @@ __pycache__/
 .idea/
 *.zip
 *.tar.gz
+logs/
+*.log

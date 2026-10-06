@@ -4,24 +4,34 @@ Automated Master Runner for All 5 CD-FSS Benchmarks
 Runs full evaluation across all domains, saves detailed individual logs,
 and outputs a comprehensive verified benchmark summary table.
 
+Key Guarantees:
+1. Automatically resolves and validates explicit deterministic manifests.
+2. The exact same manifest is shared across E0, E1, E2, and E3.
+3. Cryptographic protocol signature validation prevents invalid resume skips.
+4. Outputs results directly into results/{dataset}/{exp}_{episodes}ep_seed{seed}/.
+
 Usage:
     python run_all_benchmarks.py
     python run_all_benchmarks.py --experiments E0 E1 E2 E3 --episodes 100 --device cuda
+    python run_all_benchmarks.py --benchmarks deepglobe isic lung fss suim --episodes 100
 """
 
 import os
 import sys
 import json
+import time
+import argparse
 import subprocess
 from datetime import datetime
+from typing import Optional
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from src.utils.manifest import resolve_manifest_path
+from src.utils.manifest import resolve_manifest_path, validate_manifest
+from src.utils.protocol import create_protocol_signature, validate_protocol_signature
 
-from typing import Optional
 
 def is_valid_fss_dir(path: str) -> bool:
     """
@@ -42,6 +52,7 @@ def is_valid_fss_dir(path: str) -> bool:
     except Exception:
         pass
     return False
+
 
 def find_fss_root(start_dir: str) -> Optional[str]:
     """Recursively searches start_dir to find the directory that directly contains FSS class folders."""
@@ -101,7 +112,8 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
 
     # 3. Special handling for FSS-1000
     if benchmark in ['fss', 'fss1000']:
-        import shutil, zipfile, urllib.request
+        import urllib.request
+        import zipfile
         from tqdm import tqdm
 
         fss_check_dirs = [
@@ -188,31 +200,43 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
 
     return f"./datasets/{benchmark}"
 
+
 def parse_args():
-    import argparse
-    parser = argparse.ArgumentParser(description="Automated Runner for CD-FSS Benchmarks")
+    parser = argparse.ArgumentParser(description="Automated Master Runner for All 5 CD-FSS Benchmarks")
     parser.add_argument('--adapt-to', type=str, default='every-episode',
                         choices=['first-episode', 'every-episode'],
-                        help='Adaptation mode: every-episode (CVPR 2024 exact protocol) or first-episode (quick-infer)')
-    parser.add_argument('--episodes', type=str, default='1000',
-                        help='Number of episodes per benchmark (default: 1000 standard CVPR episodes, or "all")')
-    parser.add_argument('--experiments', nargs='+', default=['E0'],
+                        help='Adaptation mode: every-episode (CVPR 2024 exact protocol) or first-episode')
+    parser.add_argument('--episodes', type=str, default='100',
+                        help='Number of episodes per benchmark: 20, 100, 1000, or "all" (default: 100)')
+    parser.add_argument('--seed', type=int, default=42,
+                        help='Random seed for deterministic evaluation (default: 42)')
+    parser.add_argument('--experiments', nargs='+', default=['E0', 'E1', 'E2', 'E3'],
                         choices=['E0', 'E1', 'E2', 'E3', 'all'],
-                        help="Experiments to run: E0 (baseline: conv1x1+mean), E1 (dw3x3+mean), E2 (conv1x1+softmax), E3 (dw3x3+softmax), or all (default: E0)")
-    parser.add_argument('--benchmarks', nargs='+', default=['isic', 'suim', 'lung', 'fss', 'deepglobe'],
-                        help='List of benchmarks to run')
+                        help="Experiments to run: E0, E1, E2, E3, or all (default: E0 E1 E2 E3)")
+    parser.add_argument('--benchmarks', nargs='+', default=['deepglobe', 'isic', 'lung', 'fss', 'suim'],
+                        help='List of benchmarks to run (default: deepglobe isic lung fss suim)')
     parser.add_argument('--device', type=str, default='cuda',
-                        help='Compute device: cuda or cpu')
+                        help='Compute device: cuda or cpu (default: cuda)')
+    parser.add_argument('--nshot', type=int, default=1,
+                        help='Few-shot k value (default: 1)')
     parser.add_argument('--nworker', type=int, default=0,
                         help='Number of dataloader workers (default: 0)')
+    parser.add_argument('--output-dir', type=str, default=None,
+                        help='Base output directory (default: results/{benchmark}/{exp}_{episodes}ep_seed{seed})')
     return parser.parse_args()
+
 
 def main():
     args = parse_args()
+    ep_str = str(args.episodes).lower().strip()
+
     print("=" * 80)
-    print(f"      CD-FSS BENCHMARK PIPELINE: {args.adapt_to.upper()} ({args.episodes} EPISODES)")
-    print(f"      EXPERIMENTS: {args.experiments}")
-    print("=" * 80)
+    print("      AUTOMATED MASTER CD-FSS BENCHMARK PIPELINE")
+    print(f"      Mode:      {args.adapt_to} (Protocol: CVPR 2024)")
+    print(f"      Episodes:  {ep_str} | Shot: {args.nshot} | Seed: {args.seed} | Device: {args.device}")
+    print(f"      Exps:      {args.experiments}")
+    print(f"      Domains:   {args.benchmarks}")
+    print("=" * 80 + "\n")
 
     # 1. Resolve dataset paths
     all_slugs = {
@@ -220,108 +244,194 @@ def main():
         'suim': 'heyoujue/suim-merged',
         'lung': 'heyoujue/lungsegmentation',
         'fss': None,
+        'fss1000': None,
         'deepglobe': 'heyoujue/deepglobe'
     }
+
     dataset_paths = {}
     for b in args.benchmarks:
-        if b in all_slugs:
-            dataset_paths[b] = check_or_download_dataset(b, kaggle_slug=all_slugs[b])
+        b_key = b.lower().replace('-1000', '').replace('1000', '')
+        if b_key in all_slugs:
+            dataset_paths[b] = check_or_download_dataset(b_key, kaggle_slug=all_slugs.get(b_key))
 
-    # 2. Build 4 standard experiment matrix (E0/E1/E2/E3)
+    # 2. Experiment definition matrix
     exp_definitions = {
-        'E0': {'name': 'E0 — Original ABCDFSS Baseline', 'adapter': 'conv1x1', 'fusion': 'mean'},
-        'E1': {'name': 'E1 — Adapter Ablation (DW3x3 + Mean)', 'adapter': 'depthwise_separable_3x3', 'fusion': 'mean'},
-        'E2': {'name': 'E2 — Fusion Ablation (Conv1x1 + Softmax)', 'adapter': 'conv1x1', 'fusion': 'softmax_margin'},
-        'E3': {'name': 'E3 — Full Proposed Method (DW3x3 + Softmax)', 'adapter': 'depthwise_separable_3x3', 'fusion': 'softmax_margin'},
+        'E0': {'name': 'E0: Baseline (Conv1x1 + Mean)', 'adapter': 'conv1x1', 'fusion': 'mean'},
+        'E1': {'name': 'E1: Adapter Ablation (DW3x3 + Mean)', 'adapter': 'depthwise_separable_3x3', 'fusion': 'mean'},
+        'E2': {'name': 'E2: Fusion Ablation (Conv1x1 + Softmax)', 'adapter': 'conv1x1', 'fusion': 'softmax_margin'},
+        'E3': {'name': 'E3: Full Proposed (DW3x3 + Softmax)', 'adapter': 'depthwise_separable_3x3', 'fusion': 'softmax_margin'},
     }
-
     selected_exp_keys = ['E0', 'E1', 'E2', 'E3'] if 'all' in args.experiments else args.experiments
 
-    experiments = []
+    # 3. Resolve and validate deterministic manifests per benchmark
+    manifest_info = {}
     for b in args.benchmarks:
+        b_norm = b.lower().replace('-1000', '').replace('1000', '')
         if b not in dataset_paths or not dataset_paths[b]:
+            print(f"[!] Skipping {b}: dataset not found.")
             continue
+        try:
+            m_path = resolve_manifest_path(
+                benchmark=b_norm,
+                seed=args.seed,
+                episodes=ep_str,
+                allow_missing=False
+            )
+            v_info = validate_manifest(
+                manifest_path=m_path,
+                benchmark=b_norm,
+                seed=args.seed,
+                episodes=ep_str,
+                dataset_base_path=dataset_paths[b]
+            )
+            manifest_info[b] = {
+                'benchmark': b_norm,
+                'path': m_path,
+                'sha256': v_info['manifest_sha256'],
+                'resolved_episodes': v_info['resolved_episodes']
+            }
+            print(f"[OK] Manifest locked for {b.upper()}: {os.path.basename(m_path)} (SHA: {v_info['manifest_sha256'][:10]}...)")
+        except Exception as me:
+            print(f"[!] Warning: Could not resolve/validate manifest for {b}: {me}")
+
+    # 4. Execute experiments sequentially
+    total_runs = len(manifest_info) * len(selected_exp_keys)
+    current_run = 0
+    records = []
+
+    for b, m_data in manifest_info.items():
+        b_norm = m_data['benchmark']
+        datapath = dataset_paths[b]
+        manifest_path = m_data['path']
+        manifest_sha = m_data['sha256']
+        resolved_ep = m_data['resolved_episodes']
+
         for ek in selected_exp_keys:
+            current_run += 1
             ed = exp_definitions[ek]
-            experiments.append({
-                'id': ek,
-                'name': f"{b.upper()} [{ed['name']}]",
-                'benchmark': b,
-                'datapath': dataset_paths[b],
-                'adapter': ed['adapter'],
-                'fusion': ed['fusion'],
-                'nshot': 1
-            })
 
-    log_dir = "./logs"
-    os.makedirs(log_dir, exist_ok=True)
+            # Output directory
+            if args.output_dir:
+                run_dir = os.path.join(args.output_dir, b, ek)
+            else:
+                suffix = "all_ep" if ep_str == "all" else f"{ep_str}ep"
+                run_dir = os.path.join(PROJECT_ROOT, "results", b_norm, f"{ek}_{suffix}_seed{args.seed}")
+            os.makedirs(run_dir, exist_ok=True)
+            result_json = os.path.join(run_dir, "run_result.json")
 
-    # 3. Execute experiments sequentially
-    total_exp = len(experiments)
-    for i, exp in enumerate(experiments, 1):
-        print(f"\n{'='*30} PROGRESS [{i}/{total_exp}]: {exp['name']} {'='*30}")
-        if not os.path.exists(exp['datapath']) or (exp['benchmark'] == 'fss' and not is_valid_fss_dir(exp['datapath'])):
-            print(f"[!] WARNING: Dataset directory '{exp['benchmark']}' at {exp['datapath']} is invalid or missing. Skipping...")
-            continue
+            # Check Protocol Signature for resume
+            expected_sig = create_protocol_signature(
+                benchmark=b_norm,
+                experiment=ek,
+                episodes=resolved_ep if ep_str != 'all' else 'all',
+                seed=args.seed,
+                nshot=args.nshot,
+                adapt_to=args.adapt_to,
+                adapter=ed['adapter'],
+                fusion=ed['fusion'],
+                fusion_temp=1.0,
+                image_size=400,
+                num_epochs=25,
+                learning_rate=0.01,
+                manifest=manifest_path,
+                manifest_sha256=manifest_sha
+            )
 
-        manifest_path = resolve_manifest_path(
-            benchmark=exp['benchmark'],
-            seed=42,
-            episodes=args.episodes,
-            allow_missing=False
-        )
+            if os.path.exists(result_json):
+                try:
+                    with open(result_json, 'r', encoding='utf-8') as f:
+                        saved_res = json.load(f)
+                    saved_sig = saved_res.get('protocol_signature')
+                    is_valid, reason = validate_protocol_signature(saved_sig, expected_sig)
 
-        cmd = [
-            sys.executable, "evaluate.py",
-            "--benchmark", exp['benchmark'],
-            "--datapath", exp['datapath'],
-            "--nshot", str(exp['nshot']),
-            "--experiment", exp['id'],
-            "--adapter", exp['adapter'],
-            "--fusion", exp['fusion'],
-            "--adapt-to", args.adapt_to,
-            "--episodes", str(args.episodes),
-            "--manifest", manifest_path,
-            "--logpath", log_dir,
-            "--device", args.device,
-            "--nworker", str(args.nworker)
-        ]
+                    saved_count = saved_res.get('episode_count')
+                    if is_valid and saved_count == resolved_ep:
+                        m = saved_res.get('metric', {})
+                        print(f"[{current_run:02d}/{total_runs:02d}] [SKIP - RESUME VERIFIED] {b.upper()} {ek} => Mean Ep IoU: {m.get('Mean_Episode_IoU', 'N/A')}%, Cum mIoU: {m.get('Cumulative_mIoU', 'N/A')}%")
+                        records.append({
+                            'benchmark': b.upper(),
+                            'experiment': ek,
+                            'adapter': ed['adapter'],
+                            'fusion': ed['fusion'],
+                            'Mean_Episode_IoU': m.get('Mean_Episode_IoU', 0.0),
+                            'Cumulative_mIoU': m.get('Cumulative_mIoU', 0.0),
+                            'FB-IoU': m.get('FB-IoU', 0.0),
+                            'log_file': saved_res.get('log', '')
+                        })
+                        continue
+                    else:
+                        print(f"[{current_run:02d}/{total_runs:02d}] [RE-RUN] {b.upper()} {ek}: {reason}")
+                except Exception as ex:
+                    print(f"[{current_run:02d}/{total_runs:02d}] [RE-RUN] {b.upper()} {ek}: {ex}")
 
-        print(f"[*] Executing command: {' '.join(cmd)}")
-        env = os.environ.copy()
-        env["PYTHONPATH"] = PROJECT_ROOT + (":" + env.get("PYTHONPATH", "") if env.get("PYTHONPATH") else "")
-        result = subprocess.run(cmd, cwd=PROJECT_ROOT, env=env)
-        if result.returncode != 0:
-            print(f"[!] Error executing experiment {exp['name']}")
+            print(f"\n{'='*70}")
+            print(f"[{current_run:02d}/{total_runs:02d}] RUNNING: {b.upper()} - {ed['name']}")
+            print(f"Manifest: {os.path.basename(manifest_path)}")
+            print(f"Output:   {run_dir}")
+            print(f"{'='*70}\n")
 
-    # 4. Read summary_records.jsonl and output summary table
-    summary_jsonl = os.path.join(log_dir, "summary_records.jsonl")
-    if os.path.exists(summary_jsonl):
-        records = []
-        with open(summary_jsonl, 'r', encoding='utf-8') as f:
-            for line in f:
-                if line.strip():
-                    records.append(json.loads(line.strip()))
+            cmd = [
+                sys.executable, os.path.join(PROJECT_ROOT, "evaluate.py"),
+                "--benchmark", b_norm,
+                "--datapath", datapath,
+                "--nshot", str(args.nshot),
+                "--experiment", ek,
+                "--adapter", ed['adapter'],
+                "--fusion", ed['fusion'],
+                "--adapt-to", args.adapt_to,
+                "--episodes", ep_str,
+                "--manifest", manifest_path,
+                "--seed", str(args.seed),
+                "--device", args.device,
+                "--nworker", str(args.nworker),
+                "--logpath", run_dir
+            ]
 
+            env = os.environ.copy()
+            env["PYTHONPATH"] = PROJECT_ROOT + (":" + env.get("PYTHONPATH", "") if env.get("PYTHONPATH") else "")
+
+            t0 = time.time()
+            res = subprocess.run(cmd, cwd=PROJECT_ROOT, env=env)
+            elapsed = time.time() - t0
+
+            if res.returncode == 0:
+                print(f"[OK] Completed {b.upper()} {ek} in {elapsed:.1f}s")
+                if os.path.exists(result_json):
+                    try:
+                        with open(result_json, 'r', encoding='utf-8') as f:
+                            saved_res = json.load(f)
+                        m = saved_res.get('metric', {})
+                        records.append({
+                            'benchmark': b.upper(),
+                            'experiment': ek,
+                            'adapter': ed['adapter'],
+                            'fusion': ed['fusion'],
+                            'Mean_Episode_IoU': m.get('Mean_Episode_IoU', 0.0),
+                            'Cumulative_mIoU': m.get('Cumulative_mIoU', 0.0),
+                            'FB-IoU': m.get('FB-IoU', 0.0),
+                            'log_file': saved_res.get('log', '')
+                        })
+                    except Exception:
+                        pass
+            else:
+                print(f"[!] ERROR in {b.upper()} {ek} (exit code: {res.returncode})")
+
+    # 5. Output Summary Table
+    if records:
         print("\n\n" + "=" * 80)
         print("           VERIFIED EXPERIMENT BENCHMARK SUMMARY TABLE")
         print("=" * 80)
         md_table = [
-            "| Timestamp | Benchmark | Shot | Adapter | Fusion | Mean Ep IoU (%) | Cum mIoU (%) | FB-IoU (%) | Log File |",
-            "| :--- | :--- | :---: | :--- | :--- | :---: | :---: | :---: | :--- |"
+            "| Domain | Exp | Adapter | Fusion | Mean Ep IoU (%) | Cum mIoU (%) | FB-IoU (%) |",
+            "| :--- | :---: | :--- | :--- | :---: | :---: | :---: |"
         ]
         for r in records:
-            mean_ep = r.get('Mean_Episode_IoU', r.get('mIoU', 'N/A'))
-            cum_m = r.get('Cumulative_mIoU', r.get('mIoU', 'N/A'))
-            md_table.append(f"| {r['timestamp']} | **{r['benchmark'].upper()}** | {r['nshot']} | `{r['adapter']}` | `{r['fusion']}` | **{mean_ep}%** | **{cum_m}%** | **{r['FB-IoU']}%** | `{os.path.basename(r['log_file'])}` |")
+            md_table.append(f"| **{r['benchmark']}** | `{r['experiment']}` | `{r['adapter']}` | `{r['fusion']}` | **{r['Mean_Episode_IoU']:.2f}%** | **{r['Cumulative_mIoU']:.2f}%** | **{r['FB-IoU']:.2f}%** |")
 
         table_str = "\n".join(md_table)
         print(table_str)
+        print("=" * 80 + "\n")
 
-        output_md_file = os.path.join(log_dir, "verified_benchmark_summary.md")
-        with open(output_md_file, "w", encoding="utf-8") as f:
-            f.write("# VERIFIED BENCHMARK EXPERIMENT SUMMARY\n\n" + table_str + "\n")
-        print(f"\n[OK] Summary exported to: {output_md_file}")
 
 if __name__ == '__main__':
     main()
