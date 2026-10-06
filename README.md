@@ -170,9 +170,7 @@ d:/xulyanhv2/ABCDFSS/
 │       └── protocol.py                # Chữ ký giao thức thực nghiệm & resume
 │
 ├── experiments/                       # Quản lý thực nghiệm & tái lập
-│   ├── episodes/                      # Tập JSON manifest tất định (20ep và 100ep cho 5 datasets)
-│   ├── check_reproducibility.py       # Công cụ kiểm tra sai số số học & tính tái lập
-│   └── generate_manifests.py          # Script sinh manifest tất định từ seed
+│   └── episodes/                      # Tập JSON manifest 100 episodes tất định (seed=42)
 │
 ├── results/                           # Kết quả benchmark 100-episode chính thức
 │   ├── deepglobe/                     # Kết quả 100ep E0-E3 DeepGlobe (JSON + logs)
@@ -186,11 +184,8 @@ d:/xulyanhv2/ABCDFSS/
 │   ├── FULL_BENCHMARK_REPORT.md       # Báo cáo tổng hợp khoa học 20 runs chi tiết
 │   └── ENVIRONMENT.md                 # Đặc tả môi trường phần cứng, phần mềm, CUDA
 │
-├── scripts/                           # Công cụ phụ trợ tổng hợp báo cáo
-│   └── generate_full_benchmark_report.py # Script tổng hợp báo cáo FULL_BENCHMARK_REPORT.md
-│
-├── main.py                            # Điểm vào chuẩn tác giả gốc CVPR 2024
-├── evaluate.py                        # Điểm vào thực thi chi tiết (Single-run CLI)
+├── main.py                            # Điểm vào chuẩn tác giả gốc CVPR 2024 (mặc định GPU)
+├── evaluate.py                        # Điểm vào thực thi chi tiết (Single-run CLI, mặc định GPU)
 ├── run_all_benchmarks.py              # Master runner điều phối toàn bộ suite 20 runs
 ├── modal_runner.py                    # Runner không máy chủ trên Modal Cloud GPU (Tesla T4)
 ├── requirements.txt                   # Danh sách gói phụ thuộc Python
@@ -199,7 +194,7 @@ d:/xulyanhv2/ABCDFSS/
 
 ---
 
-## 🚀 6. Hướng Dẫn Tái Lập 1-Click (Quickstart & Reproduction)
+## 🚀 6. Hướng Dẫn Tái Lập 1-Click Trên GPU (GPU Reproduction)
 
 ### 6.1. Cài Đặt Môi Trường (Installation)
 
@@ -209,9 +204,9 @@ cd ABCDFSS
 pip install -r requirements.txt
 ```
 
-### 6.2. Chạy Một Thực Nghiệm Đơn Lẻ (Single Benchmark)
+### 6.2. Chạy Một Thực Nghiệm Đơn Lẻ Trên GPU (Single Benchmark on GPU)
 
-Dự án hỗ trợ 2 cách gọi:
+Hệ thống mặc định sử dụng card đồ họa GPU (`--device cuda`). Dự án hỗ trợ 2 cách gọi:
 
 ```bash
 # Cách 1: Chuẩn giao diện bài báo gốc tác giả CVPR 2024 (main.py)
@@ -221,9 +216,9 @@ python main.py --benchmark isic --datapath ./datasets/isic --nshot 1
 python main.py --benchmark isic --experiment E3 --episodes 100 --seed 42 --device cuda
 ```
 
-### 6.3. Chạy Toàn Bộ Bộ Đối Chuẩn (Full 20-Run Suite Locally)
+### 6.3. Chạy Toàn Bộ Bộ Đối Chuẩn Trên GPU (Full 20-Run Suite on GPU)
 
-Chạy tất cả 4 thực nghiệm (E0–E3) trên cả 5 datasets (tự động tải dữ liệu nếu chưa có, tự động khóa manifest và xác thực chữ ký giao thức):
+Chạy tất cả 4 thực nghiệm (E0–E3) trên cả 5 datasets (tự động khóa manifest và xác thực chữ ký giao thức, tự động bỏ qua nếu đã có kết quả):
 
 ```bash
 python run_all_benchmarks.py \
@@ -247,25 +242,6 @@ modal run modal_runner.py --benchmark isic --experiment E3 --episodes 100
 
 # 3. Chạy toàn bộ 20 thực nghiệm song song trên Cloud GPU
 modal run modal_runner.py --benchmark all --experiment all --episodes 100
-```
-
-### 6.5. Kiểm Tra Tính Tái Lập Số Học (Audit Cross-Device Reproducibility)
-
-Để thẩm định tính nhất quán số học giữa 2 tệp kết quả với ngưỡng sai số nghiêm ngặt ($\Delta_{\text{mean}} \le 0.15\%$, $\Delta_{\text{max}} \le 0.50\%$):
-
-```bash
-python experiments/check_reproducibility.py \
-    --run1 results/isic/E0_100ep_seed42/run_result.json \
-    --run2 results/isic/E1_100ep_seed42/run_result.json \
-    --tolerance-mean 0.15 \
-    --tolerance-max 0.50
-```
-
-### 6.6. Tái Tạo Báo Cáo Đối Chuẩn (Generate Official Benchmark Report)
-
-```bash
-python scripts/generate_full_benchmark_report.py
-# Cập nhật trực tiếp kết quả vào docs/FULL_BENCHMARK_REPORT.md
 ```
 
 ---

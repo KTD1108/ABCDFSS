@@ -94,8 +94,7 @@ def resolve_manifest_path(
         f"  Episodes:  {episodes}\n"
         f"  Expected:  {candidate}\n\n"
         f"ABCDFSS requires explicit, deterministic manifests for reproducible evaluation.\n"
-        f"Generate this manifest deterministically before running the benchmark:\n"
-        f"  python experiments/generate_manifests.py --benchmark {b_norm} --episodes {ep_str} --seed {seed}\n"
+        f"Please verify that {candidate} exists or specify --manifest <path>.\n"
         f"================================================================================\n"
     )
 
