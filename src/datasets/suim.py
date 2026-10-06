@@ -49,13 +49,8 @@ class SUIMDataset(Dataset):
         total = 0
         for cat in self.categories:
             cat_masks = sorted(glob.glob(os.path.join(self.ann_path, cat, '*')))
-            valid = []
-            for mp in cat_masks:
-                m = np.array(Image.open(mp).convert('L'))
-                if np.count_nonzero(m >= 128) > 0:
-                    valid.append(mp)
-            metadata[cat] = valid
-            total += len(valid)
+            metadata[cat] = cat_masks
+            total += len(cat_masks)
         return metadata, total
 
     def _resolve_image_path(self, maskpath: str) -> str:

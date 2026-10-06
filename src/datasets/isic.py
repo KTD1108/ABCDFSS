@@ -41,13 +41,8 @@ class ISICDataset(Dataset):
         for cat in self.categories:
             cat_dir = os.path.join(self.base_path, 'ISIC2018_Task1_Training_GroundTruth', cat)
             paths = sorted(glob.glob(os.path.join(cat_dir, '*.png')))
-            valid = []
-            for p in paths:
-                mask = np.array(Image.open(p).convert('L'))
-                if np.count_nonzero(mask >= 128) > 0:
-                    valid.append(p)
-            metadata[cat] = valid
-            total += len(valid)
+            metadata[cat] = paths
+            total += len(paths)
         return metadata, total
 
     def __len__(self):
