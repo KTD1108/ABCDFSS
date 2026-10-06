@@ -155,6 +155,7 @@ def run_suite(args):
             )
 
             # Strong Resume Check: skip ONLY if complete protocol signature matches
+            # AND manifest SHA256 matches AND episode set/count match identically
             if os.path.exists(result_json):
                 try:
                     with open(result_json, 'r', encoding='utf-8') as f:
@@ -164,9 +165,30 @@ def run_suite(args):
                     is_valid_resume, reason = validate_protocol_signature(saved_sig, expected_sig)
 
                     if is_valid_resume:
+                        expected_count = val_info['resolved_episodes']
+                        saved_count = saved_data.get('episode_count')
+                        raw_ious = saved_data.get('raw_result', {}).get('episode_ious', [])
+
+                        if saved_count != expected_count:
+                            is_valid_resume = False
+                            reason = f"Episode count mismatch: saved has {saved_count}, expected {expected_count}"
+                        elif len(raw_ious) != expected_count:
+                            is_valid_resume = False
+                            reason = f"Raw episode IoU count mismatch: saved has {len(raw_ious)}, expected {expected_count}"
+                        else:
+                            # If detailed episodes present, verify episode_id set match
+                            saved_detailed = saved_data.get('raw_result', {}).get('detailed_episodes', [])
+                            if saved_detailed:
+                                saved_ids = set(ep['episode_id'] for ep in saved_detailed)
+                                manifest_ids = set(ep['episode_id'] for ep in val_info['episodes'])
+                                if saved_ids != manifest_ids:
+                                    is_valid_resume = False
+                                    reason = f"Episode ID set mismatch between saved artifact and manifest"
+
+                    if is_valid_resume:
                         cum_miou = saved_data['metric']['Cumulative_mIoU']
                         mean_ep_iou = saved_data['metric']['Mean_Episode_IoU']
-                        print(f"[{current_run:02d}/{total_runs:02d}] [SKIP - SIGNATURE VERIFIED] {ds_name} {exp} => Cumulative mIoU: {cum_miou:.2f}%, Mean Episode-IoU: {mean_ep_iou:.2f}%")
+                        print(f"[{current_run:02d}/{total_runs:02d}] [SKIP - SIGNATURE & MANIFEST VERIFIED] {ds_name} {exp} => Cumulative mIoU: {cum_miou:.2f}%, Mean Episode-IoU: {mean_ep_iou:.2f}%")
                         continue
                     else:
                         print(f"[{current_run:02d}/{total_runs:02d}] [RE-RUN REQUIRED] {ds_name} {exp}: {reason}")

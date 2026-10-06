@@ -113,7 +113,7 @@ def validate_protocol_signature(
 
     critical_fields = [
         "benchmark", "experiment", "episodes", "seed", "nshot",
-        "adapt_to", "adapter", "fusion", "image_size", "num_epochs",
+        "adapt_to", "adapter", "fusion", "fusion_temp", "image_size", "num_epochs",
         "learning_rate", "manifest_sha256"
     ]
 
@@ -129,6 +129,14 @@ def validate_protocol_signature(
             if str(saved_val).lower() != str(exp_val).lower():
                 return False, f"Episode count mismatch: saved '{saved_val}' vs requested '{exp_val}'"
             continue
+
+        if field == "fusion_temp":
+            try:
+                if abs(float(saved_val) - float(exp_val)) > 1e-6:
+                    return False, f"Mismatch in protocol field '{field}': saved '{saved_val}' vs requested '{exp_val}'"
+                continue
+            except (ValueError, TypeError):
+                pass
 
         if saved_val != exp_val:
             return False, f"Mismatch in protocol field '{field}': saved '{saved_val}' vs requested '{exp_val}'"

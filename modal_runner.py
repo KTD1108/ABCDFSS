@@ -143,6 +143,68 @@ def run_single_eval(
     suffix = "all_ep" if ep_str == "all" else f"{ep_str}ep"
     output_dir = f"/root/results/{benchmark}/{experiment}_{suffix}_seed{seed}"
     os.makedirs(output_dir, exist_ok=True)
+    result_json_path = os.path.join(output_dir, "run_result.json")
+
+    # Resume Check: skip if existing run has matching protocol signature, manifest SHA256, and episode count
+    from src.utils.protocol import create_protocol_signature, validate_protocol_signature
+    exp_mapping = {
+        'E0': ('conv1x1', 'mean'),
+        'E1': ('depthwise_separable_3x3', 'mean'),
+        'E2': ('conv1x1', 'softmax_margin'),
+        'E3': ('depthwise_separable_3x3', 'softmax_margin'),
+    }
+    adapter, fusion = exp_mapping.get(experiment, ('conv1x1', 'mean'))
+    expected_sig = create_protocol_signature(
+        benchmark=benchmark,
+        experiment=experiment,
+        episodes=val_info['resolved_episodes'] if ep_str != 'all' else 'all',
+        seed=seed,
+        nshot=nshot,
+        adapt_to=adapt_to,
+        adapter=adapter,
+        fusion=fusion,
+        fusion_temp=fusion_temp,
+        image_size=400,
+        num_epochs=25,
+        learning_rate=0.01,
+        manifest=manifest,
+        manifest_sha256=val_info['manifest_sha256']
+    )
+
+    if os.path.exists(result_json_path):
+        try:
+            with open(result_json_path, 'r', encoding='utf-8') as f:
+                saved_res = json.load(f)
+            saved_sig = saved_res.get('protocol_signature')
+            is_valid_resume, reason = validate_protocol_signature(saved_sig, expected_sig)
+
+            expected_count = val_info['resolved_episodes']
+            saved_count = saved_res.get('episode_count')
+            raw_ious = saved_res.get('raw_result', {}).get('episode_ious', [])
+
+            if is_valid_resume and (saved_count != expected_count or len(raw_ious) != expected_count):
+                is_valid_resume = False
+                reason = f"Episode count mismatch: saved={saved_count}, expected={expected_count}"
+
+            if is_valid_resume:
+                metrics = saved_res.get('metric', {})
+                print(f"[SKIP - RESUME VERIFIED] {benchmark.upper()} {experiment} matches protocol signature & manifest SHA256.")
+                print(f"[*] Mean Episode-IoU: {metrics.get('Mean_Episode_IoU', 'N/A')}% | Cumulative mIoU: {metrics.get('Cumulative_mIoU', 'N/A')}%")
+                return {
+                    "benchmark": benchmark,
+                    "experiment": experiment,
+                    "episodes": ep_str,
+                    "seed": seed,
+                    "manifest": manifest,
+                    "manifest_sha256": val_info['manifest_sha256'],
+                    "returncode": 0,
+                    "metrics": metrics,
+                    "protocol_signature": saved_sig
+                }
+            else:
+                print(f"[*] [RE-RUN REQUIRED] {benchmark} {experiment}: {reason}")
+        except Exception as e:
+            print(f"[*] [RE-RUN REQUIRED] Could not verify existing cached result: {e}")
 
     # 5. Build evaluate.py execution command (ALWAYS passing --manifest)
     cmd = [

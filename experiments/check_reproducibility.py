@@ -48,16 +48,29 @@ def compare_runs(
     with open(run2_path, 'r', encoding='utf-8') as f:
         res2 = json.load(f)
 
-    # 1. Audit Protocol Signatures
+    # 1. Audit Protocol Signatures & Manifest Hash
     sig1 = res1.get('protocol_signature', res1.get('config', {}))
     sig2 = res2.get('protocol_signature', res2.get('config', {}))
 
-    print("\n[1] Protocol Signature Audit:")
+    print("\n[1] Protocol Signature & Manifest Integrity Audit:")
     is_compat, reason = validate_protocol_signature(sig1, sig2)
     if is_compat:
         print("    [PASS] Protocol signatures match identically.")
     else:
         print(f"    [WARN] Protocol signature difference: {reason}")
+
+    sha1 = sig1.get('manifest_sha256') or res1.get('config', {}).get('manifest_sha256')
+    sha2 = sig2.get('manifest_sha256') or res2.get('config', {}).get('manifest_sha256')
+    manifest_match = True
+    if sha1 and sha2:
+        if sha1 != sha2:
+            manifest_match = False
+            print(f"    [FAIL] Manifest SHA256 mismatch: run1={sha1} vs run2={sha2}")
+        else:
+            print(f"    [PASS] Manifest SHA256 verified identically: {sha1}")
+    elif sha1 or sha2:
+        manifest_match = False
+        print(f"    [FAIL] Asymmetric manifest SHA256 (run1: {sha1}, run2: {sha2})")
 
     # Extract Environment Telemetry
     env1 = res1.get('environment', {})
@@ -65,7 +78,36 @@ def compare_runs(
     print(f"    Run 1 Environment: Device={env1.get('gpu_name', 'N/A')}, PyTorch={env1.get('torch_version', 'N/A')}")
     print(f"    Run 2 Environment: Device={env2.get('gpu_name', 'N/A')}, PyTorch={env2.get('torch_version', 'N/A')}")
 
-    # 2. Metric Comparisons
+    # 2. Episode Set & Count Pre-Validation (by episode_id)
+    def extract_episodes_map(res: dict):
+        raw = res.get('raw_result', {})
+        detailed = raw.get('detailed_episodes', [])
+        if detailed:
+            return {int(ep['episode_id']): float(ep['iou']) for ep in detailed}, len(detailed)
+        ious = raw.get('episode_ious', [])
+        return {int(idx): float(iou) for idx, iou in enumerate(ious)}, len(ious)
+
+    ep_map1, count1 = extract_episodes_map(res1)
+    ep_map2, count2 = extract_episodes_map(res2)
+
+    count_match = (count1 == count2 and count1 > 0)
+    if not count_match:
+        print(f"\n[2] Episode Alignment Pre-Check:")
+        print(f"    [FAIL] Episode count mismatch: run1 has {count1} episodes, run2 has {count2} episodes.")
+    else:
+        print(f"\n[2] Episode Alignment Pre-Check:")
+        print(f"    [PASS] Episode count identical: {count1} episodes.")
+
+    ids1 = set(ep_map1.keys())
+    ids2 = set(ep_map2.keys())
+    ids_match = (ids1 == ids2 and len(ids1) > 0)
+    if not ids_match:
+        diff_ids = ids1.symmetric_difference(ids2)
+        print(f"    [FAIL] Episode ID set mismatch. Symmetric difference count: {len(diff_ids)}")
+    else:
+        print(f"    [PASS] Episode ID sets match exactly ({len(ids1)} verified IDs).")
+
+    # 3. Summary Metric Consistency
     m1 = res1.get('metric', {})
     m2 = res2.get('metric', {})
 
@@ -77,31 +119,32 @@ def compare_runs(
     cum2 = m2.get('Cumulative_mIoU', 0.0)
     diff_cum = abs(cum1 - cum2)
 
-    print("\n[2] Summary Metric Consistency:")
+    print("\n[3] Summary Metric Consistency:")
     print(f"    Mean Episode-IoU:  Run1={mean_ep1:.2f}%, Run2={mean_ep2:.2f}%  => Delta = {diff_mean_ep:.4f}% (Tol: {tol_mean}%)")
     print(f"    Cumulative mIoU:   Run1={cum1:.2f}%, Run2={cum2:.2f}%  => Delta = {diff_cum:.4f}% (Tol: {tol_mean}%)")
 
-    # 3. Episode-Level Granular Audit
-    ious1 = res1.get('raw_result', {}).get('episode_ious', [])
-    ious2 = res2.get('raw_result', {}).get('episode_ious', [])
-
-    if len(ious1) == 0 or len(ious2) == 0:
-        print("    [!] Missing raw episode IoUs in one or both runs.")
+    # 4. Episode-Level Granular Audit (mapped strictly by episode_id)
+    common_ids = sorted(ids1.intersection(ids2))
+    if not common_ids:
+        print("    [!] No common episode IDs between run1 and run2 to compute deltas.")
         ep_pass = False
-        max_ep_diff = 0.0
+        max_ep_diff = float('inf')
+        mean_ep_diff = float('inf')
     else:
-        count = min(len(ious1), len(ious2))
-        deltas = [abs(ious1[i] - ious2[i]) for i in range(count)]
+        deltas = [abs(ep_map1[eid] - ep_map2[eid]) for eid in common_ids]
         max_ep_diff = max(deltas)
         mean_ep_diff = float(np.mean(deltas))
 
-        print(f"\n[3] Granular Episode Audit (across {count} episodes):")
+        print(f"\n[4] Granular Episode Audit (across {len(common_ids)} episodes mapped strictly by episode_id):")
         print(f"    Mean Abs Episode Delta: {mean_ep_diff:.4f}%")
         print(f"    Max Abs Episode Delta:  {max_ep_diff:.4f}% (Tol: {tol_max}%)")
+        print("    [NOTE] Specified tolerances represent metric-level numerical tolerances")
+        print("           (accounting for floating-point arithmetic / non-deterministic GPU kernel reductions),")
+        print("           NOT bitwise binary equality.")
         ep_pass = (max_ep_diff <= tol_max)
 
     mean_pass = (diff_mean_ep <= tol_mean) and (diff_cum <= tol_mean)
-    overall_pass = is_compat and mean_pass and ep_pass
+    overall_pass = is_compat and manifest_match and count_match and ids_match and mean_pass and ep_pass
 
     print("\n" + "=" * 80)
     print(f"  REPRODUCIBILITY VERDICT: {'[PASS]' if overall_pass else '[FAIL]'}")
@@ -109,6 +152,9 @@ def compare_runs(
     return {
         "overall_pass": overall_pass,
         "signature_match": is_compat,
+        "manifest_match": manifest_match,
+        "count_match": count_match,
+        "ids_match": ids_match,
         "delta_mean_episode_iou": diff_mean_ep,
         "delta_cumulative_miou": diff_cum,
         "max_episode_delta": max_ep_diff

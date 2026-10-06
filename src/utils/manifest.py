@@ -104,18 +104,19 @@ def validate_manifest(
     benchmark: Optional[str] = None,
     seed: Optional[int] = None,
     episodes: Optional[Any] = None,
+    nshot: Optional[int] = None,
     dataset_base_path: Optional[str] = None,
-    check_files_limit: int = 50
+    check_files_limit: Optional[int] = None
 ) -> Dict[str, Any]:
     """
     Performs comprehensive structural and integrity validation on an episode manifest:
     1. File existence
     2. Valid JSON
     3. Non-empty episodes list
-    4. Unique episode IDs
+    4. Unique & non-null episode IDs (strictly checks for missing and duplicate IDs)
     5. Required fields per episode
-    6. Image & mask file existence on disk (if dataset_base_path is provided)
-    7. Consistent query/support structure
+    6. Exhaustive image & mask file existence on disk (all episodes verified if dataset_base_path provided)
+    7. Consistent query/support structure and support size matching nshot
     8. Benchmark alignment
     9. Seed alignment
     10. Episode count validation (or 'all' resolution)
@@ -139,12 +140,21 @@ def validate_manifest(
     if len(ep_list) == 0:
         raise ValueError(f"[Manifest Error] Manifest contains 0 episodes in {manifest_path}")
 
-    # Validate uniqueness of episode IDs
+    # Check num_episodes header consistency if present
+    if "num_episodes" in data and data["num_episodes"] != len(ep_list):
+        raise ValueError(
+            f"[Manifest Error] Manifest header num_episodes ({data['num_episodes']}) "
+            f"does not match actual episodes count ({len(ep_list)}) in {manifest_path}"
+        )
+
+    # Validate uniqueness and presence of episode IDs
     seen_ids = set()
     for idx, ep in enumerate(ep_list):
         if not isinstance(ep, dict):
-            raise ValueError(f"[Manifest Error] Episode at index {idx} is not an object")
-        ep_id = ep.get("episode_id", idx)
+            raise ValueError(f"[Manifest Error] Episode at index {idx} is not an object in {manifest_path}")
+        if "episode_id" not in ep or ep["episode_id"] is None:
+            raise ValueError(f"[Manifest Error] Missing episode_id at index {idx} in {manifest_path}")
+        ep_id = ep["episode_id"]
         if ep_id in seen_ids:
             raise ValueError(f"[Manifest Error] Duplicate episode_id {ep_id} detected in {manifest_path}")
         seen_ids.add(ep_id)
@@ -162,14 +172,24 @@ def validate_manifest(
             raise ValueError(f"[Manifest Error] Episode {ep_id} support_imgs count != support_masks count")
         if len(ep["support_imgs"]) == 0:
             raise ValueError(f"[Manifest Error] Episode {ep_id} has empty support set")
+        if nshot is not None and len(ep["support_imgs"]) != nshot:
+            raise ValueError(f"[Manifest Error] Episode {ep_id} support set size ({len(ep['support_imgs'])}) != expected nshot ({nshot})")
 
     # Validate file existence on disk if dataset base path is provided
+    # For full dataset / benchmark runs (check_files_limit is None), validates 100% of files
     if dataset_base_path and os.path.exists(dataset_base_path):
-        sample_to_check = ep_list if (check_files_limit is None or len(ep_list) <= check_files_limit) else ep_list[:check_files_limit]
+        effective_base = dataset_base_path
+        if not os.path.exists(os.path.join(effective_base, 'images')) and os.path.exists(os.path.join(effective_base, 'suim_merged')):
+            effective_base = os.path.join(effective_base, 'suim_merged')
+        elif not os.path.exists(os.path.join(effective_base, 'fewshot_data')) and os.path.exists(os.path.join(effective_base, 'fewshot1000')):
+            effective_base = os.path.join(effective_base, 'fewshot1000')
+
+        is_all_mode = episodes is not None and str(episodes).lower().strip() == 'all'
+        sample_to_check = ep_list if (check_files_limit is None or is_all_mode) else ep_list[:check_files_limit]
         for ep in sample_to_check:
             # Query img & mask
-            q_img = ep["query_img"] if os.path.isabs(ep["query_img"]) else os.path.join(dataset_base_path, ep["query_img"])
-            q_mask = ep["query_mask"] if os.path.isabs(ep["query_mask"]) else os.path.join(dataset_base_path, ep["query_mask"])
+            q_img = ep["query_img"] if os.path.isabs(ep["query_img"]) else os.path.join(effective_base, ep["query_img"])
+            q_mask = ep["query_mask"] if os.path.isabs(ep["query_mask"]) else os.path.join(effective_base, ep["query_mask"])
             if not os.path.exists(q_img):
                 raise FileNotFoundError(f"[Manifest Error] Query image does not exist: {q_img} (episode {ep.get('episode_id')})")
             if not os.path.exists(q_mask):
@@ -177,11 +197,11 @@ def validate_manifest(
 
             # Support imgs & masks
             for s_img_rel in ep["support_imgs"]:
-                s_img = s_img_rel if os.path.isabs(s_img_rel) else os.path.join(dataset_base_path, s_img_rel)
+                s_img = s_img_rel if os.path.isabs(s_img_rel) else os.path.join(effective_base, s_img_rel)
                 if not os.path.exists(s_img):
                     raise FileNotFoundError(f"[Manifest Error] Support image does not exist: {s_img} (episode {ep.get('episode_id')})")
             for s_mask_rel in ep["support_masks"]:
-                s_mask = s_mask_rel if os.path.isabs(s_mask_rel) else os.path.join(dataset_base_path, s_mask_rel)
+                s_mask = s_mask_rel if os.path.isabs(s_mask_rel) else os.path.join(effective_base, s_mask_rel)
                 if not os.path.exists(s_mask):
                     raise FileNotFoundError(f"[Manifest Error] Support mask does not exist: {s_mask} (episode {ep.get('episode_id')})")
 
@@ -196,6 +216,11 @@ def validate_manifest(
     if seed is not None and "seed" in data:
         if data["seed"] != seed:
             raise ValueError(f"[Manifest Error] Manifest seed mismatch: requested seed={seed}, manifest has seed={data['seed']}")
+
+    # N-shot validation in header
+    if nshot is not None and "nshot" in data:
+        if data["nshot"] != nshot:
+            raise ValueError(f"[Manifest Error] Manifest nshot mismatch: requested nshot={nshot}, manifest header has nshot={data['nshot']}")
 
     # Episode count validation
     total_in_manifest = len(ep_list)
@@ -223,6 +248,7 @@ def validate_manifest(
         "resolved_episodes": resolved_episodes,
         "benchmark": data.get("benchmark", benchmark),
         "seed": data.get("seed", seed),
-        "nshot": data.get("nshot", 1),
+        "nshot": data.get("nshot", nshot or 1),
+        "mode": data.get("mode", "exhaustive_full_dataset" if episodes == "all" else "sampled"),
         "episodes": ep_list
     }
