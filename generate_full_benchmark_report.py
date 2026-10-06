@@ -61,6 +61,8 @@ def generate_report():
     lines.append("# FULL BENCHMARK REPORT: E0–E3 EVALUATION ACROSS 5 DATASETS\n")
     lines.append("## Đề Tài: Cross-Domain Few-Shot Semantic Segmentation (CD-FSS)")
     lines.append("### Khảo Sát Độc Lập Ablation Study: Original ABCDFSS Baseline vs. Proposed Architecture\n")
+    lines.append("- **Execution Commit (Mã nguồn thực thi)**: [`0ad471e`](https://github.com/KTD1108/ABCDFSS/commit/0ad471e) (với runtime container patch [`6575747`](https://github.com/KTD1108/ABCDFSS/commit/6575747))")
+    lines.append("- **Results & Report Commit (Lưu trữ kết quả)**: [`635022c`](https://github.com/KTD1108/ABCDFSS/commit/635022c)\n")
     lines.append("---\n")
 
     # 1. Protocol & Execution Environment
@@ -78,6 +80,8 @@ def generate_report():
     lines.append("threshold: max(Otsu, mean) with drop_least=0.05")
     lines.append("episodes_per_run: 100 deterministic episodes (100% manifest-backed across all 5 datasets)")
     lines.append("hardware: Modal Cloud GPU (NVIDIA Tesla T4, 16GB VRAM)")
+    lines.append("execution_commit: 0ad471e (fss patch: 6575747)")
+    lines.append("results_commit: 635022c")
     lines.append("backbone: ResNet-50 (Pre-ReLU unclipped features, ImageNet weights frozen)")
     lines.append("```\n")
 
@@ -95,7 +99,7 @@ def generate_report():
     lines.append("Cumulative mIoU denotes the mean IoU computed after aggregating class-wise intersection and union statistics across the evaluated episodes:")
     lines.append("$$\\text{IoU}_c = \\frac{\\sum_{i \\in \\mathcal{E}_c} |P_i \\cap G_i|}{\\sum_{i \\in \\mathcal{E}_c} |P_i \\cup G_i|}, \\quad \\text{Cumulative mIoU} = \\frac{1}{|C|} \\sum_{c \\in C} \\text{IoU}_c$$\n")
     lines.append("> [!NOTE]")
-    lines.append("> For single-class target domains (Lung, ISIC), this corresponds to the aggregated foreground ratio $\\frac{\\sum |P_i \\cap G_i|}{\\sum |P_i \\cup G_i|}$. For multi-class benchmarks (DeepGlobe, FSS-1000, SUIM), intersection and union are aggregated per semantic class $c$ before computing the macro-average.\n")
+    lines.append("> For the binary/single-class target domain (Lung), this corresponds to the aggregated foreground ratio $\\frac{\\sum |P_i \\cap G_i|}{\\sum |P_i \\cup G_i|}$. For multi-class benchmarks (DeepGlobe, ISIC, FSS-1000, SUIM), intersection and union are aggregated per semantic class $c$ before computing the macro-average.\n")
     lines.append("| Dataset | E0 (Base) | E1 (Adp) | $\\Delta$ Adapter | E2 (Fus) | $\\Delta$ Fusion | E3 (Prop) | $\\Delta$ Combined |")
     lines.append("| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |")
 
@@ -205,8 +209,8 @@ def generate_report():
     # 5. Reference Comparison with CVPR 2024 Paper
     lines.append("## 5. Comparison with Published Paper Reference Values\n")
     lines.append("> [!NOTE]")
-    lines.append("> Paper reference values are reported from the original CVPR 2024 publication (evaluated over 1,000 episodes on GPU cluster).")
-    lines.append("> They serve as an empirical reference point for domain difficulty, and are not treated as exact reproduction targets under the 20-episode seed-controlled evaluation protocol.\n")
+    lines.append("> Paper reference values are reported from the original CVPR 2024 publication (evaluated over 1,000 random episodes on GPU cluster).")
+    lines.append("> They serve as an empirical reference point for domain difficulty, and are not treated as direct comparison targets due to differing protocols (1,000 random episodes in the original paper vs. 100 deterministic manifest-controlled episodes under seed=42 here).\n")
     lines.append("| Dataset | Published Paper Reference | E0 (Base) | E1 (Adp) | E2 (Fus) | E3 (Prop) |")
     lines.append("| :--- | :---: | :---: | :---: | :---: | :---: |")
 
@@ -266,7 +270,7 @@ def generate_report():
             dc = e3['Cumulative_mIoU'] - e0['Cumulative_mIoU']
             de = e3['Mean_Episode_IoU'] - e0['Mean_Episode_IoU']
             lines.append(f"  - *{ds}*: Cumulative mIoU đạt **{e3['Cumulative_mIoU']:.2f}%** ({dc:+.2f} pp so với E0), Mean Episode-IoU đạt **{e3['Mean_Episode_IoU']:.2f}%** ({de:+.2f} pp so với E0).")
-    lines.append("- **Kết luận Q3**: Cấu hình kết hợp E3 cải thiện kết quả rõ nét nhất trên miền Lung (+0.89 pp Cumulative mIoU, +0.77 pp Mean Episode-IoU), vượt mốc tham chiếu bài báo gốc (82.21% vs 80.0%). Tuy nhiên trên quy mô 5 benchmark, hiệu năng trung bình của E3 thấp hơn E0 (-1.34 pp Cumulative mIoU), khẳng định tính chất phụ thuộc miền (domain-dependent) của inductive bias kết hợp.")
+    lines.append("- **Kết luận Q3**: Cấu hình kết hợp E3 cải thiện kết quả so với baseline E0 trên miền Lung (+0.89 pp Cumulative mIoU, +0.77 pp Mean Episode-IoU, đạt 82.21%). Tuy nhiên, không thể kết luận đơn giản là E3 'vượt paper' ở miền này (82.21% vs 80.0%) vì hai bên sử dụng protocol khác biệt: bài báo gốc đánh giá trên 1.000 episodes lấy mẫu ngẫu nhiên, trong khi thực nghiệm ở đây đánh giá trên 100 episodes cố định theo manifest (seed=42). Xét trên quy mô trung bình 5 benchmark, hiệu năng của E3 thấp hơn E0 (-1.34 pp Cumulative mIoU, -1.75 pp Mean Episode-IoU), khẳng định tính chất phụ thuộc miền (domain-dependent) của inductive bias kết hợp.")
 
     # Q4
     lines.append("\n### Q4: Có tương tác (interaction) giữa Adapter và Fusion không?")
@@ -288,7 +292,7 @@ def generate_report():
     lines.append("- **Protocol Control**: Toàn bộ 20 thử nghiệm thực thi cố định với `seed=42`, `nshot=1`, 25 epochs online SGD per episode trên GPU Tesla T4 (Modal Cloud). 100% 5 dataset đều sử dụng explicit deterministic manifests với hash SHA256 đã kiểm chứng.")
     lines.append("- **Zero Tuning**: Các siêu tham số (learning rate 0.01, l0=3, temperature 1.0, threshold max_otsu_mean) được đóng băng tuyệt đối xuyên suốt 20 runs.")
     lines.append("- **Limitations**: ")
-    lines.append("  1. Quy mô đánh giá đạt 100 episodes chuẩn mực cho mỗi dataset (tổng 2.000 episodes toàn suite), mang lại độ tin cậy thống kê cao hơn rất nhiều so với thử nghiệm 20 episodes ban đầu.")
+    lines.append("  1. Quy mô đánh giá đạt 100 episodes chuẩn mực cho mỗi dataset (tổng 2.000 episodes toàn suite), mang lại ước lượng ổn định hơn (more stable estimate) so với các thử nghiệm quy mô nhỏ trước đây.")
     lines.append("  2. Thực nghiệm thực hiện trên 1 seed chuẩn hóa (seed=42), các nghiên cứu tương lai có thể mở rộng lên multi-seed (ví dụ: seeds 42, 123, 999) để đo đạc khoảng tin cậy (confidence intervals).")
     lines.append("  3. Toàn bộ mã nguồn, trọng số và episode manifests được công khai minh bạch tại kho lưu trữ KTD1108/ABCDFSS.")
 

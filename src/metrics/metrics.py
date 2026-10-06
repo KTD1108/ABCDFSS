@@ -16,6 +16,7 @@ class MetricTracker:
         self.total_fg_union = 0.0
         self.total_bg_inter = 0.0
         self.total_bg_union = 0.0
+        self.observed_classes = set()
         self.episode_ious = []
         self.episode_details = []
 
@@ -58,6 +59,7 @@ class MetricTracker:
         self.episode_details.append(detail)
 
         # Update class statistics
+        self.observed_classes.add(class_id)
         if class_id not in self.class_inter:
             self.class_ids.append(class_id)
             self.class_inter[class_id] = 0.0
@@ -73,12 +75,13 @@ class MetricTracker:
         self.total_bg_union += bg_union
 
     def get_metrics(self):
-        # Class-wise IoU
+        # Class-wise IoU (only across classes that actually appeared)
         class_ious = []
         for cid in self.class_ids:
-            u = self.class_union[cid]
-            if u > 0:
-                class_ious.append(self.class_inter[cid] / u)
+            if cid in self.observed_classes:
+                u = self.class_union[cid]
+                if u > 0:
+                    class_ious.append(self.class_inter[cid] / u)
 
         miou = float(np.mean(class_ious) * 100.0) if len(class_ious) > 0 else 0.0
         mean_episode_iou = float(np.mean(self.episode_ious) * 100.0) if self.episode_ious else 0.0
@@ -93,7 +96,11 @@ class MetricTracker:
             'Cumulative_mIoU': miou,
             'Mean_Episode_IoU': mean_episode_iou,
             'FB-IoU': fb_iou,
-            'class_ious': {cid: float((self.class_inter[cid] / max(self.class_union[cid], 1e-6)) * 100.0) for cid in self.class_ids},
+            'class_ious': {
+                cid: float((self.class_inter[cid] / max(self.class_union[cid], 1e-6)) * 100.0)
+                for cid in self.class_ids
+                if cid in self.observed_classes
+            },
             'episode_ious': [round(x * 100.0, 2) for x in self.episode_ious],
             'detailed_episodes': self.episode_details
         }
