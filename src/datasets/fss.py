@@ -173,9 +173,16 @@ class FSS1000Dataset(Dataset):
         s_imgs_t = torch.stack([self.transform(img) for img in s_imgs])
         s_masks_t = F.interpolate(torch.stack(s_masks).unsqueeze(1), size=s_imgs_t.shape[-2:], mode='nearest').squeeze(1)
 
-        return {
+        res = {
             'query_img': q_img_t,
             'query_mask': q_mask_t,
             'support_set': (s_imgs_t, s_masks_t),
             'class_id': torch.tensor(class_id)
         }
+        if self.episodes is not None:
+            ep = self.episodes[idx]
+            res['episode_id'] = ep.get('episode_id', idx)
+            res['query_img_name'] = ep.get('query_img', '')
+            res['support_img_names'] = ep.get('support_imgs', [])
+            res['category'] = ep.get('category', str(class_id))
+        return res

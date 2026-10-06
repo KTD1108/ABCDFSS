@@ -17,13 +17,15 @@ class MetricTracker:
         self.total_bg_inter = 0.0
         self.total_bg_union = 0.0
         self.episode_ious = []
+        self.episode_details = []
 
     @torch.no_grad()
-    def update(self, pred_mask: torch.Tensor, gt_mask: torch.Tensor, class_id: int):
+    def update(self, pred_mask: torch.Tensor, gt_mask: torch.Tensor, class_id: int, metadata: dict = None):
         """
         pred_mask: [B, H, W] binary {0, 1}
         gt_mask: [B, H, W] binary {0, 1}
         class_id: int semantic class ID
+        metadata: optional dict containing episode_id, query_img, support_imgs, category
         """
         pred = pred_mask.bool()
         gt = gt_mask.bool()
@@ -39,6 +41,21 @@ class MetricTracker:
         # Track per-episode IoU
         ep_iou = (fg_inter / fg_union) if fg_union > 0 else 1.0
         self.episode_ious.append(ep_iou)
+
+        # Track detailed trace if available
+        detail = {
+            'episode_id': metadata.get('episode_id', len(self.episode_ious) - 1) if metadata else len(self.episode_ious) - 1,
+            'class_id': class_id,
+            'iou': round(ep_iou * 100.0, 4)
+        }
+        if metadata:
+            if 'query_img' in metadata:
+                detail['query_img'] = metadata['query_img']
+            if 'support_imgs' in metadata:
+                detail['support_imgs'] = metadata['support_imgs']
+            if 'category' in metadata:
+                detail['category'] = metadata['category']
+        self.episode_details.append(detail)
 
         # Update class statistics
         if class_id not in self.class_inter:
@@ -77,5 +94,6 @@ class MetricTracker:
             'Mean_Episode_IoU': mean_episode_iou,
             'FB-IoU': fb_iou,
             'class_ious': {cid: float((self.class_inter[cid] / max(self.class_union[cid], 1e-6)) * 100.0) for cid in self.class_ids},
-            'episode_ious': [round(x * 100.0, 2) for x in self.episode_ious]
+            'episode_ious': [round(x * 100.0, 2) for x in self.episode_ious],
+            'detailed_episodes': self.episode_details
         }

@@ -19,6 +19,7 @@ import argparse
 import random
 import numpy as np
 from PIL import Image
+from typing import Any
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
@@ -215,7 +216,7 @@ SAMPLERS = {
     'suim': sample_episodes_suim,
 }
 
-def generate_manifest(benchmark: str, episodes: int = 100, seed: int = 42, shot: int = 1, datapath: str = None, out_file: str = None):
+def generate_manifest(benchmark: str, episodes: Any = 100, seed: int = 42, shot: int = 1, datapath: str = None, out_file: str = None):
     b = benchmark.lower()
     if b not in SAMPLERS:
         raise ValueError(f"Unknown benchmark: {benchmark}")
@@ -224,7 +225,36 @@ def generate_manifest(benchmark: str, episodes: int = 100, seed: int = 42, shot:
         datapath = check_or_download_dataset(b, kaggle_slug=KAGGLE_SLUGS.get(b))
 
     sampler = SAMPLERS[b]
-    ep_list = sampler(datapath, num_episodes=episodes, seed=seed, shot=shot)
+    ep_str = str(episodes).lower().strip()
+
+    if ep_str == 'all':
+        # Resolve all available evaluation queries
+        if b == 'deepglobe':
+            from src.datasets.deepglobe import DeepglobeDataset
+            ds = DeepglobeDataset(datapath, transform=lambda x: x, shot=shot)
+            num_episodes = sum(len(ds.img_metadata_classwise[c]) for c in ds.categories)
+        elif b == 'isic':
+            from src.datasets.isic import ISICDataset
+            ds = ISICDataset(datapath, transform=lambda x: x, shot=shot)
+            num_episodes = ds.num_images
+        elif b == 'lung':
+            from src.datasets.lung import LungDataset
+            ds = LungDataset(datapath, transform=lambda x: x, shot=shot)
+            num_episodes = len(ds.img_paths)
+        elif b == 'suim':
+            from src.datasets.suim import SUIMDataset
+            ds = SUIMDataset(datapath, transform=lambda x: x, shot=shot)
+            num_episodes = ds.num_images
+        elif b in ['fss', 'fss1000']:
+            from src.datasets.fss import FSS1000Dataset
+            ds = FSS1000Dataset(datapath, transform=lambda x: x, shot=shot)
+            num_episodes = len(ds.classes)
+        else:
+            num_episodes = 100
+    else:
+        num_episodes = int(episodes)
+
+    ep_list = sampler(datapath, num_episodes=num_episodes, seed=seed, shot=shot)
 
     manifest_data = {
         "seed": seed,
@@ -237,7 +267,8 @@ def generate_manifest(benchmark: str, episodes: int = 100, seed: int = 42, shot:
     if out_file is None:
         out_dir = os.path.join(PROJECT_ROOT, "experiments", "episodes")
         os.makedirs(out_dir, exist_ok=True)
-        out_file = os.path.join(out_dir, f"{b}_seed{seed}_{episodes}episodes.json")
+        filename = f"{b}_seed{seed}_all_episodes.json" if ep_str == 'all' else f"{b}_seed{seed}_{num_episodes}episodes.json"
+        out_file = os.path.join(out_dir, filename)
 
     os.makedirs(os.path.dirname(os.path.abspath(out_file)), exist_ok=True)
     with open(out_file, 'w', encoding='utf-8') as f:
@@ -249,7 +280,7 @@ def generate_manifest(benchmark: str, episodes: int = 100, seed: int = 42, shot:
 def main():
     parser = argparse.ArgumentParser(description="Deterministic Episode Manifest Generator for CD-FSS")
     parser.add_argument('--benchmark', type=str, default='all', choices=['all', 'deepglobe', 'isic', 'lung', 'fss', 'suim'])
-    parser.add_argument('--episodes', type=int, default=100, help='Number of episodes (e.g. 20, 100, 1000)')
+    parser.add_argument('--episodes', type=str, default='100', help='Number of episodes (e.g. 20, 100, 1000, or "all")')
     parser.add_argument('--seed', type=int, default=42, help='Random seed for sampling (default: 42)')
     parser.add_argument('--nshot', type=int, default=1, help='Number of support shots (default: 1)')
     parser.add_argument('--datapath', type=str, default=None, help='Explicit datapath (optional, otherwise auto-detected)')

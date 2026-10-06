@@ -6,10 +6,12 @@ Runs all 5 benchmark domains across all 4 configurations:
   Experiments: E0 (baseline), E1 (adapter), E2 (fusion), E3 (proposed)
   Fixed Protocol: seed=42, nshot=1, 400x400, adapt_to=every-episode, 25 epochs SGD
 
-Preserves historical 20-episode results in:
-  results/full_benchmark/{Dataset}/{Experiment}/
-Saves larger scale results (e.g. 100 or 1000 episodes) in:
-  results/full_benchmark_{episodes}ep/{Dataset}/{Experiment}/
+Key Guarantees:
+1. Every benchmark automatically resolves and uses an explicit, deterministic manifest.
+2. E0, E1, E2, and E3 use THE EXACT SAME manifest for the same dataset.
+3. Cryptographic protocol signature validation prevents invalid resume skips.
+4. Historical 20-episode results in results/full_benchmark/ are preserved and never overwritten.
+5. Large-scale runs (e.g. 100, 1000, all) route to isolated output directories.
 """
 
 import os
@@ -25,6 +27,8 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from run_all_benchmarks import check_or_download_dataset
+from src.utils.manifest import resolve_manifest_path, validate_manifest, compute_manifest_sha256
+from src.utils.protocol import create_protocol_signature, validate_protocol_signature
 
 BENCHMARK_META = {
     'DeepGlobe': {'benchmark': 'deepglobe', 'slug': 'heyoujue/deepglobe'},
@@ -34,12 +38,19 @@ BENCHMARK_META = {
     'SUIM': {'benchmark': 'suim', 'slug': 'heyoujue/suim-merged'},
 }
 
+EXP_DEFINITIONS = {
+    'E0': {'adapter': 'conv1x1', 'fusion': 'mean'},
+    'E1': {'adapter': 'depthwise_separable_3x3', 'fusion': 'mean'},
+    'E2': {'adapter': 'conv1x1', 'fusion': 'softmax_margin'},
+    'E3': {'adapter': 'depthwise_separable_3x3', 'fusion': 'softmax_margin'},
+}
+
 ALL_EXPERIMENTS = ['E0', 'E1', 'E2', 'E3']
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Full Benchmark Runner for ABCDFSS E0-E3")
-    parser.add_argument('--episodes', type=int, default=20,
-                        help='Number of episodes per run (default: 20)')
+    parser.add_argument('--episodes', type=str, default='20',
+                        help='Number of episodes per run: 20, 100, 1000, or "all" (default: 20)')
     parser.add_argument('--seed', type=int, default=42,
                         help='Random seed (default: 42)')
     parser.add_argument('--experiments', nargs='+', default=['E0', 'E1', 'E2', 'E3'],
@@ -56,62 +67,117 @@ def parse_args():
     return parser.parse_args()
 
 def run_suite(args):
-    # Determine safe output directory that preserves historical results
+    ep_str = str(args.episodes).lower().strip()
+
+    # Determine safe output directory to isolate runs and preserve historical benchmarks
     if args.output_dir:
         base_results_dir = args.output_dir
-    elif args.episodes == 20:
+    elif ep_str == '20':
         base_results_dir = os.path.join(PROJECT_ROOT, "results", "full_benchmark")
     else:
-        base_results_dir = os.path.join(PROJECT_ROOT, "results", f"full_benchmark_{args.episodes}ep")
+        suffix = "all_ep" if ep_str == 'all' else f"{ep_str}ep"
+        base_results_dir = os.path.join(PROJECT_ROOT, "results", f"full_benchmark_{suffix}")
 
     os.makedirs(base_results_dir, exist_ok=True)
-
     experiments_to_run = ALL_EXPERIMENTS if 'all' in args.experiments else args.experiments
 
     print("=" * 80)
     print("       STARTING FULL CD-FSS BENCHMARK SUITE (E0 - E3 ON 5 DATASETS)")
-    print(f"       Episodes: {args.episodes} | Seed: {args.seed} | Mode: every-episode | Device: {args.device}")
+    print(f"       Episodes: {ep_str} | Seed: {args.seed} | Mode: every-episode | Device: {args.device}")
     print(f"       Output directory: {base_results_dir}")
     print("=" * 80 + "\n")
 
-    # Resolve dataset paths dynamically
+    # 1. Resolve dataset paths and validate deterministic manifests
     dataset_configs = {}
     for ds_name in args.benchmarks:
         if ds_name in BENCHMARK_META:
             meta = BENCHMARK_META[ds_name]
-            resolved_path = check_or_download_dataset(meta['benchmark'], kaggle_slug=meta['slug'])
+            resolved_datapath = check_or_download_dataset(meta['benchmark'], kaggle_slug=meta['slug'])
+
+            # Automatically resolve deterministic manifest
+            manifest_path = resolve_manifest_path(
+                benchmark=meta['benchmark'],
+                seed=args.seed,
+                episodes=ep_str,
+                manifest_path=None,
+                allow_missing=False
+            )
+
+            # Validate manifest integrity
+            manifest_info = validate_manifest(
+                manifest_path=manifest_path,
+                benchmark=meta['benchmark'],
+                seed=args.seed,
+                episodes=ep_str,
+                dataset_base_path=resolved_datapath
+            )
+
             dataset_configs[ds_name] = {
                 'benchmark': meta['benchmark'],
-                'datapath': resolved_path
+                'datapath': resolved_datapath,
+                'manifest_path': manifest_path,
+                'manifest_sha256': manifest_info['manifest_sha256'],
+                'resolved_episodes': manifest_info['resolved_episodes']
             }
 
     total_runs = len(dataset_configs) * len(experiments_to_run)
     current_run = 0
 
     for ds_name, ds_info in dataset_configs.items():
+        # Exact same manifest is used across E0, E1, E2, E3
+        manifest_path = ds_info['manifest_path']
+        manifest_sha256 = ds_info['manifest_sha256']
+        actual_episodes = ds_info['resolved_episodes']
+
         for exp in experiments_to_run:
             current_run += 1
+            exp_def = EXP_DEFINITIONS[exp]
             exp_dir = os.path.join(base_results_dir, ds_name, exp)
             os.makedirs(exp_dir, exist_ok=True)
             result_json = os.path.join(exp_dir, "run_result.json")
 
-            # Check if run already completed with matching episode count
+            # Construct expected protocol signature for strong resume validation
+            expected_sig = create_protocol_signature(
+                benchmark=ds_info['benchmark'],
+                experiment=exp,
+                episodes=actual_episodes,
+                seed=args.seed,
+                nshot=1,
+                adapt_to="every-episode",
+                adapter=exp_def['adapter'],
+                fusion=exp_def['fusion'],
+                fusion_temp=1.0,
+                image_size=400,
+                num_epochs=25,
+                learning_rate=0.01,
+                manifest=manifest_path,
+                manifest_sha256=manifest_sha256
+            )
+
+            # Strong Resume Check: skip ONLY if complete protocol signature matches
             if os.path.exists(result_json):
                 try:
                     with open(result_json, 'r', encoding='utf-8') as f:
-                        data = json.load(f)
-                    if data.get('episode_count') == args.episodes:
-                        cum_miou = data['metric']['Cumulative_mIoU']
-                        mean_ep_iou = data['metric']['Mean_Episode_IoU']
-                        print(f"[{current_run:02d}/{total_runs:02d}] [SKIP - ALREADY COMPLETED] {ds_name} {exp} => Cumulative mIoU: {cum_miou:.2f}%, Mean Episode-IoU: {mean_ep_iou:.2f}%")
+                        saved_data = json.load(f)
+
+                    saved_sig = saved_data.get('protocol_signature')
+                    is_valid_resume, reason = validate_protocol_signature(saved_sig, expected_sig)
+
+                    if is_valid_resume:
+                        cum_miou = saved_data['metric']['Cumulative_mIoU']
+                        mean_ep_iou = saved_data['metric']['Mean_Episode_IoU']
+                        print(f"[{current_run:02d}/{total_runs:02d}] [SKIP - SIGNATURE VERIFIED] {ds_name} {exp} => Cumulative mIoU: {cum_miou:.2f}%, Mean Episode-IoU: {mean_ep_iou:.2f}%")
                         continue
-                except Exception:
-                    pass
+                    else:
+                        print(f"[{current_run:02d}/{total_runs:02d}] [RE-RUN REQUIRED] {ds_name} {exp}: {reason}")
+                except Exception as e:
+                    print(f"[{current_run:02d}/{total_runs:02d}] [RE-RUN REQUIRED] Could not verify existing result: {e}")
 
             print(f"\n{'='*70}")
             print(f"[{current_run:02d}/{total_runs:02d}] EXECUTING: {ds_name} - {exp}")
-            print(f"Datapath: {ds_info['datapath']}")
-            print(f"Output directory: {exp_dir}")
+            print(f"Datapath:    {ds_info['datapath']}")
+            print(f"Manifest:    {manifest_path} (SHA256: {manifest_sha256[:12]}...)")
+            print(f"Output dir:  {exp_dir}")
             print(f"{'='*70}\n")
 
             cmd = [
@@ -120,7 +186,8 @@ def run_suite(args):
                 "--benchmark", ds_info['benchmark'],
                 "--datapath", ds_info['datapath'],
                 "--experiment", exp,
-                "--episodes", str(args.episodes),
+                "--episodes", ep_str,
+                "--manifest", manifest_path,
                 "--seed", str(args.seed),
                 "--nshot", "1",
                 "--adapt-to", "every-episode",

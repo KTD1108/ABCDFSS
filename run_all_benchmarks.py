@@ -16,6 +16,10 @@ import subprocess
 from datetime import datetime
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
+from src.utils.manifest import resolve_manifest_path
 
 def is_valid_fss_dir(path: str) -> bool:
     """Checks whether the FSS directory contains at least 10 classes and valid images."""
@@ -181,8 +185,8 @@ def parse_args():
     parser.add_argument('--adapt-to', type=str, default='every-episode',
                         choices=['first-episode', 'every-episode'],
                         help='Adaptation mode: every-episode (CVPR 2024 exact protocol) or first-episode (quick-infer)')
-    parser.add_argument('--episodes', type=int, default=1000,
-                        help='Number of episodes per benchmark (default: 1000 standard CVPR episodes)')
+    parser.add_argument('--episodes', type=str, default='1000',
+                        help='Number of episodes per benchmark (default: 1000 standard CVPR episodes, or "all")')
     parser.add_argument('--experiments', nargs='+', default=['E0'],
                         choices=['E0', 'E1', 'E2', 'E3', 'all'],
                         help="Experiments to run: E0 (baseline: conv1x1+mean), E1 (dw3x3+mean), E2 (conv1x1+softmax), E3 (dw3x3+softmax), or all (default: E0)")
@@ -251,6 +255,13 @@ def main():
             print(f"[!] WARNING: Dataset directory '{exp['benchmark']}' at {exp['datapath']} is invalid or missing. Skipping...")
             continue
 
+        manifest_path = resolve_manifest_path(
+            benchmark=exp['benchmark'],
+            seed=42,
+            episodes=args.episodes,
+            allow_missing=False
+        )
+
         cmd = [
             sys.executable, "evaluate.py",
             "--benchmark", exp['benchmark'],
@@ -261,6 +272,7 @@ def main():
             "--fusion", exp['fusion'],
             "--adapt-to", args.adapt_to,
             "--episodes", str(args.episodes),
+            "--manifest", manifest_path,
             "--logpath", log_dir,
             "--device", args.device,
             "--nworker", str(args.nworker)

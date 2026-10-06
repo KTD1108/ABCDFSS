@@ -118,7 +118,11 @@ class DeepglobeDataset(Dataset):
                 'query_img': q_img_t,
                 'query_mask': q_mask_t,
                 'support_set': (s_imgs_t, s_masks_t),
-                'class_id': torch.tensor(cat_idx)
+                'class_id': torch.tensor(cat_idx),
+                'episode_id': ep.get('episode_id', idx),
+                'query_img_name': ep.get('query_img', ''),
+                'support_img_names': ep.get('support_imgs', []),
+                'category': ep.get('category', str(cat_idx))
             }
 
         cat_idx = idx % len(self.categories)

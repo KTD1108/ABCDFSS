@@ -4,14 +4,14 @@ Cross-Domain Few-Shot Segmentation (CD-FSS) Evaluation
 Independent, clean self-built framework.
 
 Usage examples:
-    python evaluate.py --benchmark isic --datapath /path/to/isic --adapter depthwise_separable_3x3 --fusion softmax_margin
-    python evaluate.py --benchmark suim --datapath /path/to/suim --adapter conv1x1 --fusion softmax_margin
+    python evaluate.py --benchmark isic --datapath /path/to/isic --experiment E0
+    python evaluate.py --benchmark deepglobe --datapath /path/to/deepglobe --experiment E3 --episodes 100
+    python evaluate.py --benchmark lung --datapath /path/to/lung --experiment E0 --episodes all
 """
 
 import sys
 import os
 
-# Ensure project root is always in sys.path for direct or subprocess invocation
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
@@ -20,9 +20,14 @@ import argparse
 import torch
 import random
 import numpy as np
+import torchvision
+from datetime import datetime
+import json
 
 from src.datasets import build_dataloader
 from src.engine import CDFSSEngine
+from src.utils.manifest import resolve_manifest_path, validate_manifest, compute_manifest_sha256
+from src.utils.protocol import get_git_info, get_environment_info, create_protocol_signature
 
 def set_seed(seed: int = 42):
     random.seed(seed)
@@ -54,10 +59,12 @@ def parse_args():
     parser.add_argument('--adapt-to', type=str, default='every-episode',
                         choices=['first-episode', 'every-episode'],
                         help='Adaptation mode: every-episode (standard CVPR Algorithm 2) or first-episode (quick-infer)')
-    parser.add_argument('--episodes', type=int, default=None,
-                        help='Maximum number of episodes to evaluate (e.g. 1000 for standard CVPR benchmark)')
+    parser.add_argument('--episodes', type=str, default='20',
+                        help='Number of episodes to evaluate (e.g. 20, 100, 1000, or "all")')
     parser.add_argument('--manifest', type=str, default=None,
                         help='Path to pre-generated episode manifest JSON')
+    parser.add_argument('--allow-runtime-sampling', action='store_true',
+                        help='Allow ad-hoc random sampling without manifest (disabled by default in benchmark mode)')
     parser.add_argument('--postprocessing', type=str, default='off',
                         help='Postprocessing option (off by default)')
     parser.add_argument('--verbosity', type=int, default=1,
@@ -76,9 +83,7 @@ def parse_args():
 
 class TeeLogger:
     def __init__(self, filepath: str):
-        import sys
         self.terminal = sys.stdout
-        import os
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         self.log_file = open(filepath, 'w', encoding='utf-8')
 
@@ -92,9 +97,6 @@ class TeeLogger:
         self.log_file.flush()
 
 def main():
-    import sys, os, json
-    import torchvision
-    from datetime import datetime
     args = parse_args()
 
     # Resolve explicit standard experiment configurations
@@ -114,16 +116,33 @@ def main():
     if args.adapter == 'pointwise':
         args.adapter = 'conv1x1'
 
-    # Auto-detect default manifest if exists
-    if args.manifest is None:
-        if args.benchmark == 'lung':
-            candidate_lung = os.path.join(PROJECT_ROOT, "experiments", "episodes", "lung_seed42_20episodes.json")
-            if os.path.exists(candidate_lung) and (args.episodes == 20 or args.episodes is None):
-                args.manifest = candidate_lung
-        elif args.episodes and args.episodes != 20:
-            candidate_specific = os.path.join(PROJECT_ROOT, "experiments", "episodes", f"{args.benchmark}_seed{args.seed}_{args.episodes}episodes.json")
-            if os.path.exists(candidate_specific):
-                args.manifest = candidate_specific
+    # 1. Deterministic Manifest Resolution & Validation
+    manifest_sha256 = None
+    manifest_info = None
+
+    if not args.manifest and not args.allow_runtime_sampling:
+        args.manifest = resolve_manifest_path(
+            benchmark=args.benchmark,
+            seed=args.seed,
+            episodes=args.episodes,
+            manifest_path=None,
+            allow_missing=False
+        )
+
+    if args.manifest:
+        manifest_info = validate_manifest(
+            manifest_path=args.manifest,
+            benchmark=args.benchmark,
+            seed=args.seed,
+            episodes=args.episodes,
+            dataset_base_path=args.datapath
+        )
+        args.manifest = manifest_info["manifest_path"]
+        manifest_sha256 = manifest_info["manifest_sha256"]
+        resolved_episodes = manifest_info["resolved_episodes"]
+    else:
+        # Fallback to runtime sampling only if explicitly allowed
+        resolved_episodes = None if str(args.episodes).lower() == 'all' else int(args.episodes)
 
     set_seed(args.seed)
 
@@ -137,9 +156,25 @@ def main():
     logger = TeeLogger(log_filepath)
     sys.stdout = logger
 
-    cuda_avail = torch.cuda.is_available()
-    gpu_name = torch.cuda.get_device_name(0) if cuda_avail else "CPU Only"
-    cuda_ver = torch.version.cuda if cuda_avail else "N/A"
+    env_info = get_environment_info()
+    git_info = get_git_info()
+
+    protocol_sig = create_protocol_signature(
+        benchmark=args.benchmark,
+        experiment=exp_name,
+        episodes=resolved_episodes,
+        seed=args.seed,
+        nshot=args.nshot,
+        adapt_to=args.adapt_to,
+        adapter=args.adapter,
+        fusion=args.fusion,
+        fusion_temp=args.fusion_temp,
+        image_size=args.img_size,
+        num_epochs=25,
+        learning_rate=1e-2,
+        manifest=args.manifest,
+        manifest_sha256=manifest_sha256
+    )
 
     print("=" * 80)
     print("                     CD-FSS EXPERIMENTAL AUDIT RUNNER")
@@ -148,7 +183,8 @@ def main():
     print(f"dataset:            {args.benchmark}")
     print(f"seed:               {args.seed}")
     print(f"nshot:              {args.nshot}")
-    print(f"num_episodes:       {args.episodes if args.episodes else 'All'}")
+    print(f"requested_episodes: {args.episodes}")
+    print(f"resolved_episodes:  {resolved_episodes}")
     print(f"adapter:            {args.adapter}")
     print(f"fusion:             {args.fusion}")
     print(f"adaptation_mode:    {args.adapt_to}")
@@ -156,12 +192,15 @@ def main():
     print(f"threshold_method:   pred_mean (max(Otsu, mean), drop_least=0.05)")
     print(f"backbone:           ResNet-50 (Pre-ReLU unclipped features)")
     print(f"checkpoint:         ResNet50_Weights.DEFAULT")
-    print(f"manifest_path:      {args.manifest if args.manifest else 'Runtime sampling'}")
+    print(f"manifest_path:      {args.manifest if args.manifest else 'Runtime sampling (ad-hoc)'}")
+    print(f"manifest_sha256:    {manifest_sha256 if manifest_sha256 else 'N/A'}")
     print(f"dataloader_workers: {args.nworker}")
-    print(f"PyTorch version:    {torch.__version__}")
-    print(f"TorchVision version:{torchvision.__version__}")
-    print(f"CUDA version:       {cuda_ver}")
-    print(f"GPU:                {gpu_name}")
+    print(f"git_commit:         {git_info.get('git_commit')}")
+    print(f"git_status:         {git_info.get('status')}")
+    print(f"PyTorch version:    {env_info['torch_version']}")
+    print(f"TorchVision version:{env_info['torchvision_version']}")
+    print(f"CUDA version:       {env_info['cuda_version']}")
+    print(f"GPU:                {env_info['gpu_name']}")
     print(f"Log file saved to:  {log_filepath}")
     print("=" * 80 + "\n")
 
@@ -190,13 +229,13 @@ def main():
     )
 
     # 3. Run Evaluation Loop
-    results = engine.evaluate_dataset(dataloader, benchmark_name=args.benchmark, max_episodes=args.episodes)
+    results = engine.evaluate_dataset(dataloader, benchmark_name=args.benchmark, max_episodes=resolved_episodes)
 
-    # Append to master JSON summary and save comprehensive run result
+    # Append to master JSON summary
     summary_file = os.path.join(args.logpath, "summary_records.jsonl")
     record = {
         "timestamp": timestamp,
-        "experiment": args.experiment if args.experiment else f"{args.adapter}_{args.fusion}",
+        "experiment": exp_name,
         "benchmark": args.benchmark,
         "adapter": args.adapter,
         "fusion": args.fusion,
@@ -206,6 +245,8 @@ def main():
         "Mean_Episode_IoU": round(results.get('Mean_Episode_IoU', results['mIoU']), 2),
         "Cumulative_mIoU": round(results.get('Cumulative_mIoU', results['mIoU']), 2),
         "FB-IoU": round(results['FB-IoU'], 2),
+        "manifest": args.manifest,
+        "manifest_sha256": manifest_sha256,
         "log_file": log_filepath
     }
     with open(summary_file, "a", encoding="utf-8") as f:
@@ -214,6 +255,9 @@ def main():
     # Save detailed run report JSON inside experiment directory
     detailed_result_file = os.path.join(args.logpath, "run_result.json")
     full_artifact = {
+        "protocol_signature": protocol_sig,
+        "code_version": git_info,
+        "environment": env_info,
         "config": {
             "experiment": args.experiment,
             "benchmark": args.benchmark,
@@ -227,11 +271,12 @@ def main():
             "img_size": args.img_size,
             "seed": args.seed,
             "nshot": args.nshot,
-            "manifest_path": args.manifest
+            "manifest_path": args.manifest,
+            "manifest_sha256": manifest_sha256
         },
         "seed": args.seed,
         "dataset": args.benchmark,
-        "experiment": args.experiment if args.experiment else f"{args.adapter}_{args.fusion}",
+        "experiment": exp_name,
         "episode_count": len(results.get('episode_ious', [])),
         "metric": {
             "Mean_Episode_IoU": round(results.get('Mean_Episode_IoU', results['mIoU']), 2),
@@ -240,7 +285,8 @@ def main():
             "class_ious": results.get('class_ious', {})
         },
         "raw_result": {
-            "episode_ious": results.get('episode_ious', [])
+            "episode_ious": results.get('episode_ious', []),
+            "detailed_episodes": results.get('detailed_episodes', [])
         },
         "summary": record,
         "log": log_filepath

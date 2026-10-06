@@ -1,0 +1,268 @@
+{
+  "seed": 42,
+  "benchmark": "fss",
+  "nshot": 1,
+  "num_episodes": 20,
+  "episodes": [
+    {
+      "episode_id": 0,
+      "class_id": 0,
+      "category": "abe's_flyingfish",
+      "query_img": "abe's_flyingfish/9.jpg",
+      "query_mask": "abe's_flyingfish/9.png",
+      "support_imgs": [
+        "abe's_flyingfish/2.jpg"
+      ],
+      "support_masks": [
+        "abe's_flyingfish/2.png"
+      ]
+    },
+    {
+      "episode_id": 1,
+      "class_id": 1,
+      "category": "accordion",
+      "query_img": "accordion/1.jpg",
+      "query_mask": "accordion/1.png",
+      "support_imgs": [
+        "accordion/2.jpg"
+      ],
+      "support_masks": [
+        "accordion/2.png"
+      ]
+    },
+    {
+      "episode_id": 2,
+      "class_id": 2,
+      "category": "american_alligator",
+      "query_img": "american_alligator/10.jpg",
+      "query_mask": "american_alligator/10.png",
+      "support_imgs": [
+        "american_alligator/3.jpg"
+      ],
+      "support_masks": [
+        "american_alligator/3.png"
+      ]
+    },
+    {
+      "episode_id": 3,
+      "class_id": 3,
+      "category": "american_chamelon",
+      "query_img": "american_chamelon/2.jpg",
+      "query_mask": "american_chamelon/2.png",
+      "support_imgs": [
+        "american_chamelon/8.jpg"
+      ],
+      "support_masks": [
+        "american_chamelon/8.png"
+      ]
+    },
+    {
+      "episode_id": 4,
+      "class_id": 4,
+      "category": "andean_condor",
+      "query_img": "andean_condor/2.jpg",
+      "query_mask": "andean_condor/2.png",
+      "support_imgs": [
+        "andean_condor/6.jpg"
+      ],
+      "support_masks": [
+        "andean_condor/6.png"
+      ]
+    },
+    {
+      "episode_id": 5,
+      "class_id": 5,
+      "category": "anise",
+      "query_img": "anise/9.jpg",
+      "query_mask": "anise/9.png",
+      "support_imgs": [
+        "anise/3.jpg"
+      ],
+      "support_masks": [
+        "anise/3.png"
+      ]
+    },
+    {
+      "episode_id": 6,
+      "class_id": 6,
+      "category": "apple_icon",
+      "query_img": "apple_icon/1.jpg",
+      "query_mask": "apple_icon/1.png",
+      "support_imgs": [
+        "apple_icon/6.jpg"
+      ],
+      "support_masks": [
+        "apple_icon/6.png"
+      ]
+    },
+    {
+      "episode_id": 7,
+      "class_id": 7,
+      "category": "arch_bridge",
+      "query_img": "arch_bridge/5.jpg",
+      "query_mask": "arch_bridge/5.png",
+      "support_imgs": [
+        "arch_bridge/9.jpg"
+      ],
+      "support_masks": [
+        "arch_bridge/9.png"
+      ]
+    },
+    {
+      "episode_id": 8,
+      "class_id": 8,
+      "category": "arrow",
+      "query_img": "arrow/3.jpg",
+      "query_mask": "arrow/3.png",
+      "support_imgs": [
+        "arrow/1.jpg"
+      ],
+      "support_masks": [
+        "arrow/1.png"
+      ]
+    },
+    {
+      "episode_id": 9,
+      "class_id": 9,
+      "category": "astronaut",
+      "query_img": "astronaut/5.jpg",
+      "query_mask": "astronaut/5.png",
+      "support_imgs": [
+        "astronaut/3.jpg"
+      ],
+      "support_masks": [
+        "astronaut/3.png"
+      ]
+    },
+    {
+      "episode_id": 10,
+      "class_id": 10,
+      "category": "australian_terrier",
+      "query_img": "australian_terrier/6.jpg",
+      "query_mask": "australian_terrier/6.png",
+      "support_imgs": [
+        "australian_terrier/3.jpg"
+      ],
+      "support_masks": [
+        "australian_terrier/3.png"
+      ]
+    },
+    {
+      "episode_id": 11,
+      "class_id": 11,
+      "category": "bamboo_dragonfly",
+      "query_img": "bamboo_dragonfly/2.jpg",
+      "query_mask": "bamboo_dragonfly/2.png",
+      "support_imgs": [
+        "bamboo_dragonfly/6.jpg"
+      ],
+      "support_masks": [
+        "bamboo_dragonfly/6.png"
+      ]
+    },
+    {
+      "episode_id": 12,
+      "class_id": 12,
+      "category": "bamboo_slip",
+      "query_img": "bamboo_slip/4.jpg",
+      "query_mask": "bamboo_slip/4.png",
+      "support_imgs": [
+        "bamboo_slip/2.jpg"
+      ],
+      "support_masks": [
+        "bamboo_slip/2.png"
+      ]
+    },
+    {
+      "episode_id": 13,
+      "class_id": 13,
+      "category": "banana_boat",
+      "query_img": "banana_boat/3.jpg",
+      "query_mask": "banana_boat/3.png",
+      "support_imgs": [
+        "banana_boat/5.jpg"
+      ],
+      "support_masks": [
+        "banana_boat/5.png"
+      ]
+    },
+    {
+      "episode_id": 14,
+      "class_id": 14,
+      "category": "barber_shaver",
+      "query_img": "barber_shaver/8.jpg",
+      "query_mask": "barber_shaver/8.png",
+      "support_imgs": [
+        "barber_shaver/1.jpg"
+      ],
+      "support_masks": [
+        "barber_shaver/1.png"
+      ]
+    },
+    {
+      "episode_id": 15,
+      "class_id": 15,
+      "category": "bat",
+      "query_img": "bat/7.jpg",
+      "query_mask": "bat/7.png",
+      "support_imgs": [
+        "bat/2.jpg"
+      ],
+      "support_masks": [
+        "bat/2.png"
+      ]
+    },
+    {
+      "episode_id": 16,
+      "class_id": 16,
+      "category": "bath_ball",
+      "query_img": "bath_ball/5.jpg",
+      "query_mask": "bath_ball/5.png",
+      "support_imgs": [
+        "bath_ball/8.jpg"
+      ],
+      "support_masks": [
+        "bath_ball/8.png"
+      ]
+    },
+    {
+      "episode_id": 17,
+      "class_id": 17,
+      "category": "beet_root",
+      "query_img": "beet_root/2.jpg",
+      "query_mask": "beet_root/2.png",
+      "support_imgs": [
+        "beet_root/9.jpg"
+      ],
+      "support_masks": [
+        "beet_root/9.png"
+      ]
+    },
+    {
+      "episode_id": 18,
+      "class_id": 18,
+      "category": "bell_pepper",
+      "query_img": "bell_pepper/9.jpg",
+      "query_mask": "bell_pepper/9.png",
+      "support_imgs": [
+        "bell_pepper/1.jpg"
+      ],
+      "support_masks": [
+        "bell_pepper/1.png"
+      ]
+    },
+    {
+      "episode_id": 19,
+      "class_id": 19,
+      "category": "big_ben",
+      "query_img": "big_ben/1.jpg",
+      "query_mask": "big_ben/1.png",
+      "support_imgs": [
+        "big_ben/3.jpg"
+      ],
+      "support_masks": [
+        "big_ben/3.png"
+      ]
+    }
+  ]
+}

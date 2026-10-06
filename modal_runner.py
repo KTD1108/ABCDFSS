@@ -2,13 +2,14 @@
 """
 Modal Serverless GPU Runner for CD-FSS Benchmarking
 Runs evaluation directly on cloud GPU (T4 / A10G / A100) matching the CVPR 2024 exact protocol:
-  Algorithm 2: --adapt-to every-episode --episodes 1000 (or 20, 100)
+  Algorithm 2: --adapt-to every-episode --episodes 1000 (or 20, 100, all)
 
-Features:
-- Persistent Modal Volume for dataset caching across runs (/root/datasets_cache)
-- Persistent Modal Volume for evaluation logs and artifacts (/root/results)
-- Configurable GPU selection (T4, A10G, A100)
-- Support for single experiments (E0, E1, E2, E3) or matrix runs
+Guarantees:
+1. Automatically resolves and validates the EXACT same deterministic repository manifest
+   from /root/ABCDFSS/experiments/episodes/.
+2. Passes --manifest <resolved_manifest> to evaluate.py for all experiments.
+3. Injects caller's git commit SHA and status into the execution environment.
+4. Uses persistent Modal Volume for dataset caching (/root/datasets_cache) and results (/root/results).
 
 Usage examples:
   # 1. Run baseline E0 on ISIC for 100 episodes on T4 GPU:
@@ -81,23 +82,29 @@ def run_single_eval(
     benchmark: str = "deepglobe",
     experiment: str = "E0",
     nshot: int = 1,
-    episodes: int = 1000,
+    episodes: str = "1000",
     seed: int = 42,
     adapt_to: str = "every-episode",
     fusion_temp: float = 1.0,
     manifest: str = "",
-    nworker: int = 2
+    nworker: int = 2,
+    caller_git_commit: str = "unknown",
+    caller_git_dirty: bool = False
 ):
     import torch
     from run_all_benchmarks import check_or_download_dataset
+    from src.utils.manifest import resolve_manifest_path, validate_manifest
+
+    ep_str = str(episodes).lower().strip()
 
     print("=" * 80)
     print("      ABCDFSS GPU EVALUATION ON MODAL CLOUD")
-    print(f"Device:    {torch.cuda.get_device_name(0)} (VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB)")
-    print(f"Benchmark: {benchmark.upper()} | Shot: {nshot} | Seed: {seed}")
-    print(f"Exp:       {experiment}")
-    print(f"Mode:      {adapt_to} (Protocol: Every-Episode)")
-    print(f"Episodes:  {episodes} episodes")
+    print(f"Device:     {torch.cuda.get_device_name(0)} (VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB)")
+    print(f"Benchmark:  {benchmark.upper()} | Shot: {nshot} | Seed: {seed}")
+    print(f"Exp:        {experiment}")
+    print(f"Mode:       {adapt_to} (Protocol: Every-Episode)")
+    print(f"Episodes:   {ep_str}")
+    print(f"Git Commit: {caller_git_commit} (dirty: {caller_git_dirty})")
     print("=" * 80)
 
     # 1. Resolve dataset path (using persistent volume cache)
@@ -110,11 +117,34 @@ def run_single_eval(
     datapath = check_or_download_dataset(benchmark, kaggle_slug=kaggle_slugs.get(benchmark))
     volume_datasets.commit()
 
-    # 2. Output directory inside persistent results volume
-    output_dir = f"/root/results/{benchmark}/{experiment}_{episodes}ep_seed{seed}"
+    # 2. Automatically resolve deterministic manifest from repository
+    if not manifest:
+        manifest = resolve_manifest_path(
+            benchmark=benchmark,
+            seed=seed,
+            episodes=ep_str,
+            base_dir="/root/ABCDFSS/experiments/episodes",
+            allow_missing=False
+        )
+
+    # 3. Validate manifest integrity inside container
+    val_info = validate_manifest(
+        manifest_path=manifest,
+        benchmark=benchmark,
+        seed=seed,
+        episodes=ep_str,
+        dataset_base_path=datapath
+    )
+    print(f"[*] Validated deterministic manifest: {manifest}")
+    print(f"[*] Manifest SHA256: {val_info['manifest_sha256']}")
+    print(f"[*] Total episodes to evaluate: {val_info['resolved_episodes']}")
+
+    # 4. Output directory inside persistent results volume
+    suffix = "all_ep" if ep_str == "all" else f"{ep_str}ep"
+    output_dir = f"/root/results/{benchmark}/{experiment}_{suffix}_seed{seed}"
     os.makedirs(output_dir, exist_ok=True)
 
-    # 3. Build evaluate.py execution command
+    # 5. Build evaluate.py execution command (ALWAYS passing --manifest)
     cmd = [
         "python", "evaluate.py",
         "--benchmark", benchmark,
@@ -123,19 +153,19 @@ def run_single_eval(
         "--experiment", experiment,
         "--fusion-temp", str(fusion_temp),
         "--adapt-to", adapt_to,
-        "--episodes", str(episodes),
+        "--episodes", ep_str,
+        "--manifest", manifest,
         "--seed", str(seed),
         "--device", "cuda",
         "--nworker", str(nworker),
         "--logpath", output_dir
     ]
 
-    if manifest:
-        cmd.extend(["--manifest", manifest])
-
     print(f"\n[*] Executing: {' '.join(cmd)}\n")
     env = os.environ.copy()
     env["PYTHONPATH"] = "/root/ABCDFSS"
+    env["ABCDFSS_GIT_COMMIT"] = caller_git_commit
+    env["ABCDFSS_GIT_DIRTY"] = str(caller_git_dirty).lower()
 
     process = subprocess.Popen(
         cmd,
@@ -156,11 +186,13 @@ def run_single_eval(
     # Read and return result metrics
     result_json_path = os.path.join(output_dir, "run_result.json")
     metrics = {}
+    sig = {}
     if os.path.exists(result_json_path):
         try:
             with open(result_json_path, 'r', encoding='utf-8') as f:
                 res_data = json.load(f)
                 metrics = res_data.get('metric', {})
+                sig = res_data.get('protocol_signature', {})
         except Exception:
             pass
 
@@ -173,10 +205,13 @@ def run_single_eval(
     return {
         "benchmark": benchmark,
         "experiment": experiment,
-        "episodes": episodes,
+        "episodes": ep_str,
         "seed": seed,
+        "manifest": manifest,
+        "manifest_sha256": val_info['manifest_sha256'],
         "returncode": process.returncode,
-        "metrics": metrics
+        "metrics": metrics,
+        "protocol_signature": sig
     }
 
 @app.local_entrypoint()
@@ -184,13 +219,19 @@ def main(
     benchmark: str = "deepglobe",
     experiment: str = "E0",
     nshot: int = 1,
-    episodes: int = 1000,
+    episodes: str = "1000",
     seed: int = 42,
     adapt_to: str = "every-episode",
     fusion_temp: float = 1.0,
     manifest: str = "",
     nworker: int = 2
 ):
+    from src.utils.protocol import get_git_info
+
+    git_info = get_git_info(LOCAL_DIR)
+    git_commit = git_info.get("git_commit", "unknown")
+    git_dirty = bool(git_info.get("git_dirty", False))
+
     benchmarks = ['deepglobe', 'isic', 'lung', 'fss', 'suim'] if benchmark == 'all' else [benchmark]
     experiments = ['E0', 'E1', 'E2', 'E3'] if experiment == 'all' else [experiment]
 
@@ -202,12 +243,14 @@ def main(
                 benchmark=b,
                 experiment=exp,
                 nshot=nshot,
-                episodes=episodes,
+                episodes=str(episodes),
                 seed=seed,
                 adapt_to=adapt_to,
                 fusion_temp=fusion_temp,
                 manifest=manifest,
-                nworker=nworker
+                nworker=nworker,
+                caller_git_commit=git_commit,
+                caller_git_dirty=git_dirty
             )
             all_results.append(res)
 

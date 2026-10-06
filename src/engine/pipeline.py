@@ -211,7 +211,20 @@ class CDFSSEngine:
             if max_episodes is not None and idx >= max_episodes:
                 break
             pred_mask, gt_mask, class_id = self.evaluate_episode(batch)
-            tracker.update(pred_mask, gt_mask, class_id)
+
+            # Extract episode metadata if provided by manifest dataloader
+            meta = {
+                'episode_id': int(batch['episode_id'][0]) if 'episode_id' in batch else idx,
+                'class_id': class_id
+            }
+            if 'query_img_name' in batch:
+                meta['query_img'] = str(batch['query_img_name'][0])
+            if 'support_img_names' in batch:
+                meta['support_imgs'] = [str(p) for p in batch['support_img_names']]
+            if 'category' in batch:
+                meta['category'] = str(batch['category'][0])
+
+            tracker.update(pred_mask, gt_mask, class_id, metadata=meta)
 
             if (idx + 1) % 50 == 0 or (idx + 1) == total_episodes or idx == 0:
                 current_metrics = tracker.get_metrics()
