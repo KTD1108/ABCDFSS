@@ -1,0 +1,1425 @@
+{
+  "protocol_signature": {
+    "benchmark": "fss",
+    "experiment": "E1",
+    "episodes": 100,
+    "seed": 42,
+    "nshot": 1,
+    "adapt_to": "every-episode",
+    "adapter": "depthwise_separable_3x3",
+    "fusion": "mean",
+    "fusion_temp": 1.0,
+    "image_size": 400,
+    "num_epochs": 25,
+    "learning_rate": 0.01,
+    "manifest": "/root/ABCDFSS/experiments/episodes/fss_seed42_100episodes.json",
+    "manifest_sha256": "bed933c99154864c7238dba81e7a7efe37b897c03a1b75c0716ba819e1a907a9"
+  },
+  "code_version": {
+    "git_commit": "6575747ed2567026cffc5dc5fb2b8df30691e606",
+    "git_dirty": false,
+    "status": "injected_via_env"
+  },
+  "environment": {
+    "python_version": "3.10.17",
+    "torch_version": "2.1.2+cu121",
+    "torchvision_version": "0.16.2+cu121",
+    "numpy_version": "1.26.4",
+    "pillow_version": "12.3.0",
+    "scipy_version": "1.15.3",
+    "cuda_available": true,
+    "cuda_version": "12.1",
+    "gpu_name": "Tesla T4",
+    "platform": "linux"
+  },
+  "config": {
+    "experiment": "E1",
+    "benchmark": "fss",
+    "adapter": "depthwise_separable_3x3",
+    "fusion": "mean",
+    "fusion_temp": 1.0,
+    "adapt_to": "every-episode",
+    "num_epochs": 25,
+    "lr": 0.01,
+    "l0": 3,
+    "img_size": 400,
+    "seed": 42,
+    "nshot": 1,
+    "manifest_path": "/root/ABCDFSS/experiments/episodes/fss_seed42_100episodes.json",
+    "manifest_sha256": "bed933c99154864c7238dba81e7a7efe37b897c03a1b75c0716ba819e1a907a9"
+  },
+  "seed": 42,
+  "dataset": "fss",
+  "experiment": "E1",
+  "episode_count": 100,
+  "metric": {
+    "Mean_Episode_IoU": 65.73,
+    "Cumulative_mIoU": 65.73,
+    "FB-IoU": 76.78,
+    "class_ious": {
+      "0": 82.78383225272451,
+      "1": 89.39941518546506,
+      "2": 36.58975856697819,
+      "3": 43.16496144938583,
+      "4": 31.726976504887674,
+      "5": 85.63421616030405,
+      "6": 58.300239587777746,
+      "7": 30.642119190383692,
+      "8": 3.9271017048794827,
+      "9": 56.72635034318114,
+      "10": 85.49869592589262,
+      "11": 41.221114635251475,
+      "12": 95.31692578838043,
+      "13": 64.65606929423436,
+      "14": 37.07265707265707,
+      "15": 60.26532385869843,
+      "16": 81.54534769518105,
+      "17": 57.372233400402415,
+      "18": 84.68450598060025,
+      "19": 44.767669516413235,
+      "20": 82.99384178114637,
+      "21": 62.827919715838576,
+      "22": 79.28894460010815,
+      "23": 59.62781659878181,
+      "24": 29.152348224513176,
+      "25": 72.00889324339602,
+      "26": 66.64343601282332,
+      "27": 86.02469907769267,
+      "28": 71.38482333312214,
+      "29": 57.57037788485925,
+      "30": 92.44591285194684,
+      "31": 63.26761359621228,
+      "32": 69.73919477156421,
+      "33": 48.591696223659504,
+      "34": 69.35134368861256,
+      "35": 85.99438703916316,
+      "36": 69.40047517664846,
+      "37": 74.64147199422747,
+      "38": 54.49866565001906,
+      "39": 52.410874583226466,
+      "40": 83.58864344853015,
+      "41": 70.1012968578618,
+      "42": 61.982524997663766,
+      "43": 39.742991128524736,
+      "44": 81.53820120145528,
+      "45": 91.94033478141993,
+      "46": 95.89218207625392,
+      "47": 80.4561578934838,
+      "48": 76.87284489335083,
+      "49": 64.62179042331714,
+      "50": 64.59157871591908,
+      "51": 44.906234161175874,
+      "52": 42.27712077990417,
+      "53": 73.9320788062579,
+      "54": 65.20409138705668,
+      "55": 65.61897416120324,
+      "56": 85.58581444975104,
+      "57": 50.31496660595022,
+      "58": 65.45893362157041,
+      "59": 76.9342010122921,
+      "60": 73.62557312422334,
+      "61": 83.78371099220742,
+      "62": 55.04232902523818,
+      "63": 52.16148467390826,
+      "64": 74.25671334960812,
+      "65": 74.53403067850749,
+      "66": 59.908811125042746,
+      "67": 96.39905729676788,
+      "68": 86.02882305844676,
+      "69": 68.54480399480988,
+      "70": 69.921742973767,
+      "71": 23.705661220084117,
+      "72": 37.027694841964376,
+      "73": 89.14052978293402,
+      "74": 57.27290503400179,
+      "75": 62.97640014089468,
+      "76": 62.718552282468195,
+      "77": 78.14298116331186,
+      "78": 92.36497151877016,
+      "79": 73.99385335870042,
+      "80": 63.94034192255975,
+      "81": 56.866970926301555,
+      "82": 30.497641509433965,
+      "83": 67.19670899094181,
+      "84": 82.17125270215806,
+      "85": 87.45800271642004,
+      "86": 18.67230422563739,
+      "87": 71.26172429654221,
+      "88": 77.70681934962931,
+      "89": 72.67316572601334,
+      "90": 66.0198945349952,
+      "91": 78.11449552671044,
+      "92": 31.669115486335585,
+      "93": 47.584627345506505,
+      "94": 72.64813978979947,
+      "95": 83.30253288400912,
+      "96": 77.00071073205402,
+      "97": 91.67446912100671,
+      "98": 52.95768658303211,
+      "99": 71.71789801665767,
+      "100": 0.0,
+      "101": 0.0,
+      "102": 0.0,
+      "103": 0.0,
+      "104": 0.0,
+      "105": 0.0,
+      "106": 0.0,
+      "107": 0.0,
+      "108": 0.0,
+      "109": 0.0,
+      "110": 0.0,
+      "111": 0.0,
+      "112": 0.0,
+      "113": 0.0,
+      "114": 0.0,
+      "115": 0.0,
+      "116": 0.0,
+      "117": 0.0,
+      "118": 0.0,
+      "119": 0.0,
+      "120": 0.0,
+      "121": 0.0,
+      "122": 0.0,
+      "123": 0.0,
+      "124": 0.0,
+      "125": 0.0,
+      "126": 0.0,
+      "127": 0.0,
+      "128": 0.0,
+      "129": 0.0,
+      "130": 0.0,
+      "131": 0.0,
+      "132": 0.0,
+      "133": 0.0,
+      "134": 0.0,
+      "135": 0.0,
+      "136": 0.0,
+      "137": 0.0,
+      "138": 0.0,
+      "139": 0.0,
+      "140": 0.0,
+      "141": 0.0,
+      "142": 0.0,
+      "143": 0.0,
+      "144": 0.0,
+      "145": 0.0,
+      "146": 0.0,
+      "147": 0.0,
+      "148": 0.0,
+      "149": 0.0,
+      "150": 0.0,
+      "151": 0.0,
+      "152": 0.0,
+      "153": 0.0,
+      "154": 0.0,
+      "155": 0.0,
+      "156": 0.0,
+      "157": 0.0,
+      "158": 0.0,
+      "159": 0.0,
+      "160": 0.0,
+      "161": 0.0,
+      "162": 0.0,
+      "163": 0.0,
+      "164": 0.0,
+      "165": 0.0,
+      "166": 0.0,
+      "167": 0.0,
+      "168": 0.0,
+      "169": 0.0,
+      "170": 0.0,
+      "171": 0.0,
+      "172": 0.0,
+      "173": 0.0,
+      "174": 0.0,
+      "175": 0.0,
+      "176": 0.0,
+      "177": 0.0,
+      "178": 0.0,
+      "179": 0.0,
+      "180": 0.0,
+      "181": 0.0,
+      "182": 0.0,
+      "183": 0.0,
+      "184": 0.0,
+      "185": 0.0,
+      "186": 0.0,
+      "187": 0.0,
+      "188": 0.0,
+      "189": 0.0,
+      "190": 0.0,
+      "191": 0.0,
+      "192": 0.0,
+      "193": 0.0,
+      "194": 0.0,
+      "195": 0.0,
+      "196": 0.0,
+      "197": 0.0,
+      "198": 0.0,
+      "199": 0.0,
+      "200": 0.0,
+      "201": 0.0,
+      "202": 0.0,
+      "203": 0.0,
+      "204": 0.0,
+      "205": 0.0,
+      "206": 0.0,
+      "207": 0.0,
+      "208": 0.0,
+      "209": 0.0,
+      "210": 0.0,
+      "211": 0.0,
+      "212": 0.0,
+      "213": 0.0,
+      "214": 0.0,
+      "215": 0.0,
+      "216": 0.0,
+      "217": 0.0,
+      "218": 0.0,
+      "219": 0.0,
+      "220": 0.0,
+      "221": 0.0,
+      "222": 0.0,
+      "223": 0.0,
+      "224": 0.0,
+      "225": 0.0,
+      "226": 0.0,
+      "227": 0.0,
+      "228": 0.0,
+      "229": 0.0,
+      "230": 0.0,
+      "231": 0.0,
+      "232": 0.0,
+      "233": 0.0,
+      "234": 0.0,
+      "235": 0.0,
+      "236": 0.0,
+      "237": 0.0,
+      "238": 0.0,
+      "239": 0.0
+    }
+  },
+  "raw_result": {
+    "episode_ious": [
+      82.78,
+      89.4,
+      36.59,
+      43.16,
+      31.73,
+      85.63,
+      58.3,
+      30.64,
+      3.93,
+      56.73,
+      85.5,
+      41.22,
+      95.32,
+      64.66,
+      37.07,
+      60.27,
+      81.55,
+      57.37,
+      84.68,
+      44.77,
+      82.99,
+      62.83,
+      79.29,
+      59.63,
+      29.15,
+      72.01,
+      66.64,
+      86.02,
+      71.38,
+      57.57,
+      92.45,
+      63.27,
+      69.74,
+      48.59,
+      69.35,
+      85.99,
+      69.4,
+      74.64,
+      54.5,
+      52.41,
+      83.59,
+      70.1,
+      61.98,
+      39.74,
+      81.54,
+      91.94,
+      95.89,
+      80.46,
+      76.87,
+      64.62,
+      64.59,
+      44.91,
+      42.28,
+      73.93,
+      65.2,
+      65.62,
+      85.59,
+      50.31,
+      65.46,
+      76.93,
+      73.63,
+      83.78,
+      55.04,
+      52.16,
+      74.26,
+      74.53,
+      59.91,
+      96.4,
+      86.03,
+      68.54,
+      69.92,
+      23.71,
+      37.03,
+      89.14,
+      57.27,
+      62.98,
+      62.72,
+      78.14,
+      92.36,
+      73.99,
+      63.94,
+      56.87,
+      30.5,
+      67.2,
+      82.17,
+      87.46,
+      18.67,
+      71.26,
+      77.71,
+      72.67,
+      66.02,
+      78.11,
+      31.67,
+      47.58,
+      72.65,
+      83.3,
+      77.0,
+      91.67,
+      52.96,
+      71.72
+    ],
+    "detailed_episodes": [
+      {
+        "episode_id": 0,
+        "class_id": 0,
+        "iou": 82.7838,
+        "query_img": "abe's_flyingfish/9.jpg",
+        "support_imgs": [
+          "[\"abe's_flyingfish/2.jpg\"]"
+        ],
+        "category": "abe's_flyingfish"
+      },
+      {
+        "episode_id": 1,
+        "class_id": 1,
+        "iou": 89.3994,
+        "query_img": "accordion/1.jpg",
+        "support_imgs": [
+          "['accordion/2.jpg']"
+        ],
+        "category": "accordion"
+      },
+      {
+        "episode_id": 2,
+        "class_id": 2,
+        "iou": 36.5898,
+        "query_img": "american_alligator/10.jpg",
+        "support_imgs": [
+          "['american_alligator/3.jpg']"
+        ],
+        "category": "american_alligator"
+      },
+      {
+        "episode_id": 3,
+        "class_id": 3,
+        "iou": 43.165,
+        "query_img": "american_chamelon/2.jpg",
+        "support_imgs": [
+          "['american_chamelon/8.jpg']"
+        ],
+        "category": "american_chamelon"
+      },
+      {
+        "episode_id": 4,
+        "class_id": 4,
+        "iou": 31.727,
+        "query_img": "andean_condor/2.jpg",
+        "support_imgs": [
+          "['andean_condor/6.jpg']"
+        ],
+        "category": "andean_condor"
+      },
+      {
+        "episode_id": 5,
+        "class_id": 5,
+        "iou": 85.6342,
+        "query_img": "anise/9.jpg",
+        "support_imgs": [
+          "['anise/3.jpg']"
+        ],
+        "category": "anise"
+      },
+      {
+        "episode_id": 6,
+        "class_id": 6,
+        "iou": 58.3002,
+        "query_img": "apple_icon/1.jpg",
+        "support_imgs": [
+          "['apple_icon/6.jpg']"
+        ],
+        "category": "apple_icon"
+      },
+      {
+        "episode_id": 7,
+        "class_id": 7,
+        "iou": 30.6421,
+        "query_img": "arch_bridge/5.jpg",
+        "support_imgs": [
+          "['arch_bridge/9.jpg']"
+        ],
+        "category": "arch_bridge"
+      },
+      {
+        "episode_id": 8,
+        "class_id": 8,
+        "iou": 3.9271,
+        "query_img": "arrow/3.jpg",
+        "support_imgs": [
+          "['arrow/1.jpg']"
+        ],
+        "category": "arrow"
+      },
+      {
+        "episode_id": 9,
+        "class_id": 9,
+        "iou": 56.7264,
+        "query_img": "astronaut/5.jpg",
+        "support_imgs": [
+          "['astronaut/3.jpg']"
+        ],
+        "category": "astronaut"
+      },
+      {
+        "episode_id": 10,
+        "class_id": 10,
+        "iou": 85.4987,
+        "query_img": "australian_terrier/6.jpg",
+        "support_imgs": [
+          "['australian_terrier/3.jpg']"
+        ],
+        "category": "australian_terrier"
+      },
+      {
+        "episode_id": 11,
+        "class_id": 11,
+        "iou": 41.2211,
+        "query_img": "bamboo_dragonfly/2.jpg",
+        "support_imgs": [
+          "['bamboo_dragonfly/6.jpg']"
+        ],
+        "category": "bamboo_dragonfly"
+      },
+      {
+        "episode_id": 12,
+        "class_id": 12,
+        "iou": 95.3169,
+        "query_img": "bamboo_slip/4.jpg",
+        "support_imgs": [
+          "['bamboo_slip/2.jpg']"
+        ],
+        "category": "bamboo_slip"
+      },
+      {
+        "episode_id": 13,
+        "class_id": 13,
+        "iou": 64.6561,
+        "query_img": "banana_boat/3.jpg",
+        "support_imgs": [
+          "['banana_boat/5.jpg']"
+        ],
+        "category": "banana_boat"
+      },
+      {
+        "episode_id": 14,
+        "class_id": 14,
+        "iou": 37.0727,
+        "query_img": "barber_shaver/8.jpg",
+        "support_imgs": [
+          "['barber_shaver/1.jpg']"
+        ],
+        "category": "barber_shaver"
+      },
+      {
+        "episode_id": 15,
+        "class_id": 15,
+        "iou": 60.2653,
+        "query_img": "bat/7.jpg",
+        "support_imgs": [
+          "['bat/2.jpg']"
+        ],
+        "category": "bat"
+      },
+      {
+        "episode_id": 16,
+        "class_id": 16,
+        "iou": 81.5453,
+        "query_img": "bath_ball/5.jpg",
+        "support_imgs": [
+          "['bath_ball/8.jpg']"
+        ],
+        "category": "bath_ball"
+      },
+      {
+        "episode_id": 17,
+        "class_id": 17,
+        "iou": 57.3722,
+        "query_img": "beet_root/2.jpg",
+        "support_imgs": [
+          "['beet_root/9.jpg']"
+        ],
+        "category": "beet_root"
+      },
+      {
+        "episode_id": 18,
+        "class_id": 18,
+        "iou": 84.6845,
+        "query_img": "bell_pepper/9.jpg",
+        "support_imgs": [
+          "['bell_pepper/1.jpg']"
+        ],
+        "category": "bell_pepper"
+      },
+      {
+        "episode_id": 19,
+        "class_id": 19,
+        "iou": 44.7677,
+        "query_img": "big_ben/1.jpg",
+        "support_imgs": [
+          "['big_ben/3.jpg']"
+        ],
+        "category": "big_ben"
+      },
+      {
+        "episode_id": 20,
+        "class_id": 20,
+        "iou": 82.9938,
+        "query_img": "black_bear/2.jpg",
+        "support_imgs": [
+          "['black_bear/3.jpg']"
+        ],
+        "category": "black_bear"
+      },
+      {
+        "episode_id": 21,
+        "class_id": 21,
+        "iou": 62.8279,
+        "query_img": "bloodhound/8.jpg",
+        "support_imgs": [
+          "['bloodhound/10.jpg']"
+        ],
+        "category": "bloodhound"
+      },
+      {
+        "episode_id": 22,
+        "class_id": 22,
+        "iou": 79.2889,
+        "query_img": "boxing_gloves/6.jpg",
+        "support_imgs": [
+          "['boxing_gloves/8.jpg']"
+        ],
+        "category": "boxing_gloves"
+      },
+      {
+        "episode_id": 23,
+        "class_id": 23,
+        "iou": 59.6278,
+        "query_img": "breast_pump/7.jpg",
+        "support_imgs": [
+          "['breast_pump/5.jpg']"
+        ],
+        "category": "breast_pump"
+      },
+      {
+        "episode_id": 24,
+        "class_id": 24,
+        "iou": 29.1523,
+        "query_img": "broom/10.jpg",
+        "support_imgs": [
+          "['broom/7.jpg']"
+        ],
+        "category": "broom"
+      },
+      {
+        "episode_id": 25,
+        "class_id": 25,
+        "iou": 72.0089,
+        "query_img": "bucket/4.jpg",
+        "support_imgs": [
+          "['bucket/7.jpg']"
+        ],
+        "category": "bucket"
+      },
+      {
+        "episode_id": 26,
+        "class_id": 26,
+        "iou": 66.6434,
+        "query_img": "bulb/8.jpg",
+        "support_imgs": [
+          "['bulb/2.jpg']"
+        ],
+        "category": "bulb"
+      },
+      {
+        "episode_id": 27,
+        "class_id": 27,
+        "iou": 86.0247,
+        "query_img": "burj_al/7.jpg",
+        "support_imgs": [
+          "['burj_al/10.jpg']"
+        ],
+        "category": "burj_al"
+      },
+      {
+        "episode_id": 28,
+        "class_id": 28,
+        "iou": 71.3848,
+        "query_img": "bus/5.jpg",
+        "support_imgs": [
+          "['bus/1.jpg']"
+        ],
+        "category": "bus"
+      },
+      {
+        "episode_id": 29,
+        "class_id": 29,
+        "iou": 57.5704,
+        "query_img": "bustard/6.jpg",
+        "support_imgs": [
+          "['bustard/2.jpg']"
+        ],
+        "category": "bustard"
+      },
+      {
+        "episode_id": 30,
+        "class_id": 30,
+        "iou": 92.4459,
+        "query_img": "cabbage_butterfly/7.jpg",
+        "support_imgs": [
+          "['cabbage_butterfly/5.jpg']"
+        ],
+        "category": "cabbage_butterfly"
+      },
+      {
+        "episode_id": 31,
+        "class_id": 31,
+        "iou": 63.2676,
+        "query_img": "cablestayed_bridge/9.jpg",
+        "support_imgs": [
+          "['cablestayed_bridge/6.jpg']"
+        ],
+        "category": "cablestayed_bridge"
+      },
+      {
+        "episode_id": 32,
+        "class_id": 32,
+        "iou": 69.7392,
+        "query_img": "cantilever_bridge/8.jpg",
+        "support_imgs": [
+          "['cantilever_bridge/2.jpg']"
+        ],
+        "category": "cantilever_bridge"
+      },
+      {
+        "episode_id": 33,
+        "class_id": 33,
+        "iou": 48.5917,
+        "query_img": "canton_tower/5.jpg",
+        "support_imgs": [
+          "['canton_tower/2.jpg']"
+        ],
+        "category": "canton_tower"
+      },
+      {
+        "episode_id": 34,
+        "class_id": 34,
+        "iou": 69.3513,
+        "query_img": "captain_america_shield/5.jpg",
+        "support_imgs": [
+          "['captain_america_shield/1.jpg']"
+        ],
+        "category": "captain_america_shield"
+      },
+      {
+        "episode_id": 35,
+        "class_id": 35,
+        "iou": 85.9944,
+        "query_img": "carriage/10.jpg",
+        "support_imgs": [
+          "['carriage/1.jpg']"
+        ],
+        "category": "carriage"
+      },
+      {
+        "episode_id": 36,
+        "class_id": 36,
+        "iou": 69.4005,
+        "query_img": "cathedrale_paris/2.jpg",
+        "support_imgs": [
+          "['cathedrale_paris/6.jpg']"
+        ],
+        "category": "cathedrale_paris"
+      },
+      {
+        "episode_id": 37,
+        "class_id": 37,
+        "iou": 74.6415,
+        "query_img": "cd/9.jpg",
+        "support_imgs": [
+          "['cd/7.jpg']"
+        ],
+        "category": "cd"
+      },
+      {
+        "episode_id": 38,
+        "class_id": 38,
+        "iou": 54.4987,
+        "query_img": "chalk_brush/4.jpg",
+        "support_imgs": [
+          "['chalk_brush/1.jpg']"
+        ],
+        "category": "chalk_brush"
+      },
+      {
+        "episode_id": 39,
+        "class_id": 39,
+        "iou": 52.4109,
+        "query_img": "chandelier/9.jpg",
+        "support_imgs": [
+          "['chandelier/2.jpg']"
+        ],
+        "category": "chandelier"
+      },
+      {
+        "episode_id": 40,
+        "class_id": 40,
+        "iou": 83.5886,
+        "query_img": "charge_battery/3.jpg",
+        "support_imgs": [
+          "['charge_battery/7.jpg']"
+        ],
+        "category": "charge_battery"
+      },
+      {
+        "episode_id": 41,
+        "class_id": 41,
+        "iou": 70.1013,
+        "query_img": "chess_king/6.jpg",
+        "support_imgs": [
+          "['chess_king/2.jpg']"
+        ],
+        "category": "chess_king"
+      },
+      {
+        "episode_id": 42,
+        "class_id": 42,
+        "iou": 61.9825,
+        "query_img": "chess_knight/6.jpg",
+        "support_imgs": [
+          "['chess_knight/2.jpg']"
+        ],
+        "category": "chess_knight"
+      },
+      {
+        "episode_id": 43,
+        "class_id": 43,
+        "iou": 39.743,
+        "query_img": "chess_queen/1.jpg",
+        "support_imgs": [
+          "['chess_queen/4.jpg']"
+        ],
+        "category": "chess_queen"
+      },
+      {
+        "episode_id": 44,
+        "class_id": 44,
+        "iou": 81.5382,
+        "query_img": "chicken/9.jpg",
+        "support_imgs": [
+          "['chicken/1.jpg']"
+        ],
+        "category": "chicken"
+      },
+      {
+        "episode_id": 45,
+        "class_id": 45,
+        "iou": 91.9403,
+        "query_img": "chicken_leg/10.jpg",
+        "support_imgs": [
+          "['chicken_leg/4.jpg']"
+        ],
+        "category": "chicken_leg"
+      },
+      {
+        "episode_id": 46,
+        "class_id": 46,
+        "iou": 95.8922,
+        "query_img": "chiffon_cake/6.jpg",
+        "support_imgs": [
+          "['chiffon_cake/7.jpg']"
+        ],
+        "category": "chiffon_cake"
+      },
+      {
+        "episode_id": 47,
+        "class_id": 47,
+        "iou": 80.4562,
+        "query_img": "chinese_knot/2.jpg",
+        "support_imgs": [
+          "['chinese_knot/9.jpg']"
+        ],
+        "category": "chinese_knot"
+      },
+      {
+        "episode_id": 48,
+        "class_id": 48,
+        "iou": 76.8728,
+        "query_img": "church/5.jpg",
+        "support_imgs": [
+          "['church/4.jpg']"
+        ],
+        "category": "church"
+      },
+      {
+        "episode_id": 49,
+        "class_id": 49,
+        "iou": 64.6218,
+        "query_img": "cicada/9.jpg",
+        "support_imgs": [
+          "['cicada/5.jpg']"
+        ],
+        "category": "cicada"
+      },
+      {
+        "episode_id": 50,
+        "class_id": 50,
+        "iou": 64.5916,
+        "query_img": "clam/6.jpg",
+        "support_imgs": [
+          "['clam/1.jpg']"
+        ],
+        "category": "clam"
+      },
+      {
+        "episode_id": 51,
+        "class_id": 51,
+        "iou": 44.9062,
+        "query_img": "clearwing_flyingfish/1.jpg",
+        "support_imgs": [
+          "['clearwing_flyingfish/9.jpg']"
+        ],
+        "category": "clearwing_flyingfish"
+      },
+      {
+        "episode_id": 52,
+        "class_id": 52,
+        "iou": 42.2771,
+        "query_img": "cloud/9.jpg",
+        "support_imgs": [
+          "['cloud/5.jpg']"
+        ],
+        "category": "cloud"
+      },
+      {
+        "episode_id": 53,
+        "class_id": 53,
+        "iou": 73.9321,
+        "query_img": "coffee_mug/3.jpg",
+        "support_imgs": [
+          "['coffee_mug/2.jpg']"
+        ],
+        "category": "coffee_mug"
+      },
+      {
+        "episode_id": 54,
+        "class_id": 54,
+        "iou": 65.2041,
+        "query_img": "coin/8.jpg",
+        "support_imgs": [
+          "['coin/3.jpg']"
+        ],
+        "category": "coin"
+      },
+      {
+        "episode_id": 55,
+        "class_id": 55,
+        "iou": 65.619,
+        "query_img": "combination_lock/10.jpg",
+        "support_imgs": [
+          "['combination_lock/2.jpg']"
+        ],
+        "category": "combination_lock"
+      },
+      {
+        "episode_id": 56,
+        "class_id": 56,
+        "iou": 85.5858,
+        "query_img": "condor/4.jpg",
+        "support_imgs": [
+          "['condor/9.jpg']"
+        ],
+        "category": "condor"
+      },
+      {
+        "episode_id": 57,
+        "class_id": 57,
+        "iou": 50.315,
+        "query_img": "cricket/8.jpg",
+        "support_imgs": [
+          "['cricket/3.jpg']"
+        ],
+        "category": "cricket"
+      },
+      {
+        "episode_id": 58,
+        "class_id": 58,
+        "iou": 65.4589,
+        "query_img": "crt_screen/3.jpg",
+        "support_imgs": [
+          "['crt_screen/9.jpg']"
+        ],
+        "category": "crt_screen"
+      },
+      {
+        "episode_id": 59,
+        "class_id": 59,
+        "iou": 76.9342,
+        "query_img": "cuckoo/1.jpg",
+        "support_imgs": [
+          "['cuckoo/8.jpg']"
+        ],
+        "category": "cuckoo"
+      },
+      {
+        "episode_id": 60,
+        "class_id": 60,
+        "iou": 73.6256,
+        "query_img": "curlew/6.jpg",
+        "support_imgs": [
+          "['curlew/7.jpg']"
+        ],
+        "category": "curlew"
+      },
+      {
+        "episode_id": 61,
+        "class_id": 61,
+        "iou": 83.7837,
+        "query_img": "dart_target/9.jpg",
+        "support_imgs": [
+          "['dart_target/7.jpg']"
+        ],
+        "category": "dart_target"
+      },
+      {
+        "episode_id": 62,
+        "class_id": 62,
+        "iou": 55.0423,
+        "query_img": "delta_wing/6.jpg",
+        "support_imgs": [
+          "['delta_wing/10.jpg']"
+        ],
+        "category": "delta_wing"
+      },
+      {
+        "episode_id": 63,
+        "class_id": 63,
+        "iou": 52.1615,
+        "query_img": "diver/7.jpg",
+        "support_imgs": [
+          "['diver/5.jpg']"
+        ],
+        "category": "diver"
+      },
+      {
+        "episode_id": 64,
+        "class_id": 64,
+        "iou": 74.2567,
+        "query_img": "doormat/8.jpg",
+        "support_imgs": [
+          "['doormat/6.jpg']"
+        ],
+        "category": "doormat"
+      },
+      {
+        "episode_id": 65,
+        "class_id": 65,
+        "iou": 74.534,
+        "query_img": "doublebus/3.jpg",
+        "support_imgs": [
+          "['doublebus/6.jpg']"
+        ],
+        "category": "doublebus"
+      },
+      {
+        "episode_id": 66,
+        "class_id": 66,
+        "iou": 59.9088,
+        "query_img": "doughnut/5.jpg",
+        "support_imgs": [
+          "['doughnut/6.jpg']"
+        ],
+        "category": "doughnut"
+      },
+      {
+        "episode_id": 67,
+        "class_id": 67,
+        "iou": 96.3991,
+        "query_img": "downy_pitch/2.jpg",
+        "support_imgs": [
+          "['downy_pitch/9.jpg']"
+        ],
+        "category": "downy_pitch"
+      },
+      {
+        "episode_id": 68,
+        "class_id": 68,
+        "iou": 86.0288,
+        "query_img": "drilling_platform/4.jpg",
+        "support_imgs": [
+          "['drilling_platform/8.jpg']"
+        ],
+        "category": "drilling_platform"
+      },
+      {
+        "episode_id": 69,
+        "class_id": 69,
+        "iou": 68.5448,
+        "query_img": "dwarf_beans/2.jpg",
+        "support_imgs": [
+          "['dwarf_beans/10.jpg']"
+        ],
+        "category": "dwarf_beans"
+      },
+      {
+        "episode_id": 70,
+        "class_id": 70,
+        "iou": 69.9217,
+        "query_img": "eagle/5.jpg",
+        "support_imgs": [
+          "['eagle/1.jpg']"
+        ],
+        "category": "eagle"
+      },
+      {
+        "episode_id": 71,
+        "class_id": 71,
+        "iou": 23.7057,
+        "query_img": "earphone1/9.jpg",
+        "support_imgs": [
+          "['earphone1/2.jpg']"
+        ],
+        "category": "earphone1"
+      },
+      {
+        "episode_id": 72,
+        "class_id": 72,
+        "iou": 37.0277,
+        "query_img": "earphone2/3.jpg",
+        "support_imgs": [
+          "['earphone2/9.jpg']"
+        ],
+        "category": "earphone2"
+      },
+      {
+        "episode_id": 73,
+        "class_id": 73,
+        "iou": 89.1405,
+        "query_img": "echidna/4.jpg",
+        "support_imgs": [
+          "['echidna/1.jpg']"
+        ],
+        "category": "echidna"
+      },
+      {
+        "episode_id": 74,
+        "class_id": 74,
+        "iou": 57.2729,
+        "query_img": "egg/3.jpg",
+        "support_imgs": [
+          "['egg/10.jpg']"
+        ],
+        "category": "egg"
+      },
+      {
+        "episode_id": 75,
+        "class_id": 75,
+        "iou": 62.9764,
+        "query_img": "electronic_stove/9.jpg",
+        "support_imgs": [
+          "['electronic_stove/6.jpg']"
+        ],
+        "category": "electronic_stove"
+      },
+      {
+        "episode_id": 76,
+        "class_id": 76,
+        "iou": 62.7186,
+        "query_img": "english_foxhound/10.jpg",
+        "support_imgs": [
+          "['english_foxhound/3.jpg']"
+        ],
+        "category": "english_foxhound"
+      },
+      {
+        "episode_id": 77,
+        "class_id": 77,
+        "iou": 78.143,
+        "query_img": "f1_racing/1.jpg",
+        "support_imgs": [
+          "['f1_racing/5.jpg']"
+        ],
+        "category": "f1_racing"
+      },
+      {
+        "episode_id": 78,
+        "class_id": 78,
+        "iou": 92.365,
+        "query_img": "fan/7.jpg",
+        "support_imgs": [
+          "['fan/10.jpg']"
+        ],
+        "category": "fan"
+      },
+      {
+        "episode_id": 79,
+        "class_id": 79,
+        "iou": 73.9939,
+        "query_img": "feather_clothes/6.jpg",
+        "support_imgs": [
+          "['feather_clothes/10.jpg']"
+        ],
+        "category": "feather_clothes"
+      },
+      {
+        "episode_id": 80,
+        "class_id": 80,
+        "iou": 63.9403,
+        "query_img": "fennel_bulb/7.jpg",
+        "support_imgs": [
+          "['fennel_bulb/3.jpg']"
+        ],
+        "category": "fennel_bulb"
+      },
+      {
+        "episode_id": 81,
+        "class_id": 81,
+        "iou": 56.867,
+        "query_img": "ferrari911/2.jpg",
+        "support_imgs": [
+          "['ferrari911/1.jpg']"
+        ],
+        "category": "ferrari911"
+      },
+      {
+        "episode_id": 82,
+        "class_id": 82,
+        "iou": 30.4976,
+        "query_img": "fish/10.jpg",
+        "support_imgs": [
+          "['fish/5.jpg']"
+        ],
+        "category": "fish"
+      },
+      {
+        "episode_id": 83,
+        "class_id": 83,
+        "iou": 67.1967,
+        "query_img": "fish_eagle/9.jpg",
+        "support_imgs": [
+          "['fish_eagle/4.jpg']"
+        ],
+        "category": "fish_eagle"
+      },
+      {
+        "episode_id": 84,
+        "class_id": 84,
+        "iou": 82.1713,
+        "query_img": "flamingo/1.jpg",
+        "support_imgs": [
+          "['flamingo/3.jpg']"
+        ],
+        "category": "flamingo"
+      },
+      {
+        "episode_id": 85,
+        "class_id": 85,
+        "iou": 87.458,
+        "query_img": "fly/6.jpg",
+        "support_imgs": [
+          "['fly/9.jpg']"
+        ],
+        "category": "fly"
+      },
+      {
+        "episode_id": 86,
+        "class_id": 86,
+        "iou": 18.6723,
+        "query_img": "flying_frog/2.jpg",
+        "support_imgs": [
+          "['flying_frog/3.jpg']"
+        ],
+        "category": "flying_frog"
+      },
+      {
+        "episode_id": 87,
+        "class_id": 87,
+        "iou": 71.2617,
+        "query_img": "flying_geckos/9.jpg",
+        "support_imgs": [
+          "['flying_geckos/7.jpg']"
+        ],
+        "category": "flying_geckos"
+      },
+      {
+        "episode_id": 88,
+        "class_id": 88,
+        "iou": 77.7068,
+        "query_img": "flying_snakes/4.jpg",
+        "support_imgs": [
+          "['flying_snakes/9.jpg']"
+        ],
+        "category": "flying_snakes"
+      },
+      {
+        "episode_id": 89,
+        "class_id": 89,
+        "iou": 72.6732,
+        "query_img": "flying_squirrel/8.jpg",
+        "support_imgs": [
+          "['flying_squirrel/2.jpg']"
+        ],
+        "category": "flying_squirrel"
+      },
+      {
+        "episode_id": 90,
+        "class_id": 90,
+        "iou": 66.0199,
+        "query_img": "fox/2.jpg",
+        "support_imgs": [
+          "['fox/10.jpg']"
+        ],
+        "category": "fox"
+      },
+      {
+        "episode_id": 91,
+        "class_id": 91,
+        "iou": 78.1145,
+        "query_img": "french_fries/4.jpg",
+        "support_imgs": [
+          "['french_fries/8.jpg']"
+        ],
+        "category": "french_fries"
+      },
+      {
+        "episode_id": 92,
+        "class_id": 92,
+        "iou": 31.6691,
+        "query_img": "ganeva_chair/2.jpg",
+        "support_imgs": [
+          "['ganeva_chair/4.jpg']"
+        ],
+        "category": "ganeva_chair"
+      },
+      {
+        "episode_id": 93,
+        "class_id": 93,
+        "iou": 47.5846,
+        "query_img": "glider_flyingfish/8.jpg",
+        "support_imgs": [
+          "['glider_flyingfish/3.jpg']"
+        ],
+        "category": "glider_flyingfish"
+      },
+      {
+        "episode_id": 94,
+        "class_id": 94,
+        "iou": 72.6481,
+        "query_img": "goblet/8.jpg",
+        "support_imgs": [
+          "['goblet/10.jpg']"
+        ],
+        "category": "goblet"
+      },
+      {
+        "episode_id": 95,
+        "class_id": 95,
+        "iou": 83.3025,
+        "query_img": "golden_plover/3.jpg",
+        "support_imgs": [
+          "['golden_plover/10.jpg']"
+        ],
+        "category": "golden_plover"
+      },
+      {
+        "episode_id": 96,
+        "class_id": 96,
+        "iou": 77.0007,
+        "query_img": "goldfinch/1.jpg",
+        "support_imgs": [
+          "['goldfinch/10.jpg']"
+        ],
+        "category": "goldfinch"
+      },
+      {
+        "episode_id": 97,
+        "class_id": 97,
+        "iou": 91.6745,
+        "query_img": "groenendael/5.jpg",
+        "support_imgs": [
+          "['groenendael/9.jpg']"
+        ],
+        "category": "groenendael"
+      },
+      {
+        "episode_id": 98,
+        "class_id": 98,
+        "iou": 52.9577,
+        "query_img": "guitar/9.jpg",
+        "support_imgs": [
+          "['guitar/6.jpg']"
+        ],
+        "category": "guitar"
+      },
+      {
+        "episode_id": 99,
+        "class_id": 99,
+        "iou": 71.7179,
+        "query_img": "gym_ball/3.jpg",
+        "support_imgs": [
+          "['gym_ball/9.jpg']"
+        ],
+        "category": "gym_ball"
+      }
+    ]
+  },
+  "summary": {
+    "timestamp": "20261006_085646",
+    "experiment": "E1",
+    "benchmark": "fss",
+    "adapter": "depthwise_separable_3x3",
+    "fusion": "mean",
+    "nshot": 1,
+    "episodes": 100,
+    "seed": 42,
+    "Mean_Episode_IoU": 65.73,
+    "Cumulative_mIoU": 65.73,
+    "FB-IoU": 76.78,
+    "manifest": "/root/ABCDFSS/experiments/episodes/fss_seed42_100episodes.json",
+    "manifest_sha256": "bed933c99154864c7238dba81e7a7efe37b897c03a1b75c0716ba819e1a907a9",
+    "log_file": "/root/results/fss/E1_100ep_seed42/fss_depthwise_separable_3x3_mean_1shot_E1_20261006_085646.log"
+  },
+  "log": "/root/results/fss/E1_100ep_seed42/fss_depthwise_separable_3x3_mean_1shot_E1_20261006_085646.log"
+}

@@ -1,0 +1,51 @@
+================================================================================
+                     CD-FSS EXPERIMENTAL AUDIT RUNNER
+================================================================================
+experiment_name:    E0
+dataset:            lung
+seed:               42
+nshot:              1
+requested_episodes: 20
+resolved_episodes:  20
+adapter:            conv1x1
+fusion:             mean
+adaptation_mode:    every-episode
+image_size:         400x400
+threshold_method:   pred_mean (max(Otsu, mean), drop_least=0.05)
+backbone:           ResNet-50 (Pre-ReLU unclipped features)
+checkpoint:         ResNet50_Weights.DEFAULT
+manifest_path:      /root/ABCDFSS/experiments/episodes/lung_seed42_20episodes.json
+manifest_sha256:    0dd188e8c1b6c4a7df0451c0c13aa2d96bbe4fd2eacaa26e15a3e3fd5174a5e9
+dataloader_workers: 2
+git_commit:         96231f29c5c20e8d92c2eabcc5683295f1ade466
+git_status:         injected_via_env
+PyTorch version:    2.1.2+cu121
+TorchVision version:0.16.2+cu121
+CUDA version:       12.1
+GPU:                Tesla T4
+Log file saved to:  /root/results/lung/E0_20ep_seed42/lung_conv1x1_mean_1shot_E0_20261006_063058.log
+================================================================================
+
+[*] LungDataset loaded 20 fixed episodes from manifest: /root/ABCDFSS/experiments/episodes/lung_seed42_20episodes.json
+
+:=========== CD-FSS Clean Framework Evaluation: LUNG ===========
+| Device:         cuda
+| Adapter Type:   conv1x1
+| Fusion Mode:    mean (temp=1.0)
+| Adapt Mode:     every-episode
+| Total Episodes: 20
+:========================================================================
+
+[Batch: 0001/0020]  mIoU: 68.64%  |  FB-IoU: 78.84%
+[Batch: 0020/0020]  mIoU: 78.82%  |  FB-IoU: 85.96%
+
+================ FINAL RESULTS ================
+Benchmark:   LUNG
+Adapter:     conv1x1
+Fusion:      mean
+Final mIoU (Cumulative): 78.82%
+Mean Episode-IoU:       78.48%
+Final FB-IoU:           85.96%
+Elapsed Time:           73.21s (3.661s/episode)
+================================================
+

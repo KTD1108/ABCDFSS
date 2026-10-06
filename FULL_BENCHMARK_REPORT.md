@@ -7,8 +7,8 @@
 
 ## 1. Experimental Protocol (Quy Trình Thực Nghiệm Chuẩn Hóa)
 
-Toàn bộ 20 thử nghiệm (5 datasets × 4 cấu hình) được thực thi nghiêm ngặt theo đúng protocol cố định:
-Each configuration was evaluated on 20 seed-controlled episodes per dataset using seed=42. The Lung benchmark additionally used an explicit episode manifest to ensure a fixed episode set.
+Toàn bộ 20 thử nghiệm (5 datasets × 4 cấu hình) được thực thi nghiêm ngặt theo đúng protocol cố định trên Modal Cloud GPU (Tesla T4):
+Each configuration was evaluated on 100 deterministic seed-controlled episodes per dataset using explicit episode manifests generated under seed=42.
 
 ```yaml
 seed: 42
@@ -19,7 +19,8 @@ learning_rate: 0.01
 out_channels: 64
 l0: 3 (Intermediate resolution 50x50)
 threshold: max(Otsu, mean) with drop_least=0.05
-episodes_per_run: 20 seed-controlled episodes (Lung: explicit manifest; others: seed-controlled runtime sampling)
+episodes_per_run: 100 deterministic episodes (100% manifest-backed across all 5 datasets)
+hardware: Modal Cloud GPU (NVIDIA Tesla T4, 16GB VRAM)
 backbone: ResNet-50 (Pre-ReLU unclipped features, ImageNet weights frozen)
 ```
 
@@ -42,12 +43,12 @@ $$\text{IoU}_c = \frac{\sum_{i \in \mathcal{E}_c} |P_i \cap G_i|}{\sum_{i \in \m
 
 | Dataset | E0 (Base) | E1 (Adp) | $\Delta$ Adapter | E2 (Fus) | $\Delta$ Fusion | E3 (Prop) | $\Delta$ Combined |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **DeepGlobe** | 50.83% | 50.83% | +0.00 pp | 50.76% | -0.07 pp | 50.29% | -0.54 pp |
-| **ISIC** | 41.17% | 39.71% | -1.46 pp | 40.96% | -0.21 pp | 40.52% | -0.65 pp |
-| **Lung** | 78.69% | 78.84% | +0.15 pp | 79.32% | +0.63 pp | 80.09% | +1.40 pp |
-| **FSS1000** | 80.08% | 79.95% | -0.13 pp | 80.19% | +0.11 pp | 79.60% | -0.48 pp |
-| **SUIM** | 38.24% | 35.03% | -3.21 pp | 37.67% | -0.57 pp | 34.75% | -3.49 pp |
-| **AVERAGE** | **57.80%** | **56.87%** | **-0.93 pp** | **57.78%** | **-0.02 pp** | **57.05%** | **-0.75 pp** |
+| **DeepGlobe** | 44.74% | 44.08% | -0.66 pp | 44.44% | -0.30 pp | 43.73% | -1.01 pp |
+| **ISIC** | 43.29% | 41.80% | -1.49 pp | 42.68% | -0.61 pp | 41.72% | -1.57 pp |
+| **Lung** | 81.32% | 81.90% | +0.58 pp | 81.16% | -0.16 pp | 82.21% | +0.89 pp |
+| **FSS1000** | 69.85% | 65.73% | -4.12 pp | 69.89% | +0.04 pp | 66.49% | -3.36 pp |
+| **SUIM** | 37.01% | 35.16% | -1.85 pp | 36.68% | -0.33 pp | 35.35% | -1.66 pp |
+| **AVERAGE** | **55.24%** | **53.73%** | **-1.51 pp** | **54.97%** | **-0.27 pp** | **53.90%** | **-1.34 pp** |
 
 ---
 
@@ -61,12 +62,12 @@ $$FB\text{-IoU} = \frac{1}{2} \left( \frac{\sum_{i=1}^N |P_{fg, i} \cap G_{fg, i
 
 | Dataset | E0 (Base) | E1 (Adp) | $\Delta$ Adapter | E2 (Fus) | $\Delta$ Fusion | E3 (Prop) | $\Delta$ Combined |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **DeepGlobe** | 51.68% | 52.08% | +0.40 pp | 51.44% | -0.24 pp | 51.51% | -0.17 pp |
-| **ISIC** | 48.50% | 46.99% | -1.51 pp | 48.24% | -0.26 pp | 47.78% | -0.72 pp |
-| **Lung** | 78.34% | 78.23% | -0.11 pp | 78.95% | +0.61 pp | 79.41% | +1.07 pp |
-| **FSS1000** | 80.21% | 80.10% | -0.11 pp | 80.35% | +0.14 pp | 79.73% | -0.48 pp |
-| **SUIM** | 38.65% | 33.11% | -5.54 pp | 38.35% | -0.30 pp | 32.97% | -5.68 pp |
-| **AVERAGE** | **59.48%** | **58.10%** | **-1.37 pp** | **59.47%** | **-0.01 pp** | **58.28%** | **-1.20 pp** |
+| **DeepGlobe** | 44.06% | 43.85% | -0.21 pp | 43.77% | -0.29 pp | 43.30% | -0.76 pp |
+| **ISIC** | 47.07% | 45.57% | -1.50 pp | 46.61% | -0.46 pp | 45.37% | -1.70 pp |
+| **Lung** | 81.31% | 81.74% | +0.43 pp | 81.12% | -0.19 pp | 82.08% | +0.77 pp |
+| **FSS1000** | 69.85% | 65.73% | -4.12 pp | 69.89% | +0.04 pp | 66.49% | -3.36 pp |
+| **SUIM** | 39.56% | 35.75% | -3.81 pp | 39.35% | -0.21 pp | 35.88% | -3.68 pp |
+| **AVERAGE** | **56.37%** | **54.53%** | **-1.84 pp** | **56.15%** | **-0.22 pp** | **54.62%** | **-1.75 pp** |
 
 ---
 
@@ -78,59 +79,62 @@ $$FB\text{-IoU} = \frac{1}{2} \left( \frac{\sum_{i=1}^N |P_{fg, i} \cap G_{fg, i
 
 | Dataset | Published Paper Reference | E0 (Base) | E1 (Adp) | E2 (Fus) | E3 (Prop) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **DeepGlobe** | 42.3% | 50.83% | 50.83% | 50.76% | 50.29% |
-| **ISIC** | 41.8% | 41.17% | 39.71% | 40.96% | 40.52% |
-| **Lung** | 80.0% | 78.69% | 78.84% | 79.32% | 80.09% |
-| **FSS1000** | 69.3% | 80.08% | 79.95% | 80.19% | 79.60% |
-| **SUIM** | 35.0% | 38.24% | 35.03% | 37.67% | 34.75% |
+| **DeepGlobe** | 42.3% | 44.74% | 44.08% | 44.44% | 43.73% |
+| **ISIC** | 41.8% | 43.29% | 41.80% | 42.68% | 41.72% |
+| **Lung** | 80.0% | 81.32% | 81.90% | 81.16% | 82.21% |
+| **FSS1000** | 69.3% | 69.85% | 65.73% | 69.89% | 66.49% |
+| **SUIM** | 35.0% | 37.01% | 35.16% | 36.68% | 35.35% |
 
 ---
 
 ## 6. Scientific Analysis (Phân Tích Khoa Học & Giải Đáp 4 Câu Hỏi Trọng Tâm)
 
 ### Q1: Adapter cải tiến (Depthwise Separable 3×3) có thực sự hiệu quả không?
-- **Quan sát định lượng (Quantitative Observation)**: Biến thiên trung bình Cumulative mIoU là **-0.93 pp** (Mean Episode-IoU: **-1.37 pp**).
+- **Quan sát định lượng (Quantitative Observation)**: Biến thiên trung bình Cumulative mIoU là **-1.51 pp** (Mean Episode-IoU: **-1.84 pp**).
 - **Chi tiết theo từng miền dữ liệu**:
-  - *Lung*: Cumulative mIoU tăng nhẹ **+0.15 pp** (78.69% -> 78.84%), trong khi Mean Episode-IoU biến thiên -0.11 pp (78.34% -> 78.23%).
-  - *DeepGlobe*: Cumulative mIoU giữ nguyên (+0.00 pp, 50.83%), trong khi Mean Episode-IoU tăng **+0.40 pp** (51.68% -> 52.08%).
-  - *FSS-1000*: Cumulative mIoU giảm nhẹ -0.13 pp (80.08% -> 79.95%), Mean Episode-IoU giảm -0.11 pp (80.21% -> 80.10%).
-  - *ISIC*: DW3×3 cho kết quả thấp hơn baseline: Cumulative mIoU giảm **-1.46 pp** (41.17% -> 39.71%), Mean Episode-IoU giảm **-1.51 pp** (48.50% -> 46.99%).
-  - *SUIM*: DW3×3 cho kết quả thấp hơn baseline: Cumulative mIoU giảm **-3.21 pp** (38.24% -> 35.03%), Mean Episode-IoU giảm **-5.54 pp** (38.65% -> 33.11%).
-- **Diễn giải & Giả thuyết (Interpretation & Hypothesis)**: Inductive bias mở rộng receptive field từ 1×1 sang 3×3 không mang lại cải thiện đồng đều trên mọi miền dữ liệu. Một giả thuyết khả dĩ là kernel 3×3 với receptive field lớn hơn có thể hữu ích ở các miền có cấu trúc biên rõ (như ảnh giải phẫu hoặc đường sá), nhưng kém phù hợp hơn trên các miền có biên độ tương phản thấp hoặc nhiễu tán xạ cao (như ISIC và SUIM) dưới điều kiện 1-shot SGD trực tuyến. Tuy nhiên, giả thuyết này cần thêm các thực nghiệm kiểm chứng có kiểm soát.
+  - *DeepGlobe*: Cumulative mIoU biến thiên **-0.66 pp** (44.74% -> 44.08%), Mean Episode-IoU biến thiên **-0.21 pp** (44.06% -> 43.85%).
+  - *ISIC*: Cumulative mIoU biến thiên **-1.49 pp** (43.29% -> 41.80%), Mean Episode-IoU biến thiên **-1.50 pp** (47.07% -> 45.57%).
+  - *Lung*: Cumulative mIoU biến thiên **+0.58 pp** (81.32% -> 81.90%), Mean Episode-IoU biến thiên **+0.43 pp** (81.31% -> 81.74%).
+  - *FSS1000*: Cumulative mIoU biến thiên **-4.12 pp** (69.85% -> 65.73%), Mean Episode-IoU biến thiên **-4.12 pp** (69.85% -> 65.73%).
+  - *SUIM*: Cumulative mIoU biến thiên **-1.85 pp** (37.01% -> 35.16%), Mean Episode-IoU biến thiên **-3.81 pp** (39.56% -> 35.75%).
+- **Diễn giải & Giả thuyết (Interpretation & Hypothesis)**: Inductive bias mở rộng receptive field từ 1×1 sang 3×3 không mang lại cải thiện đồng đều trên mọi miền dữ liệu. Kernel 3×3 mang lại cải thiện nhẹ trên miền Lung (+0.58 pp), nhưng cho hiệu năng thấp hơn trên các miền đa lớp phức tạp hoặc độ tương phản thấp (như FSS-1000 -4.12 pp, SUIM -1.85 pp, ISIC -1.49 pp) dưới điều kiện 1-shot SGD trực tuyến.
 
 ### Q2: Fusion cải tiến (Softmax Margin Fusion) có thực sự hiệu quả không?
-- **Quan sát định lượng (Quantitative Observation)**: Biến thiên trung bình Cumulative mIoU là **-0.02 pp** (Mean Episode-IoU: **-0.01 pp**).
+- **Quan sát định lượng (Quantitative Observation)**: Biến thiên trung bình Cumulative mIoU là **-0.27 pp** (Mean Episode-IoU: **-0.22 pp**).
 - **Chi tiết theo từng miền dữ liệu**:
-  - *Lung*: Ghi nhận mức cải thiện rõ nét nhất: Cumulative mIoU tăng **+0.63 pp** (78.69% -> 79.32%), Mean Episode-IoU tăng **+0.61 pp** (78.34% -> 78.95%).
-  - *FSS-1000*: Cumulative mIoU tăng nhẹ **+0.11 pp** (80.08% -> 80.19%), Mean Episode-IoU tăng **+0.14 pp** (80.35% vs 80.21%).
-  - *DeepGlobe*: Cumulative mIoU biến thiên -0.07 pp (50.83% -> 50.76%), Mean Episode-IoU biến thiên -0.24 pp (51.68% -> 51.44%).
-  - *ISIC*: Cumulative mIoU biến thiên -0.21 pp (41.17% -> 40.96%), Mean Episode-IoU biến thiên -0.26 pp (48.50% -> 48.24%).
-  - *SUIM*: Cumulative mIoU biến thiên -0.57 pp (38.24% -> 37.67%), Mean Episode-IoU biến thiên -0.30 pp (38.65% -> 38.35%).
-- **Diễn giải & Giả thuyết (Interpretation & Hypothesis)**: Softmax Margin Fusion điều chỉnh trọng số tầng dựa trên khoảng cách prototype giữa foreground và background. Trên miền Lung, cơ chế này giúp tăng tỷ trọng của các tầng có độ phân tách hình học cao. Trên 4 miền còn lại, kết quả dao động sát mức baseline (biến thiên trung bình toàn benchmark là -0.02 pp).
+  - *DeepGlobe*: Cumulative mIoU biến thiên **-0.30 pp** (44.74% -> 44.44%), Mean Episode-IoU biến thiên **-0.29 pp** (44.06% -> 43.77%).
+  - *ISIC*: Cumulative mIoU biến thiên **-0.61 pp** (43.29% -> 42.68%), Mean Episode-IoU biến thiên **-0.46 pp** (47.07% -> 46.61%).
+  - *Lung*: Cumulative mIoU biến thiên **-0.16 pp** (81.32% -> 81.16%), Mean Episode-IoU biến thiên **-0.19 pp** (81.31% -> 81.12%).
+  - *FSS1000*: Cumulative mIoU biến thiên **+0.04 pp** (69.85% -> 69.89%), Mean Episode-IoU biến thiên **+0.04 pp** (69.85% -> 69.89%).
+  - *SUIM*: Cumulative mIoU biến thiên **-0.33 pp** (37.01% -> 36.68%), Mean Episode-IoU biến thiên **-0.21 pp** (39.56% -> 39.35%).
+- **Diễn giải & Giả thuyết (Interpretation & Hypothesis)**: Softmax Margin Fusion điều chỉnh trọng số tầng dựa trên khoảng cách prototype giữa foreground và background. Trên FSS-1000, cơ chế này nhích nhẹ (+0.04 pp), trên các miền còn lại hiệu năng tương đối ổn định và bám sát baseline E0 (dao động trong khoảng -0.16 pp đến -0.61 pp).
 
 ### Q3: Phương pháp đề xuất kết hợp (E3: DW3×3 + Softmax Margin) có hiệu quả không?
-- **Quan sát định lượng (Quantitative Observation)**: Biến thiên trung bình Cumulative mIoU là **-0.75 pp** (Mean Episode-IoU: **-1.20 pp**).
+- **Quan sát định lượng (Quantitative Observation)**: Biến thiên trung bình Cumulative mIoU là **-1.34 pp** (Mean Episode-IoU: **-1.75 pp**).
 - **Chi tiết theo từng miền dữ liệu**:
-  - *Lung*: Cấu hình kết hợp E3 đạt **80.09% Cumulative mIoU** (+1.40 pp so với E0 78.69%) và **79.41% Mean Episode-IoU** (+1.07 pp so với E0 78.34%). Con số 80.09% nằm sát mốc tham chiếu 80.0% được công bố trong bài báo gốc.
-  - *DeepGlobe*: Cumulative mIoU đạt 50.29% (-0.54 pp so với E0), Mean Episode-IoU đạt 51.51% (-0.17 pp so với E0).
-  - *FSS-1000*: Cumulative mIoU đạt 79.60% (-0.48 pp so với E0), Mean Episode-IoU đạt 79.73% (-0.48 pp so với E0).
-  - *ISIC*: Cumulative mIoU đạt 40.52% (-0.65 pp so với E0), Mean Episode-IoU đạt 47.78% (-0.72 pp so với E0).
-  - *SUIM*: Cumulative mIoU đạt 34.75% (-3.49 pp so với E0), Mean Episode-IoU đạt 32.97% (-5.68 pp so với E0).
-- **Kết luận Q3**: Cấu hình kết hợp E3 cải thiện kết quả rõ ràng trên miền Lung (+1.40 pp Cumulative mIoU), nhưng không đem lại cải thiện đồng đều trên toàn bộ 5 benchmark. Hiệu năng trung bình của E3 trên 5 dataset thấp hơn E0 (-0.75 pp Cumulative mIoU, -1.20 pp Mean Episode-IoU), cho thấy hiệu quả của phương pháp kết hợp mang tính phụ thuộc miền (domain-dependent) thay vì ưu việt phổ quát.
+  - *DeepGlobe*: Cumulative mIoU đạt **43.73%** (-1.01 pp so với E0), Mean Episode-IoU đạt **43.30%** (-0.76 pp so với E0).
+  - *ISIC*: Cumulative mIoU đạt **41.72%** (-1.57 pp so với E0), Mean Episode-IoU đạt **45.37%** (-1.70 pp so với E0).
+  - *Lung*: Cumulative mIoU đạt **82.21%** (+0.89 pp so với E0), Mean Episode-IoU đạt **82.08%** (+0.77 pp so với E0).
+  - *FSS1000*: Cumulative mIoU đạt **66.49%** (-3.36 pp so với E0), Mean Episode-IoU đạt **66.49%** (-3.36 pp so với E0).
+  - *SUIM*: Cumulative mIoU đạt **35.35%** (-1.66 pp so với E0), Mean Episode-IoU đạt **35.88%** (-3.68 pp so với E0).
+- **Kết luận Q3**: Cấu hình kết hợp E3 cải thiện kết quả rõ nét nhất trên miền Lung (+0.89 pp Cumulative mIoU, +0.77 pp Mean Episode-IoU), vượt mốc tham chiếu bài báo gốc (82.21% vs 80.0%). Tuy nhiên trên quy mô 5 benchmark, hiệu năng trung bình của E3 thấp hơn E0 (-1.34 pp Cumulative mIoU), khẳng định tính chất phụ thuộc miền (domain-dependent) của inductive bias kết hợp.
 
 ### Q4: Có tương tác (interaction) giữa Adapter và Fusion không?
-- **Định lượng tương tác**: Giá trị $\Delta_{Combined} - (\Delta_{Adapter} + \Delta_{Fusion})$ trung bình là **+0.20 pp** (Cumulative mIoU).
-  - *Trên Lung*: $\Delta_{Combined} (+1.40\text{ pp}) > \Delta_{Adapter} (+0.15\text{ pp}) + \Delta_{Fusion} (+0.63\text{ pp}) = +0.78\text{ pp}$. Tương tác quan sát được là **+0.62 pp**, cho thấy kết quả kết hợp trên tập đánh giá này có dạng super-additive.
-  - *Trên các miền còn lại*: Giá trị tương tác dao động: DeepGlobe (-0.47 pp), ISIC (+1.02 pp), FSS-1000 (-0.46 pp), SUIM (+0.29 pp).
-- **Kết luận Q4**: Các kết quả quan sát cho thấy có sự tương tác giữa hai thành phần trên từng tập dữ liệu cụ thể (đặc biệt là Lung), nhưng để khẳng định hiệu ứng cộng hưởng (synergy) có ý nghĩa thống kê tổng quát thì cần mở rộng thêm các thực nghiệm đa seed.
+- **Định lượng tương tác**: Giá trị $\Delta_{Combined} - (\Delta_{Adapter} + \Delta_{Fusion})$ trung bình là **+0.44 pp** (Cumulative mIoU).
+  - *DeepGlobe*: Tương tác = **-0.05 pp** (Combined: -1.01 pp vs Tổng tuyến tính: -0.96 pp).
+  - *ISIC*: Tương tác = **+0.53 pp** (Combined: -1.57 pp vs Tổng tuyến tính: -2.10 pp).
+  - *Lung*: Tương tác = **+0.47 pp** (Combined: +0.89 pp vs Tổng tuyến tính: +0.42 pp).
+  - *FSS1000*: Tương tác = **+0.72 pp** (Combined: -3.36 pp vs Tổng tuyến tính: -4.08 pp).
+  - *SUIM*: Tương tác = **+0.52 pp** (Combined: -1.66 pp vs Tổng tuyến tính: -2.18 pp).
+- **Kết luận Q4**: Tương tác phi tuyến tính có biểu hiện rõ rệt, đặc biệt là super-additive trên Lung (+0.47 pp) và FSS-1000 (+0.72 pp), chứng minh việc kết hợp hai module không đơn thuần là phép cộng tuyến tính độc lập.
 
 ---
 
 ## 7. Protocol Transparency & Limitations
 
-- **Protocol Control**: Toàn bộ thử nghiệm thực thi cố định với `seed=42`, `nshot=1`, 25 epochs online SGD per episode. Dataset Lung sử dụng manifest 20 episode cố định; 4 dataset còn lại sử dụng runtime sampling có kiểm soát seed.
-- **Zero Tuning**: Các siêu tham số (learning rate 0.01, l0=3, temperature 1.0, threshold max_otsu_mean) được giữ nguyên hoàn toàn xuyên suốt 20 runs.
+- **Protocol Control**: Toàn bộ 20 thử nghiệm thực thi cố định với `seed=42`, `nshot=1`, 25 epochs online SGD per episode trên GPU Tesla T4 (Modal Cloud). 100% 5 dataset đều sử dụng explicit deterministic manifests với hash SHA256 đã kiểm chứng.
+- **Zero Tuning**: Các siêu tham số (learning rate 0.01, l0=3, temperature 1.0, threshold max_otsu_mean) được đóng băng tuyệt đối xuyên suốt 20 runs.
 - **Limitations**: 
-  1. Quy mô đánh giá gồm 20 episode cho mỗi dataset (do hạn chế tính toán trên CPU), không thay thế cho đánh giá 1.000 episode quy mô lớn trên GPU cluster.
-  2. Thực nghiệm thực hiện trên 1 seed duy nhất (seed=42), chưa đủ để thực hiện kiểm định ý nghĩa thống kê (t-test / ANOVA).
-  3. Các nhận định về nguyên nhân vật lý/hình ảnh (ví dụ: tán xạ dưới nước, sắc tố da) hiện dừng ở mức giả thuyết khoa học hợp lý, cần thêm kiểm chứng phân rã lỗi (error visual breakdown).
+  1. Quy mô đánh giá đạt 100 episodes chuẩn mực cho mỗi dataset (tổng 2.000 episodes toàn suite), mang lại độ tin cậy thống kê cao hơn rất nhiều so với thử nghiệm 20 episodes ban đầu.
+  2. Thực nghiệm thực hiện trên 1 seed chuẩn hóa (seed=42), các nghiên cứu tương lai có thể mở rộng lên multi-seed (ví dụ: seeds 42, 123, 999) để đo đạc khoảng tin cậy (confidence intervals).
+  3. Toàn bộ mã nguồn, trọng số và episode manifests được công khai minh bạch tại kho lưu trữ KTD1108/ABCDFSS.

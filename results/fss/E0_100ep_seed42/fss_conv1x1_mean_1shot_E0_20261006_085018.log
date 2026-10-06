@@ -1,0 +1,52 @@
+================================================================================
+                     CD-FSS EXPERIMENTAL AUDIT RUNNER
+================================================================================
+experiment_name:    E0
+dataset:            fss
+seed:               42
+nshot:              1
+requested_episodes: 100
+resolved_episodes:  100
+adapter:            conv1x1
+fusion:             mean
+adaptation_mode:    every-episode
+image_size:         400x400
+threshold_method:   pred_mean (max(Otsu, mean), drop_least=0.05)
+backbone:           ResNet-50 (Pre-ReLU unclipped features)
+checkpoint:         ResNet50_Weights.DEFAULT
+manifest_path:      /root/ABCDFSS/experiments/episodes/fss_seed42_100episodes.json
+manifest_sha256:    bed933c99154864c7238dba81e7a7efe37b897c03a1b75c0716ba819e1a907a9
+dataloader_workers: 2
+git_commit:         6575747ed2567026cffc5dc5fb2b8df30691e606
+git_status:         injected_via_env
+PyTorch version:    2.1.2+cu121
+TorchVision version:0.16.2+cu121
+CUDA version:       12.1
+GPU:                Tesla T4
+Log file saved to:  /root/results/fss/E0_100ep_seed42/fss_conv1x1_mean_1shot_E0_20261006_085018.log
+================================================================================
+
+[*] FSS1000Dataset loaded 100 fixed episodes from manifest: /root/ABCDFSS/experiments/episodes/fss_seed42_100episodes.json
+
+:=========== CD-FSS Clean Framework Evaluation: FSS ===========
+| Device:         cuda
+| Adapter Type:   conv1x1
+| Fusion Mode:    mean (temp=1.0)
+| Adapt Mode:     every-episode
+| Total Episodes: 100
+:========================================================================
+
+[Batch: 0001/0100]  mIoU: 81.27%  |  FB-IoU: 87.29%
+[Batch: 0050/0100]  mIoU: 69.28%  |  FB-IoU: 79.16%
+[Batch: 0100/0100]  mIoU: 69.85%  |  FB-IoU: 79.54%
+
+================ FINAL RESULTS ================
+Benchmark:   FSS
+Adapter:     conv1x1
+Fusion:      mean
+Final mIoU (Cumulative): 69.85%
+Mean Episode-IoU:       69.85%
+Final FB-IoU:           79.54%
+Elapsed Time:           378.45s (3.785s/episode)
+================================================
+

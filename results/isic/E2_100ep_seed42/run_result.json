@@ -1,0 +1,1188 @@
+{
+  "protocol_signature": {
+    "benchmark": "isic",
+    "experiment": "E2",
+    "episodes": 100,
+    "seed": 42,
+    "nshot": 1,
+    "adapt_to": "every-episode",
+    "adapter": "conv1x1",
+    "fusion": "softmax_margin",
+    "fusion_temp": 1.0,
+    "image_size": 400,
+    "num_epochs": 25,
+    "learning_rate": 0.01,
+    "manifest": "/root/ABCDFSS/experiments/episodes/isic_seed42_100episodes.json",
+    "manifest_sha256": "3691e721ff6df2efa79f7e480f17e68f7e6153c53461b45a7de8cf08d7e30ce0"
+  },
+  "code_version": {
+    "git_commit": "0ad471e32d6701f781be4bd2952593332b8074eb",
+    "git_dirty": false,
+    "status": "injected_via_env"
+  },
+  "environment": {
+    "python_version": "3.10.17",
+    "torch_version": "2.1.2+cu121",
+    "torchvision_version": "0.16.2+cu121",
+    "numpy_version": "1.26.4",
+    "pillow_version": "12.3.0",
+    "scipy_version": "1.15.3",
+    "cuda_available": true,
+    "cuda_version": "12.1",
+    "gpu_name": "Tesla T4",
+    "platform": "linux"
+  },
+  "config": {
+    "experiment": "E2",
+    "benchmark": "isic",
+    "adapter": "conv1x1",
+    "fusion": "softmax_margin",
+    "fusion_temp": 1.0,
+    "adapt_to": "every-episode",
+    "num_epochs": 25,
+    "lr": 0.01,
+    "l0": 3,
+    "img_size": 400,
+    "seed": 42,
+    "nshot": 1,
+    "manifest_path": "/root/ABCDFSS/experiments/episodes/isic_seed42_100episodes.json",
+    "manifest_sha256": "3691e721ff6df2efa79f7e480f17e68f7e6153c53461b45a7de8cf08d7e30ce0"
+  },
+  "seed": 42,
+  "dataset": "isic",
+  "experiment": "E2",
+  "episode_count": 100,
+  "metric": {
+    "Mean_Episode_IoU": 46.61,
+    "Cumulative_mIoU": 42.68,
+    "FB-IoU": 58.27,
+    "class_ious": {
+      "0": 45.190181756843764,
+      "1": 48.20031186964421,
+      "2": 34.66450216947498
+    }
+  },
+  "raw_result": {
+    "episode_ious": [
+      41.07,
+      56.84,
+      6.83,
+      59.33,
+      29.12,
+      55.62,
+      76.77,
+      57.08,
+      17.36,
+      20.0,
+      77.32,
+      12.82,
+      82.81,
+      56.51,
+      37.75,
+      75.94,
+      71.53,
+      31.57,
+      20.59,
+      78.53,
+      21.01,
+      54.72,
+      49.11,
+      67.38,
+      69.95,
+      23.45,
+      30.57,
+      10.76,
+      62.25,
+      20.65,
+      67.34,
+      58.07,
+      51.26,
+      31.47,
+      45.2,
+      13.45,
+      68.85,
+      51.7,
+      45.24,
+      26.54,
+      40.78,
+      91.01,
+      74.09,
+      53.76,
+      41.45,
+      14.62,
+      6.89,
+      57.64,
+      29.41,
+      52.92,
+      28.37,
+      35.48,
+      59.87,
+      36.96,
+      23.1,
+      89.47,
+      41.58,
+      81.87,
+      68.19,
+      3.96,
+      5.32,
+      86.66,
+      51.0,
+      58.95,
+      38.22,
+      15.17,
+      50.07,
+      69.89,
+      64.39,
+      89.05,
+      64.13,
+      10.74,
+      78.15,
+      83.57,
+      53.99,
+      74.92,
+      54.87,
+      6.47,
+      81.01,
+      19.84,
+      51.81,
+      39.04,
+      84.53,
+      0.0,
+      27.52,
+      3.17,
+      54.94,
+      92.47,
+      7.53,
+      35.73,
+      80.85,
+      19.36,
+      15.52,
+      41.58,
+      63.99,
+      14.54,
+      73.96,
+      57.49,
+      60.75,
+      13.68
+    ],
+    "detailed_episodes": [
+      {
+        "episode_id": 0,
+        "class_id": 0,
+        "iou": 41.0688,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0015559.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0015274.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 1,
+        "class_id": 1,
+        "iou": 56.8357,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012356.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0011390.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 2,
+        "class_id": 2,
+        "iou": 6.8252,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014610.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012786.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 3,
+        "class_id": 0,
+        "iou": 59.33,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0015559.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013417.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 4,
+        "class_id": 1,
+        "iou": 29.1208,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014233.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013334.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 5,
+        "class_id": 2,
+        "iou": 55.6167,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0015233.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013958.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 6,
+        "class_id": 0,
+        "iou": 76.772,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0000057.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012538.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 7,
+        "class_id": 1,
+        "iou": 57.0819,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0015185.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0010036.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 8,
+        "class_id": 2,
+        "iou": 17.3594,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012330.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013667.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 9,
+        "class_id": 0,
+        "iou": 20.0038,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0000207.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013310.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 10,
+        "class_id": 1,
+        "iou": 77.3182,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014788.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0010350.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 11,
+        "class_id": 2,
+        "iou": 12.8199,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013129.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012178.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 12,
+        "class_id": 0,
+        "iou": 82.809,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014657.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0009891.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 13,
+        "class_id": 1,
+        "iou": 56.5067,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0000295.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014480.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 14,
+        "class_id": 2,
+        "iou": 37.7534,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013052.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013167.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 15,
+        "class_id": 0,
+        "iou": 75.9372,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0015631.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0015526.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 16,
+        "class_id": 1,
+        "iou": 71.5274,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014316.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013842.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 17,
+        "class_id": 2,
+        "iou": 31.5693,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014770.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012889.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 18,
+        "class_id": 0,
+        "iou": 20.5859,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0015040.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0000131.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 19,
+        "class_id": 1,
+        "iou": 78.5326,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0000518.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014108.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 20,
+        "class_id": 2,
+        "iou": 21.0097,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012210.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0015062.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 21,
+        "class_id": 0,
+        "iou": 54.7225,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0010348.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0010335.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 22,
+        "class_id": 1,
+        "iou": 49.1082,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0000166.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014478.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 23,
+        "class_id": 2,
+        "iou": 67.3754,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0015220.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014605.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 24,
+        "class_id": 0,
+        "iou": 69.9468,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0011082.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012803.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 25,
+        "class_id": 1,
+        "iou": 23.4469,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0000148.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014872.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 26,
+        "class_id": 2,
+        "iou": 30.5676,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013063.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014587.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 27,
+        "class_id": 0,
+        "iou": 10.7597,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0015603.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0011300.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 28,
+        "class_id": 1,
+        "iou": 62.2455,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014703.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014222.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 29,
+        "class_id": 2,
+        "iou": 20.6469,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013635.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013493.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 30,
+        "class_id": 0,
+        "iou": 67.3422,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0015203.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014708.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 31,
+        "class_id": 1,
+        "iou": 58.0746,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013617.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012290.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 32,
+        "class_id": 2,
+        "iou": 51.2639,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012358.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014139.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 33,
+        "class_id": 0,
+        "iou": 31.4734,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0009976.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013603.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 34,
+        "class_id": 1,
+        "iou": 45.1984,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0000040.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0011158.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 35,
+        "class_id": 2,
+        "iou": 13.4478,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014587.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014637.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 36,
+        "class_id": 0,
+        "iou": 68.8464,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0011082.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0003005.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 37,
+        "class_id": 1,
+        "iou": 51.7039,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013232.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014049.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 38,
+        "class_id": 2,
+        "iou": 45.2406,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013474.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013089.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 39,
+        "class_id": 0,
+        "iou": 26.5399,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013424.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0010357.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 40,
+        "class_id": 1,
+        "iou": 40.7803,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013840.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012512.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 41,
+        "class_id": 2,
+        "iou": 91.0119,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012272.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013165.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 42,
+        "class_id": 0,
+        "iou": 74.0907,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0009972.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0010213.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 43,
+        "class_id": 1,
+        "iou": 53.757,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014931.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014920.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 44,
+        "class_id": 2,
+        "iou": 41.4528,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012478.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013333.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 45,
+        "class_id": 0,
+        "iou": 14.6194,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0015419.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0009860.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 46,
+        "class_id": 1,
+        "iou": 6.8929,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013733.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012356.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 47,
+        "class_id": 2,
+        "iou": 57.643,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013685.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014554.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 48,
+        "class_id": 0,
+        "iou": 29.4066,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012865.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0010599.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 49,
+        "class_id": 1,
+        "iou": 52.9229,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014527.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0001103.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 50,
+        "class_id": 2,
+        "iou": 28.3665,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014643.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014603.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 51,
+        "class_id": 0,
+        "iou": 35.4839,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014901.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014937.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 52,
+        "class_id": 1,
+        "iou": 59.873,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013232.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0015206.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 53,
+        "class_id": 2,
+        "iou": 36.9607,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014586.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012329.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 54,
+        "class_id": 0,
+        "iou": 23.0984,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0015961.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0010858.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 55,
+        "class_id": 1,
+        "iou": 89.4719,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0000056.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014513.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 56,
+        "class_id": 2,
+        "iou": 41.5842,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013063.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013918.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 57,
+        "class_id": 0,
+        "iou": 81.8662,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0010014.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0000486.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 58,
+        "class_id": 1,
+        "iou": 68.1885,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013472.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0009898.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 59,
+        "class_id": 2,
+        "iou": 3.9639,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013673.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012282.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 60,
+        "class_id": 0,
+        "iou": 5.3221,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014131.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0000119.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 61,
+        "class_id": 1,
+        "iou": 86.6607,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0000283.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0010207.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 62,
+        "class_id": 2,
+        "iou": 51.0047,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013782.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012155.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 63,
+        "class_id": 0,
+        "iou": 58.9486,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0000493.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013053.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 64,
+        "class_id": 1,
+        "iou": 38.2221,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012715.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014975.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 65,
+        "class_id": 2,
+        "iou": 15.1685,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012224.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013765.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 66,
+        "class_id": 0,
+        "iou": 50.0675,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0006914.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0010263.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 67,
+        "class_id": 1,
+        "iou": 69.8874,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0000172.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0000547.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 68,
+        "class_id": 2,
+        "iou": 64.3923,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0015153.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012266.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 69,
+        "class_id": 0,
+        "iou": 89.0539,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0000363.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0007087.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 70,
+        "class_id": 1,
+        "iou": 64.1327,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0011137.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014722.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 71,
+        "class_id": 2,
+        "iou": 10.7434,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014393.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012227.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 72,
+        "class_id": 0,
+        "iou": 78.1531,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014769.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014782.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 73,
+        "class_id": 1,
+        "iou": 83.5713,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013491.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013626.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 74,
+        "class_id": 2,
+        "iou": 53.9948,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013170.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014599.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 75,
+        "class_id": 0,
+        "iou": 74.924,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012221.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0009967.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 76,
+        "class_id": 1,
+        "iou": 54.8669,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0010231.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0000175.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 77,
+        "class_id": 2,
+        "iou": 6.4688,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013910.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012475.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 78,
+        "class_id": 0,
+        "iou": 81.0119,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0000341.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012107.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 79,
+        "class_id": 1,
+        "iou": 19.84,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012678.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0015156.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 80,
+        "class_id": 2,
+        "iou": 51.806,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014169.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013364.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 81,
+        "class_id": 0,
+        "iou": 39.0421,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013862.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0000409.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 82,
+        "class_id": 1,
+        "iou": 84.5316,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012382.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013948.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 83,
+        "class_id": 2,
+        "iou": 0.0,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012245.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012792.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 84,
+        "class_id": 0,
+        "iou": 27.5162,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012770.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0011102.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 85,
+        "class_id": 1,
+        "iou": 3.172,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013839.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0000143.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 86,
+        "class_id": 2,
+        "iou": 54.9365,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014623.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012852.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 87,
+        "class_id": 0,
+        "iou": 92.4675,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0000341.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014728.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 88,
+        "class_id": 1,
+        "iou": 7.5326,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013995.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014151.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 89,
+        "class_id": 2,
+        "iou": 35.7319,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012828.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012986.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 90,
+        "class_id": 0,
+        "iou": 80.8517,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0010215.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013428.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 91,
+        "class_id": 1,
+        "iou": 19.3582,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012749.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013581.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 92,
+        "class_id": 2,
+        "iou": 15.5152,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013371.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012379.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 93,
+        "class_id": 0,
+        "iou": 41.581,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0010173.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0002976.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 94,
+        "class_id": 1,
+        "iou": 63.9917,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0012298.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013969.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 95,
+        "class_id": 2,
+        "iou": 14.5407,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013635.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012224.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 96,
+        "class_id": 0,
+        "iou": 73.9605,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0001267.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0014164.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 97,
+        "class_id": 1,
+        "iou": 57.4943,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014103.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0015284.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 98,
+        "class_id": 2,
+        "iou": 60.7487,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0014599.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0013397.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 99,
+        "class_id": 0,
+        "iou": 13.6835,
+        "query_img": "ISIC2018_Task1-2_Training_Input/ISIC_0013249.jpg",
+        "support_imgs": [
+          "['ISIC2018_Task1-2_Training_Input/ISIC_0012187.jpg']"
+        ],
+        "category": "1"
+      }
+    ]
+  },
+  "summary": {
+    "timestamp": "20261006_072249",
+    "experiment": "E2",
+    "benchmark": "isic",
+    "adapter": "conv1x1",
+    "fusion": "softmax_margin",
+    "nshot": 1,
+    "episodes": 100,
+    "seed": 42,
+    "Mean_Episode_IoU": 46.61,
+    "Cumulative_mIoU": 42.68,
+    "FB-IoU": 58.27,
+    "manifest": "/root/ABCDFSS/experiments/episodes/isic_seed42_100episodes.json",
+    "manifest_sha256": "3691e721ff6df2efa79f7e480f17e68f7e6153c53461b45a7de8cf08d7e30ce0",
+    "log_file": "/root/results/isic/E2_100ep_seed42/isic_conv1x1_softmax_margin_1shot_E2_20261006_072249.log"
+  },
+  "log": "/root/results/isic/E2_100ep_seed42/isic_conv1x1_softmax_margin_1shot_E2_20261006_072249.log"
+}

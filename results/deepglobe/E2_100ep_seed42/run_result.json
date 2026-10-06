@@ -1,0 +1,1191 @@
+{
+  "protocol_signature": {
+    "benchmark": "deepglobe",
+    "experiment": "E2",
+    "episodes": 100,
+    "seed": 42,
+    "nshot": 1,
+    "adapt_to": "every-episode",
+    "adapter": "conv1x1",
+    "fusion": "softmax_margin",
+    "fusion_temp": 1.0,
+    "image_size": 400,
+    "num_epochs": 25,
+    "learning_rate": 0.01,
+    "manifest": "/root/ABCDFSS/experiments/episodes/deepglobe_seed42_100episodes.json",
+    "manifest_sha256": "f29661f0686c702d70511c8de8fa6dd1c4ab54d22e39d60f64edcc76ae5ed149"
+  },
+  "code_version": {
+    "git_commit": "0ad471e32d6701f781be4bd2952593332b8074eb",
+    "git_dirty": false,
+    "status": "injected_via_env"
+  },
+  "environment": {
+    "python_version": "3.10.17",
+    "torch_version": "2.1.2+cu121",
+    "torchvision_version": "0.16.2+cu121",
+    "numpy_version": "1.26.4",
+    "pillow_version": "12.3.0",
+    "scipy_version": "1.15.3",
+    "cuda_available": true,
+    "cuda_version": "12.1",
+    "gpu_name": "Tesla T4",
+    "platform": "linux"
+  },
+  "config": {
+    "experiment": "E2",
+    "benchmark": "deepglobe",
+    "adapter": "conv1x1",
+    "fusion": "softmax_margin",
+    "fusion_temp": 1.0,
+    "adapt_to": "every-episode",
+    "num_epochs": 25,
+    "lr": 0.01,
+    "l0": 3,
+    "img_size": 400,
+    "seed": 42,
+    "nshot": 1,
+    "manifest_path": "/root/ABCDFSS/experiments/episodes/deepglobe_seed42_100episodes.json",
+    "manifest_sha256": "f29661f0686c702d70511c8de8fa6dd1c4ab54d22e39d60f64edcc76ae5ed149"
+  },
+  "seed": 42,
+  "dataset": "deepglobe",
+  "experiment": "E2",
+  "episode_count": 100,
+  "metric": {
+    "Mean_Episode_IoU": 43.77,
+    "Cumulative_mIoU": 44.44,
+    "FB-IoU": 46.81,
+    "class_ious": {
+      "0": 45.789116749573836,
+      "1": 40.066723542695215,
+      "2": 42.17252377176726,
+      "3": 52.62635590206122,
+      "4": 53.03714760435053,
+      "5": 32.96473582870686
+    }
+  },
+  "raw_result": {
+    "episode_ious": [
+      48.73,
+      15.06,
+      52.47,
+      84.97,
+      89.49,
+      51.05,
+      57.71,
+      77.97,
+      36.3,
+      64.9,
+      66.98,
+      2.96,
+      80.22,
+      26.58,
+      65.1,
+      63.34,
+      39.27,
+      31.61,
+      9.68,
+      63.76,
+      63.56,
+      40.96,
+      65.79,
+      20.37,
+      56.15,
+      19.06,
+      43.34,
+      40.5,
+      70.42,
+      4.13,
+      14.09,
+      0.14,
+      25.95,
+      39.83,
+      53.02,
+      52.06,
+      35.5,
+      73.52,
+      48.05,
+      71.07,
+      6.43,
+      52.83,
+      52.3,
+      51.0,
+      11.68,
+      63.38,
+      36.14,
+      27.3,
+      12.51,
+      47.35,
+      3.54,
+      46.55,
+      83.97,
+      50.72,
+      21.72,
+      19.46,
+      27.81,
+      78.41,
+      10.55,
+      42.97,
+      75.35,
+      41.57,
+      44.38,
+      56.69,
+      84.5,
+      16.66,
+      61.68,
+      74.49,
+      50.46,
+      52.32,
+      0.69,
+      17.36,
+      73.24,
+      8.5,
+      55.36,
+      63.34,
+      71.05,
+      36.7,
+      44.18,
+      18.6,
+      14.33,
+      45.2,
+      46.08,
+      10.3,
+      44.67,
+      19.17,
+      57.78,
+      25.37,
+      55.64,
+      65.98,
+      16.95,
+      26.92,
+      20.16,
+      36.88,
+      76.18,
+      29.82,
+      57.33,
+      64.19,
+      50.4,
+      54.74
+    ],
+    "detailed_episodes": [
+      {
+        "episode_id": 0,
+        "class_id": 0,
+        "iou": 48.7326,
+        "query_img": "1/test/origin/834900_54.jpg",
+        "support_imgs": [
+          "['1/test/origin/219670_52.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 1,
+        "class_id": 1,
+        "iou": 15.0555,
+        "query_img": "2/test/origin/772130_01.jpg",
+        "support_imgs": [
+          "['2/test/origin/282120_45.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 2,
+        "class_id": 2,
+        "iou": 52.4714,
+        "query_img": "3/test/origin/616860_52.jpg",
+        "support_imgs": [
+          "['3/test/origin/834900_12.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 3,
+        "class_id": 3,
+        "iou": 84.974,
+        "query_img": "4/test/origin/877160_53.jpg",
+        "support_imgs": [
+          "['4/test/origin/174980_14.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 4,
+        "class_id": 4,
+        "iou": 89.4919,
+        "query_img": "5/test/origin/616860_11.jpg",
+        "support_imgs": [
+          "['5/test/origin/971880_51.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 5,
+        "class_id": 5,
+        "iou": 51.0491,
+        "query_img": "6/test/origin/644150_01.jpg",
+        "support_imgs": [
+          "['6/test/origin/44070_50.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 6,
+        "class_id": 0,
+        "iou": 57.7135,
+        "query_img": "1/test/origin/772130_04.jpg",
+        "support_imgs": [
+          "['1/test/origin/878990_54.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 7,
+        "class_id": 1,
+        "iou": 77.9674,
+        "query_img": "2/test/origin/586670_05.jpg",
+        "support_imgs": [
+          "['2/test/origin/103730_00.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 8,
+        "class_id": 2,
+        "iou": 36.3023,
+        "query_img": "3/test/origin/98150_13.jpg",
+        "support_imgs": [
+          "['3/test/origin/125510_34.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 9,
+        "class_id": 3,
+        "iou": 64.8962,
+        "query_img": "4/test/origin/174980_51.jpg",
+        "support_imgs": [
+          "['4/test/origin/27460_34.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 10,
+        "class_id": 4,
+        "iou": 66.976,
+        "query_img": "5/test/origin/616860_12.jpg",
+        "support_imgs": [
+          "['5/test/origin/78430_00.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 11,
+        "class_id": 5,
+        "iou": 2.9599,
+        "query_img": "6/test/origin/511850_12.jpg",
+        "support_imgs": [
+          "['6/test/origin/784140_43.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 12,
+        "class_id": 0,
+        "iou": 80.2188,
+        "query_img": "1/test/origin/549870_12.jpg",
+        "support_imgs": [
+          "['1/test/origin/805150_52.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 13,
+        "class_id": 1,
+        "iou": 26.5834,
+        "query_img": "2/test/origin/419820_11.jpg",
+        "support_imgs": [
+          "['2/test/origin/616860_54.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 14,
+        "class_id": 2,
+        "iou": 65.1006,
+        "query_img": "3/test/origin/282120_54.jpg",
+        "support_imgs": [
+          "['3/test/origin/654770_52.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 15,
+        "class_id": 3,
+        "iou": 63.335,
+        "query_img": "4/test/origin/952430_51.jpg",
+        "support_imgs": [
+          "['4/test/origin/880610_32.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 16,
+        "class_id": 4,
+        "iou": 39.266,
+        "query_img": "5/test/origin/549870_55.jpg",
+        "support_imgs": [
+          "['5/test/origin/457070_01.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 17,
+        "class_id": 5,
+        "iou": 31.6089,
+        "query_img": "6/test/origin/412210_45.jpg",
+        "support_imgs": [
+          "['6/test/origin/808980_03.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 18,
+        "class_id": 0,
+        "iou": 9.6806,
+        "query_img": "1/test/origin/58910_13.jpg",
+        "support_imgs": [
+          "['1/test/origin/530040_25.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 19,
+        "class_id": 1,
+        "iou": 63.7611,
+        "query_img": "2/test/origin/952430_52.jpg",
+        "support_imgs": [
+          "['2/test/origin/509290_52.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 20,
+        "class_id": 2,
+        "iou": 63.5642,
+        "query_img": "3/test/origin/148260_31.jpg",
+        "support_imgs": [
+          "['3/test/origin/654770_45.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 21,
+        "class_id": 3,
+        "iou": 40.9578,
+        "query_img": "4/test/origin/880610_54.jpg",
+        "support_imgs": [
+          "['4/test/origin/162310_15.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 22,
+        "class_id": 4,
+        "iou": 65.7924,
+        "query_img": "5/test/origin/499600_11.jpg",
+        "support_imgs": [
+          "['5/test/origin/78430_12.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 23,
+        "class_id": 5,
+        "iou": 20.3714,
+        "query_img": "6/test/origin/159280_02.jpg",
+        "support_imgs": [
+          "['6/test/origin/808980_43.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 24,
+        "class_id": 0,
+        "iou": 56.1528,
+        "query_img": "1/test/origin/547080_03.jpg",
+        "support_imgs": [
+          "['1/test/origin/394500_44.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 25,
+        "class_id": 1,
+        "iou": 19.0572,
+        "query_img": "2/test/origin/530040_55.jpg",
+        "support_imgs": [
+          "['2/test/origin/44070_42.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 26,
+        "class_id": 2,
+        "iou": 43.3427,
+        "query_img": "3/test/origin/616860_30.jpg",
+        "support_imgs": [
+          "['3/test/origin/586670_25.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 27,
+        "class_id": 3,
+        "iou": 40.5018,
+        "query_img": "4/test/origin/880610_41.jpg",
+        "support_imgs": [
+          "['4/test/origin/784140_55.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 28,
+        "class_id": 4,
+        "iou": 70.4211,
+        "query_img": "5/test/origin/616860_12.jpg",
+        "support_imgs": [
+          "['5/test/origin/586670_41.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 29,
+        "class_id": 5,
+        "iou": 4.1275,
+        "query_img": "6/test/origin/808980_42.jpg",
+        "support_imgs": [
+          "['6/test/origin/162310_50.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 30,
+        "class_id": 0,
+        "iou": 14.0947,
+        "query_img": "1/test/origin/606370_21.jpg",
+        "support_imgs": [
+          "['1/test/origin/394500_43.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 31,
+        "class_id": 1,
+        "iou": 0.1392,
+        "query_img": "2/test/origin/848780_50.jpg",
+        "support_imgs": [
+          "['2/test/origin/44070_45.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 32,
+        "class_id": 2,
+        "iou": 25.9513,
+        "query_img": "3/test/origin/103730_43.jpg",
+        "support_imgs": [
+          "['3/test/origin/571520_10.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 33,
+        "class_id": 3,
+        "iou": 39.8342,
+        "query_img": "4/test/origin/877160_25.jpg",
+        "support_imgs": [
+          "['4/test/origin/174980_50.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 34,
+        "class_id": 4,
+        "iou": 53.0224,
+        "query_img": "5/test/origin/644150_05.jpg",
+        "support_imgs": [
+          "['5/test/origin/457070_20.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 35,
+        "class_id": 5,
+        "iou": 52.0567,
+        "query_img": "6/test/origin/324170_01.jpg",
+        "support_imgs": [
+          "['6/test/origin/324170_54.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 36,
+        "class_id": 0,
+        "iou": 35.4956,
+        "query_img": "1/test/origin/805150_10.jpg",
+        "support_imgs": [
+          "['1/test/origin/547080_03.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 37,
+        "class_id": 1,
+        "iou": 73.5234,
+        "query_img": "2/test/origin/834900_54.jpg",
+        "support_imgs": [
+          "['2/test/origin/616860_20.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 38,
+        "class_id": 2,
+        "iou": 48.0528,
+        "query_img": "3/test/origin/282120_54.jpg",
+        "support_imgs": [
+          "['3/test/origin/762470_31.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 39,
+        "class_id": 3,
+        "iou": 71.0668,
+        "query_img": "4/test/origin/877160_50.jpg",
+        "support_imgs": [
+          "['4/test/origin/619800_43.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 40,
+        "class_id": 4,
+        "iou": 6.4321,
+        "query_img": "5/test/origin/848780_05.jpg",
+        "support_imgs": [
+          "['5/test/origin/586670_41.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 41,
+        "class_id": 5,
+        "iou": 52.8276,
+        "query_img": "6/test/origin/971880_23.jpg",
+        "support_imgs": [
+          "['6/test/origin/805150_23.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 42,
+        "class_id": 0,
+        "iou": 52.3007,
+        "query_img": "1/test/origin/848780_53.jpg",
+        "support_imgs": [
+          "['1/test/origin/471930_50.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 43,
+        "class_id": 1,
+        "iou": 51.0,
+        "query_img": "2/test/origin/616860_52.jpg",
+        "support_imgs": [
+          "['2/test/origin/880610_14.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 44,
+        "class_id": 2,
+        "iou": 11.6767,
+        "query_img": "3/test/origin/148260_33.jpg",
+        "support_imgs": [
+          "['3/test/origin/162310_04.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 45,
+        "class_id": 3,
+        "iou": 63.3849,
+        "query_img": "4/test/origin/162310_35.jpg",
+        "support_imgs": [
+          "['4/test/origin/162310_15.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 46,
+        "class_id": 4,
+        "iou": 36.1414,
+        "query_img": "5/test/origin/878990_02.jpg",
+        "support_imgs": [
+          "['5/test/origin/586670_31.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 47,
+        "class_id": 5,
+        "iou": 27.2995,
+        "query_img": "6/test/origin/805150_01.jpg",
+        "support_imgs": [
+          "['6/test/origin/956410_53.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 48,
+        "class_id": 0,
+        "iou": 12.5052,
+        "query_img": "1/test/origin/805150_52.jpg",
+        "support_imgs": [
+          "['1/test/origin/549870_12.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 49,
+        "class_id": 1,
+        "iou": 47.3516,
+        "query_img": "2/test/origin/619800_20.jpg",
+        "support_imgs": [
+          "['2/test/origin/457070_24.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 50,
+        "class_id": 2,
+        "iou": 3.5366,
+        "query_img": "3/test/origin/541060_42.jpg",
+        "support_imgs": [
+          "['3/test/origin/878990_15.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 51,
+        "class_id": 3,
+        "iou": 46.5469,
+        "query_img": "4/test/origin/277900_32.jpg",
+        "support_imgs": [
+          "['4/test/origin/877160_50.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 52,
+        "class_id": 4,
+        "iou": 83.9743,
+        "query_img": "5/test/origin/586670_21.jpg",
+        "support_imgs": [
+          "['5/test/origin/586670_13.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 53,
+        "class_id": 5,
+        "iou": 50.7216,
+        "query_img": "6/test/origin/971880_05.jpg",
+        "support_imgs": [
+          "['6/test/origin/912620_13.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 54,
+        "class_id": 0,
+        "iou": 21.7183,
+        "query_img": "1/test/origin/324170_51.jpg",
+        "support_imgs": [
+          "['1/test/origin/471930_31.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 55,
+        "class_id": 1,
+        "iou": 19.464,
+        "query_img": "2/test/origin/678520_42.jpg",
+        "support_imgs": [
+          "['2/test/origin/530040_54.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 56,
+        "class_id": 2,
+        "iou": 27.8091,
+        "query_img": "3/test/origin/664140_01.jpg",
+        "support_imgs": [
+          "['3/test/origin/878990_02.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 57,
+        "class_id": 3,
+        "iou": 78.412,
+        "query_img": "4/test/origin/877160_31.jpg",
+        "support_imgs": [
+          "['4/test/origin/784140_54.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 58,
+        "class_id": 4,
+        "iou": 10.5505,
+        "query_img": "5/test/origin/78430_12.jpg",
+        "support_imgs": [
+          "['5/test/origin/664140_11.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 59,
+        "class_id": 5,
+        "iou": 42.9668,
+        "query_img": "6/test/origin/805150_50.jpg",
+        "support_imgs": [
+          "['6/test/origin/277900_00.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 60,
+        "class_id": 0,
+        "iou": 75.347,
+        "query_img": "1/test/origin/762470_50.jpg",
+        "support_imgs": [
+          "['1/test/origin/547080_52.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 61,
+        "class_id": 1,
+        "iou": 41.5722,
+        "query_img": "2/test/origin/649260_32.jpg",
+        "support_imgs": [
+          "['2/test/origin/616860_52.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 62,
+        "class_id": 2,
+        "iou": 44.3796,
+        "query_img": "3/test/origin/616860_00.jpg",
+        "support_imgs": [
+          "['3/test/origin/159280_30.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 63,
+        "class_id": 3,
+        "iou": 56.6941,
+        "query_img": "4/test/origin/850510_35.jpg",
+        "support_imgs": [
+          "['4/test/origin/27460_02.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 64,
+        "class_id": 4,
+        "iou": 84.4971,
+        "query_img": "5/test/origin/644150_05.jpg",
+        "support_imgs": [
+          "['5/test/origin/678520_21.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 65,
+        "class_id": 5,
+        "iou": 16.6591,
+        "query_img": "6/test/origin/541060_40.jpg",
+        "support_imgs": [
+          "['6/test/origin/419820_10.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 66,
+        "class_id": 0,
+        "iou": 61.6772,
+        "query_img": "1/test/origin/805150_04.jpg",
+        "support_imgs": [
+          "['1/test/origin/457070_42.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 67,
+        "class_id": 1,
+        "iou": 74.4942,
+        "query_img": "2/test/origin/664140_02.jpg",
+        "support_imgs": [
+          "['2/test/origin/878990_24.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 68,
+        "class_id": 2,
+        "iou": 50.4558,
+        "query_img": "3/test/origin/616860_43.jpg",
+        "support_imgs": [
+          "['3/test/origin/148260_11.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 69,
+        "class_id": 3,
+        "iou": 52.3208,
+        "query_img": "4/test/origin/739760_25.jpg",
+        "support_imgs": [
+          "['4/test/origin/784140_10.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 70,
+        "class_id": 4,
+        "iou": 0.6873,
+        "query_img": "5/test/origin/878990_12.jpg",
+        "support_imgs": [
+          "['5/test/origin/649260_43.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 71,
+        "class_id": 5,
+        "iou": 17.3557,
+        "query_img": "6/test/origin/878990_12.jpg",
+        "support_imgs": [
+          "['6/test/origin/412210_10.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 72,
+        "class_id": 0,
+        "iou": 73.2375,
+        "query_img": "1/test/origin/457070_33.jpg",
+        "support_imgs": [
+          "['1/test/origin/654770_10.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 73,
+        "class_id": 1,
+        "iou": 8.4992,
+        "query_img": "2/test/origin/654770_01.jpg",
+        "support_imgs": [
+          "['2/test/origin/805150_50.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 74,
+        "class_id": 2,
+        "iou": 55.362,
+        "query_img": "3/test/origin/619800_25.jpg",
+        "support_imgs": [
+          "['3/test/origin/65170_35.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 75,
+        "class_id": 3,
+        "iou": 63.3443,
+        "query_img": "4/test/origin/880610_32.jpg",
+        "support_imgs": [
+          "['4/test/origin/277900_13.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 76,
+        "class_id": 4,
+        "iou": 71.0452,
+        "query_img": "5/test/origin/549870_34.jpg",
+        "support_imgs": [
+          "['5/test/origin/530040_10.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 77,
+        "class_id": 5,
+        "iou": 36.7031,
+        "query_img": "6/test/origin/808980_11.jpg",
+        "support_imgs": [
+          "['6/test/origin/808980_12.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 78,
+        "class_id": 0,
+        "iou": 44.185,
+        "query_img": "1/test/origin/219670_25.jpg",
+        "support_imgs": [
+          "['1/test/origin/78430_35.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 79,
+        "class_id": 1,
+        "iou": 18.5998,
+        "query_img": "2/test/origin/616860_43.jpg",
+        "support_imgs": [
+          "['2/test/origin/971880_22.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 80,
+        "class_id": 2,
+        "iou": 14.3333,
+        "query_img": "3/test/origin/277900_00.jpg",
+        "support_imgs": [
+          "['3/test/origin/877160_51.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 81,
+        "class_id": 3,
+        "iou": 45.2022,
+        "query_img": "4/test/origin/739760_14.jpg",
+        "support_imgs": [
+          "['4/test/origin/277900_12.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 82,
+        "class_id": 4,
+        "iou": 46.0784,
+        "query_img": "5/test/origin/78430_00.jpg",
+        "support_imgs": [
+          "['5/test/origin/664140_11.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 83,
+        "class_id": 5,
+        "iou": 10.2961,
+        "query_img": "6/test/origin/511850_35.jpg",
+        "support_imgs": [
+          "['6/test/origin/784140_55.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 84,
+        "class_id": 0,
+        "iou": 44.6664,
+        "query_img": "1/test/origin/219670_12.jpg",
+        "support_imgs": [
+          "['1/test/origin/457070_02.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 85,
+        "class_id": 1,
+        "iou": 19.1713,
+        "query_img": "2/test/origin/848780_03.jpg",
+        "support_imgs": [
+          "['2/test/origin/509290_43.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 86,
+        "class_id": 2,
+        "iou": 57.7759,
+        "query_img": "3/test/origin/471930_51.jpg",
+        "support_imgs": [
+          "['3/test/origin/277900_10.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 87,
+        "class_id": 3,
+        "iou": 25.3688,
+        "query_img": "4/test/origin/784140_55.jpg",
+        "support_imgs": [
+          "['4/test/origin/880610_30.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 88,
+        "class_id": 4,
+        "iou": 55.6413,
+        "query_img": "5/test/origin/616860_12.jpg",
+        "support_imgs": [
+          "['5/test/origin/509290_30.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 89,
+        "class_id": 5,
+        "iou": 65.9775,
+        "query_img": "6/test/origin/44070_51.jpg",
+        "support_imgs": [
+          "['6/test/origin/664140_01.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 90,
+        "class_id": 0,
+        "iou": 16.9541,
+        "query_img": "1/test/origin/27460_34.jpg",
+        "support_imgs": [
+          "['1/test/origin/664140_20.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 91,
+        "class_id": 1,
+        "iou": 26.9181,
+        "query_img": "2/test/origin/219670_54.jpg",
+        "support_imgs": [
+          "['2/test/origin/282120_32.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 92,
+        "class_id": 2,
+        "iou": 20.1647,
+        "query_img": "3/test/origin/649260_12.jpg",
+        "support_imgs": [
+          "['3/test/origin/784140_54.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 93,
+        "class_id": 3,
+        "iou": 36.8801,
+        "query_img": "4/test/origin/174980_50.jpg",
+        "support_imgs": [
+          "['4/test/origin/27460_05.jpg']"
+        ],
+        "category": "4"
+      },
+      {
+        "episode_id": 94,
+        "class_id": 4,
+        "iou": 76.1786,
+        "query_img": "5/test/origin/457070_04.jpg",
+        "support_imgs": [
+          "['5/test/origin/549870_10.jpg']"
+        ],
+        "category": "5"
+      },
+      {
+        "episode_id": 95,
+        "class_id": 5,
+        "iou": 29.8162,
+        "query_img": "6/test/origin/324170_51.jpg",
+        "support_imgs": [
+          "['6/test/origin/808980_12.jpg']"
+        ],
+        "category": "6"
+      },
+      {
+        "episode_id": 96,
+        "class_id": 0,
+        "iou": 57.3327,
+        "query_img": "1/test/origin/805150_03.jpg",
+        "support_imgs": [
+          "['1/test/origin/762470_44.jpg']"
+        ],
+        "category": "1"
+      },
+      {
+        "episode_id": 97,
+        "class_id": 1,
+        "iou": 64.1923,
+        "query_img": "2/test/origin/678520_04.jpg",
+        "support_imgs": [
+          "['2/test/origin/103730_21.jpg']"
+        ],
+        "category": "2"
+      },
+      {
+        "episode_id": 98,
+        "class_id": 2,
+        "iou": 50.3956,
+        "query_img": "3/test/origin/159280_44.jpg",
+        "support_imgs": [
+          "['3/test/origin/649260_05.jpg']"
+        ],
+        "category": "3"
+      },
+      {
+        "episode_id": 99,
+        "class_id": 3,
+        "iou": 54.7359,
+        "query_img": "4/test/origin/739760_51.jpg",
+        "support_imgs": [
+          "['4/test/origin/952430_51.jpg']"
+        ],
+        "category": "4"
+      }
+    ]
+  },
+  "summary": {
+    "timestamp": "20261006_065448",
+    "experiment": "E2",
+    "benchmark": "deepglobe",
+    "adapter": "conv1x1",
+    "fusion": "softmax_margin",
+    "nshot": 1,
+    "episodes": 100,
+    "seed": 42,
+    "Mean_Episode_IoU": 43.77,
+    "Cumulative_mIoU": 44.44,
+    "FB-IoU": 46.81,
+    "manifest": "/root/ABCDFSS/experiments/episodes/deepglobe_seed42_100episodes.json",
+    "manifest_sha256": "f29661f0686c702d70511c8de8fa6dd1c4ab54d22e39d60f64edcc76ae5ed149",
+    "log_file": "/root/results/deepglobe/E2_100ep_seed42/deepglobe_conv1x1_softmax_margin_1shot_E2_20261006_065448.log"
+  },
+  "log": "/root/results/deepglobe/E2_100ep_seed42/deepglobe_conv1x1_softmax_margin_1shot_E2_20261006_065448.log"
+}

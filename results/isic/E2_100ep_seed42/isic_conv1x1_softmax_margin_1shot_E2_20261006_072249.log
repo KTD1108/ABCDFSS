@@ -1,0 +1,52 @@
+================================================================================
+                     CD-FSS EXPERIMENTAL AUDIT RUNNER
+================================================================================
+experiment_name:    E2
+dataset:            isic
+seed:               42
+nshot:              1
+requested_episodes: 100
+resolved_episodes:  100
+adapter:            conv1x1
+fusion:             softmax_margin
+adaptation_mode:    every-episode
+image_size:         400x400
+threshold_method:   pred_mean (max(Otsu, mean), drop_least=0.05)
+backbone:           ResNet-50 (Pre-ReLU unclipped features)
+checkpoint:         ResNet50_Weights.DEFAULT
+manifest_path:      /root/ABCDFSS/experiments/episodes/isic_seed42_100episodes.json
+manifest_sha256:    3691e721ff6df2efa79f7e480f17e68f7e6153c53461b45a7de8cf08d7e30ce0
+dataloader_workers: 2
+git_commit:         0ad471e32d6701f781be4bd2952593332b8074eb
+git_status:         injected_via_env
+PyTorch version:    2.1.2+cu121
+TorchVision version:0.16.2+cu121
+CUDA version:       12.1
+GPU:                Tesla T4
+Log file saved to:  /root/results/isic/E2_100ep_seed42/isic_conv1x1_softmax_margin_1shot_E2_20261006_072249.log
+================================================================================
+
+[*] ISICDataset loaded 100 fixed episodes from manifest: /root/ABCDFSS/experiments/episodes/isic_seed42_100episodes.json
+
+:=========== CD-FSS Clean Framework Evaluation: ISIC ===========
+| Device:         cuda
+| Adapter Type:   conv1x1
+| Fusion Mode:    softmax_margin (temp=1.0)
+| Adapt Mode:     every-episode
+| Total Episodes: 100
+:========================================================================
+
+[Batch: 0001/0100]  mIoU: 41.07%  |  FB-IoU: 51.44%
+[Batch: 0050/0100]  mIoU: 41.07%  |  FB-IoU: 56.27%
+[Batch: 0100/0100]  mIoU: 42.68%  |  FB-IoU: 58.27%
+
+================ FINAL RESULTS ================
+Benchmark:   ISIC
+Adapter:     conv1x1
+Fusion:      softmax_margin
+Final mIoU (Cumulative): 42.68%
+Mean Episode-IoU:       46.61%
+Final FB-IoU:           58.27%
+Elapsed Time:           344.51s (3.445s/episode)
+================================================
+

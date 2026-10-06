@@ -1,0 +1,53 @@
+================================================================================
+                     CD-FSS EXPERIMENTAL AUDIT RUNNER
+================================================================================
+experiment_name:    E0
+dataset:            suim
+seed:               42
+nshot:              1
+requested_episodes: 100
+resolved_episodes:  100
+adapter:            conv1x1
+fusion:             mean
+adaptation_mode:    every-episode
+image_size:         400x400
+threshold_method:   pred_mean (max(Otsu, mean), drop_least=0.05)
+backbone:           ResNet-50 (Pre-ReLU unclipped features)
+checkpoint:         ResNet50_Weights.DEFAULT
+manifest_path:      /root/ABCDFSS/experiments/episodes/suim_seed42_100episodes.json
+manifest_sha256:    815b46460e672ce642320a35f8c6b5e576cc0289ca10bca95f7b159af130f5c0
+dataloader_workers: 2
+git_commit:         0ad471e32d6701f781be4bd2952593332b8074eb
+git_status:         injected_via_env
+PyTorch version:    2.1.2+cu121
+TorchVision version:0.16.2+cu121
+CUDA version:       12.1
+GPU:                Tesla T4
+Log file saved to:  /root/results/suim/E0_100ep_seed42/suim_conv1x1_mean_1shot_E0_20261006_080539.log
+================================================================================
+
+[*] SUIM auto-detected base_path at: /root/datasets_cache/kagglehub/datasets/heyoujue/suim-merged/versions/2/suim_merged
+[*] SUIMDataset loaded 100 fixed episodes from manifest: /root/ABCDFSS/experiments/episodes/suim_seed42_100episodes.json
+
+:=========== CD-FSS Clean Framework Evaluation: SUIM ===========
+| Device:         cuda
+| Adapter Type:   conv1x1
+| Fusion Mode:    mean (temp=1.0)
+| Adapt Mode:     every-episode
+| Total Episodes: 100
+:========================================================================
+
+[Batch: 0001/0100]  mIoU:  4.07%  |  FB-IoU: 41.17%
+[Batch: 0050/0100]  mIoU: 38.27%  |  FB-IoU: 54.61%
+[Batch: 0100/0100]  mIoU: 37.01%  |  FB-IoU: 53.90%
+
+================ FINAL RESULTS ================
+Benchmark:   SUIM
+Adapter:     conv1x1
+Fusion:      mean
+Final mIoU (Cumulative): 37.01%
+Mean Episode-IoU:       39.56%
+Final FB-IoU:           53.90%
+Elapsed Time:           337.59s (3.376s/episode)
+================================================
+

@@ -1,0 +1,306 @@
+{
+  "protocol_signature": {
+    "benchmark": "lung",
+    "experiment": "E0",
+    "episodes": 20,
+    "seed": 42,
+    "nshot": 1,
+    "adapt_to": "every-episode",
+    "adapter": "conv1x1",
+    "fusion": "mean",
+    "fusion_temp": 1.0,
+    "image_size": 400,
+    "num_epochs": 25,
+    "learning_rate": 0.01,
+    "manifest": "/root/ABCDFSS/experiments/episodes/lung_seed42_20episodes.json",
+    "manifest_sha256": "0dd188e8c1b6c4a7df0451c0c13aa2d96bbe4fd2eacaa26e15a3e3fd5174a5e9"
+  },
+  "code_version": {
+    "git_commit": "96231f29c5c20e8d92c2eabcc5683295f1ade466",
+    "git_dirty": true,
+    "status": "injected_via_env"
+  },
+  "environment": {
+    "python_version": "3.10.17",
+    "torch_version": "2.1.2+cu121",
+    "torchvision_version": "0.16.2+cu121",
+    "numpy_version": "1.26.4",
+    "pillow_version": "12.3.0",
+    "scipy_version": "1.15.3",
+    "cuda_available": true,
+    "cuda_version": "12.1",
+    "gpu_name": "Tesla T4",
+    "platform": "linux"
+  },
+  "config": {
+    "experiment": "E0",
+    "benchmark": "lung",
+    "adapter": "conv1x1",
+    "fusion": "mean",
+    "fusion_temp": 1.0,
+    "adapt_to": "every-episode",
+    "num_epochs": 25,
+    "lr": 0.01,
+    "l0": 3,
+    "img_size": 400,
+    "seed": 42,
+    "nshot": 1,
+    "manifest_path": "/root/ABCDFSS/experiments/episodes/lung_seed42_20episodes.json",
+    "manifest_sha256": "0dd188e8c1b6c4a7df0451c0c13aa2d96bbe4fd2eacaa26e15a3e3fd5174a5e9"
+  },
+  "seed": 42,
+  "dataset": "lung",
+  "experiment": "E0",
+  "episode_count": 20,
+  "metric": {
+    "Mean_Episode_IoU": 78.48,
+    "Cumulative_mIoU": 78.82,
+    "FB-IoU": 85.96,
+    "class_ious": {
+      "0": 78.82412453705098
+    }
+  },
+  "raw_result": {
+    "episode_ious": [
+      68.64,
+      70.97,
+      86.34,
+      84.04,
+      84.16,
+      71.63,
+      66.89,
+      66.71,
+      85.2,
+      80.71,
+      83.3,
+      72.37,
+      84.27,
+      84.85,
+      79.55,
+      86.93,
+      69.78,
+      86.38,
+      79.43,
+      77.42
+    ],
+    "detailed_episodes": [
+      {
+        "episode_id": 0,
+        "class_id": 0,
+        "iou": 68.6412,
+        "query_img": "CXR_png/CHNCXR_0365_1.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0123_0.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 1,
+        "class_id": 0,
+        "iou": 70.9736,
+        "query_img": "CXR_png/CHNCXR_0364_1.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0009_0.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 2,
+        "class_id": 0,
+        "iou": 86.3423,
+        "query_img": "CXR_png/CHNCXR_0275_0.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0385_1.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 3,
+        "class_id": 0,
+        "iou": 84.0391,
+        "query_img": "CXR_png/CHNCXR_0651_1.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0622_1.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 4,
+        "class_id": 0,
+        "iou": 84.1597,
+        "query_img": "CXR_png/CHNCXR_0268_0.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0257_0.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 5,
+        "class_id": 0,
+        "iou": 71.6336,
+        "query_img": "CXR_png/CHNCXR_0033_0.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0390_1.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 6,
+        "class_id": 0,
+        "iou": 66.8897,
+        "query_img": "CXR_png/CHNCXR_0176_0.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0005_0.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 7,
+        "class_id": 0,
+        "iou": 66.7146,
+        "query_img": "CXR_png/CHNCXR_0423_1.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0051_0.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 8,
+        "class_id": 0,
+        "iou": 85.2037,
+        "query_img": "CXR_png/CHNCXR_0111_0.png",
+        "support_imgs": [
+          "['CXR_png/MCUCXR_0108_1.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 9,
+        "class_id": 0,
+        "iou": 80.708,
+        "query_img": "CXR_png/MCUCXR_0060_0.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0473_1.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 10,
+        "class_id": 0,
+        "iou": 83.2956,
+        "query_img": "CXR_png/CHNCXR_0335_1.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0095_0.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 11,
+        "class_id": 0,
+        "iou": 72.37,
+        "query_img": "CXR_png/CHNCXR_0370_1.png",
+        "support_imgs": [
+          "['CXR_png/MCUCXR_0334_1.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 12,
+        "class_id": 0,
+        "iou": 84.2749,
+        "query_img": "CXR_png/CHNCXR_0395_1.png",
+        "support_imgs": [
+          "['CXR_png/MCUCXR_0011_0.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 13,
+        "class_id": 0,
+        "iou": 84.8477,
+        "query_img": "CXR_png/CHNCXR_0642_1.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0611_1.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 14,
+        "class_id": 0,
+        "iou": 79.547,
+        "query_img": "CXR_png/CHNCXR_0096_0.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0597_1.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 15,
+        "class_id": 0,
+        "iou": 86.9265,
+        "query_img": "CXR_png/CHNCXR_0548_1.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0020_0.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 16,
+        "class_id": 0,
+        "iou": 69.7779,
+        "query_img": "CXR_png/CHNCXR_0034_0.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0634_1.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 17,
+        "class_id": 0,
+        "iou": 86.3829,
+        "query_img": "CXR_png/CHNCXR_0654_1.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0134_0.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 18,
+        "class_id": 0,
+        "iou": 79.4278,
+        "query_img": "CXR_png/CHNCXR_0157_0.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0544_1.png']"
+        ],
+        "category": "lung"
+      },
+      {
+        "episode_id": 19,
+        "class_id": 0,
+        "iou": 77.4185,
+        "query_img": "CXR_png/CHNCXR_0366_1.png",
+        "support_imgs": [
+          "['CXR_png/CHNCXR_0298_0.png']"
+        ],
+        "category": "lung"
+      }
+    ]
+  },
+  "summary": {
+    "timestamp": "20261006_063058",
+    "experiment": "E0",
+    "benchmark": "lung",
+    "adapter": "conv1x1",
+    "fusion": "mean",
+    "nshot": 1,
+    "episodes": 20,
+    "seed": 42,
+    "Mean_Episode_IoU": 78.48,
+    "Cumulative_mIoU": 78.82,
+    "FB-IoU": 85.96,
+    "manifest": "/root/ABCDFSS/experiments/episodes/lung_seed42_20episodes.json",
+    "manifest_sha256": "0dd188e8c1b6c4a7df0451c0c13aa2d96bbe4fd2eacaa26e15a3e3fd5174a5e9",
+    "log_file": "/root/results/lung/E0_20ep_seed42/lung_conv1x1_mean_1shot_E0_20261006_063058.log"
+  },
+  "log": "/root/results/lung/E0_20ep_seed42/lung_conv1x1_mean_1shot_E0_20261006_063058.log"
+}

@@ -1,0 +1,52 @@
+================================================================================
+                     CD-FSS EXPERIMENTAL AUDIT RUNNER
+================================================================================
+experiment_name:    E0
+dataset:            lung
+seed:               42
+nshot:              1
+requested_episodes: 100
+resolved_episodes:  100
+adapter:            conv1x1
+fusion:             mean
+adaptation_mode:    every-episode
+image_size:         400x400
+threshold_method:   pred_mean (max(Otsu, mean), drop_least=0.05)
+backbone:           ResNet-50 (Pre-ReLU unclipped features)
+checkpoint:         ResNet50_Weights.DEFAULT
+manifest_path:      /root/ABCDFSS/experiments/episodes/lung_seed42_100episodes.json
+manifest_sha256:    fc2fcc1ceff77c1b70cf11776326c7304df451523565907a1d6354151191141f
+dataloader_workers: 2
+git_commit:         0ad471e32d6701f781be4bd2952593332b8074eb
+git_status:         injected_via_env
+PyTorch version:    2.1.2+cu121
+TorchVision version:0.16.2+cu121
+CUDA version:       12.1
+GPU:                Tesla T4
+Log file saved to:  /root/results/lung/E0_100ep_seed42/lung_conv1x1_mean_1shot_E0_20261006_073601.log
+================================================================================
+
+[*] LungDataset loaded 100 fixed episodes from manifest: /root/ABCDFSS/experiments/episodes/lung_seed42_100episodes.json
+
+:=========== CD-FSS Clean Framework Evaluation: LUNG ===========
+| Device:         cuda
+| Adapter Type:   conv1x1
+| Fusion Mode:    mean (temp=1.0)
+| Adapt Mode:     every-episode
+| Total Episodes: 100
+:========================================================================
+
+[Batch: 0001/0100]  mIoU: 74.00%  |  FB-IoU: 82.35%
+[Batch: 0050/0100]  mIoU: 81.35%  |  FB-IoU: 87.49%
+[Batch: 0100/0100]  mIoU: 81.32%  |  FB-IoU: 87.39%
+
+================ FINAL RESULTS ================
+Benchmark:   LUNG
+Adapter:     conv1x1
+Fusion:      mean
+Final mIoU (Cumulative): 81.32%
+Mean Episode-IoU:       81.31%
+Final FB-IoU:           87.39%
+Elapsed Time:           341.96s (3.420s/episode)
+================================================
+

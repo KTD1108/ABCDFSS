@@ -1,0 +1,1192 @@
+{
+  "protocol_signature": {
+    "benchmark": "suim",
+    "experiment": "E0",
+    "episodes": 100,
+    "seed": 42,
+    "nshot": 1,
+    "adapt_to": "every-episode",
+    "adapter": "conv1x1",
+    "fusion": "mean",
+    "fusion_temp": 1.0,
+    "image_size": 400,
+    "num_epochs": 25,
+    "learning_rate": 0.01,
+    "manifest": "/root/ABCDFSS/experiments/episodes/suim_seed42_100episodes.json",
+    "manifest_sha256": "815b46460e672ce642320a35f8c6b5e576cc0289ca10bca95f7b159af130f5c0"
+  },
+  "code_version": {
+    "git_commit": "0ad471e32d6701f781be4bd2952593332b8074eb",
+    "git_dirty": false,
+    "status": "injected_via_env"
+  },
+  "environment": {
+    "python_version": "3.10.17",
+    "torch_version": "2.1.2+cu121",
+    "torchvision_version": "0.16.2+cu121",
+    "numpy_version": "1.26.4",
+    "pillow_version": "12.3.0",
+    "scipy_version": "1.15.3",
+    "cuda_available": true,
+    "cuda_version": "12.1",
+    "gpu_name": "Tesla T4",
+    "platform": "linux"
+  },
+  "config": {
+    "experiment": "E0",
+    "benchmark": "suim",
+    "adapter": "conv1x1",
+    "fusion": "mean",
+    "fusion_temp": 1.0,
+    "adapt_to": "every-episode",
+    "num_epochs": 25,
+    "lr": 0.01,
+    "l0": 3,
+    "img_size": 400,
+    "seed": 42,
+    "nshot": 1,
+    "manifest_path": "/root/ABCDFSS/experiments/episodes/suim_seed42_100episodes.json",
+    "manifest_sha256": "815b46460e672ce642320a35f8c6b5e576cc0289ca10bca95f7b159af130f5c0"
+  },
+  "seed": 42,
+  "dataset": "suim",
+  "experiment": "E0",
+  "episode_count": 100,
+  "metric": {
+    "Mean_Episode_IoU": 39.56,
+    "Cumulative_mIoU": 37.01,
+    "FB-IoU": 53.9,
+    "class_ious": {
+      "0": 21.385717986356966,
+      "1": 36.843343078765386,
+      "2": 23.392086310423284,
+      "3": 47.47977534809873,
+      "4": 15.091128923917424,
+      "5": 53.83021984465761,
+      "6": 61.04854690151518
+    }
+  },
+  "raw_result": {
+    "episode_ious": [
+      4.07,
+      11.73,
+      47.27,
+      40.39,
+      62.69,
+      66.65,
+      79.62,
+      62.82,
+      45.65,
+      0.07,
+      35.53,
+      10.85,
+      69.11,
+      79.97,
+      3.6,
+      46.89,
+      4.55,
+      16.39,
+      46.09,
+      33.51,
+      54.69,
+      24.53,
+      61.45,
+      30.59,
+      20.41,
+      4.51,
+      63.68,
+      27.58,
+      52.19,
+      28.85,
+      4.3,
+      40.01,
+      51.8,
+      83.67,
+      40.98,
+      1.62,
+      69.95,
+      27.53,
+      58.68,
+      71.55,
+      65.98,
+      63.03,
+      6.22,
+      79.14,
+      30.22,
+      50.46,
+      4.35,
+      53.28,
+      73.31,
+      48.94,
+      51.86,
+      36.93,
+      60.5,
+      6.58,
+      53.7,
+      18.39,
+      17.48,
+      48.21,
+      5.13,
+      50.5,
+      41.64,
+      2.36,
+      90.63,
+      4.5,
+      20.91,
+      29.97,
+      77.02,
+      27.07,
+      49.64,
+      71.8,
+      11.67,
+      50.68,
+      0.0,
+      41.65,
+      56.81,
+      50.67,
+      49.68,
+      77.16,
+      34.89,
+      13.95,
+      67.47,
+      0.6,
+      28.37,
+      75.25,
+      48.35,
+      2.32,
+      50.07,
+      43.95,
+      1.71,
+      68.46,
+      75.91,
+      12.86,
+      29.6,
+      26.38,
+      69.55,
+      4.51,
+      38.4,
+      26.75,
+      0.05,
+      72.35
+    ],
+    "detailed_episodes": [
+      {
+        "episode_id": 0,
+        "class_id": 0,
+        "iou": 4.0705,
+        "query_img": "images/f_r_1698_.jpg",
+        "support_imgs": [
+          "['images/f_r_1915_.jpg']"
+        ],
+        "category": "FV"
+      },
+      {
+        "episode_id": 1,
+        "class_id": 1,
+        "iou": 11.7271,
+        "query_img": "images/d_r_776_.jpg",
+        "support_imgs": [
+          "['images/w_r_186_.jpg']"
+        ],
+        "category": "HD"
+      },
+      {
+        "episode_id": 2,
+        "class_id": 2,
+        "iou": 47.2709,
+        "query_img": "images/n_l_24_.jpg",
+        "support_imgs": [
+          "['images/f_r_1745_.jpg']"
+        ],
+        "category": "PF"
+      },
+      {
+        "episode_id": 3,
+        "class_id": 3,
+        "iou": 40.3931,
+        "query_img": "images/f_r_914_.jpg",
+        "support_imgs": [
+          "['images/f_r_1686_.jpg']"
+        ],
+        "category": "RI"
+      },
+      {
+        "episode_id": 4,
+        "class_id": 4,
+        "iou": 62.6891,
+        "query_img": "images/d_r_798_.jpg",
+        "support_imgs": [
+          "['images/d_r_746_.jpg']"
+        ],
+        "category": "RO"
+      },
+      {
+        "episode_id": 5,
+        "class_id": 5,
+        "iou": 66.6529,
+        "query_img": "images/n_l_1_.jpg",
+        "support_imgs": [
+          "['images/n_l_68_.jpg']"
+        ],
+        "category": "SR"
+      },
+      {
+        "episode_id": 6,
+        "class_id": 6,
+        "iou": 79.624,
+        "query_img": "images/w_r_135_.jpg",
+        "support_imgs": [
+          "['images/w_r_217_.jpg']"
+        ],
+        "category": "WR"
+      },
+      {
+        "episode_id": 7,
+        "class_id": 0,
+        "iou": 62.821,
+        "query_img": "images/f_r_445_.jpg",
+        "support_imgs": [
+          "['images/f_r_1969_.jpg']"
+        ],
+        "category": "FV"
+      },
+      {
+        "episode_id": 8,
+        "class_id": 1,
+        "iou": 45.6522,
+        "query_img": "images/n_l_30_.jpg",
+        "support_imgs": [
+          "['images/w_r_56_.jpg']"
+        ],
+        "category": "HD"
+      },
+      {
+        "episode_id": 9,
+        "class_id": 2,
+        "iou": 0.0669,
+        "query_img": "images/f_r_1215_.jpg",
+        "support_imgs": [
+          "['images/w_r_162_.jpg']"
+        ],
+        "category": "PF"
+      },
+      {
+        "episode_id": 10,
+        "class_id": 3,
+        "iou": 35.5337,
+        "query_img": "images/f_r_1050_.jpg",
+        "support_imgs": [
+          "['images/f_r_1500_.jpg']"
+        ],
+        "category": "RI"
+      },
+      {
+        "episode_id": 11,
+        "class_id": 4,
+        "iou": 10.8467,
+        "query_img": "images/d_r_80_.jpg",
+        "support_imgs": [
+          "['images/d_r_588_.jpg']"
+        ],
+        "category": "RO"
+      },
+      {
+        "episode_id": 12,
+        "class_id": 5,
+        "iou": 69.1081,
+        "query_img": "images/d_r_297_.jpg",
+        "support_imgs": [
+          "['images/w_r_257_.jpg']"
+        ],
+        "category": "SR"
+      },
+      {
+        "episode_id": 13,
+        "class_id": 6,
+        "iou": 79.9687,
+        "query_img": "images/w_r_208_.jpg",
+        "support_imgs": [
+          "['images/w_r_257_.jpg']"
+        ],
+        "category": "WR"
+      },
+      {
+        "episode_id": 14,
+        "class_id": 0,
+        "iou": 3.6042,
+        "query_img": "images/f_r_603_.jpg",
+        "support_imgs": [
+          "['images/f_r_2031_.jpg']"
+        ],
+        "category": "FV"
+      },
+      {
+        "episode_id": 15,
+        "class_id": 1,
+        "iou": 46.8868,
+        "query_img": "images/w_r_100_.jpg",
+        "support_imgs": [
+          "['images/w_r_130_.jpg']"
+        ],
+        "category": "HD"
+      },
+      {
+        "episode_id": 16,
+        "class_id": 2,
+        "iou": 4.5499,
+        "query_img": "images/f_r_643_.jpg",
+        "support_imgs": [
+          "['images/w_r_63_.jpg']"
+        ],
+        "category": "PF"
+      },
+      {
+        "episode_id": 17,
+        "class_id": 3,
+        "iou": 16.389,
+        "query_img": "images/f_r_1531_.jpg",
+        "support_imgs": [
+          "['images/f_r_280_.jpg']"
+        ],
+        "category": "RI"
+      },
+      {
+        "episode_id": 18,
+        "class_id": 4,
+        "iou": 46.0938,
+        "query_img": "images/d_r_160_.jpg",
+        "support_imgs": [
+          "['images/d_r_513_.jpg']"
+        ],
+        "category": "RO"
+      },
+      {
+        "episode_id": 19,
+        "class_id": 5,
+        "iou": 33.5135,
+        "query_img": "images/w_r_238_.jpg",
+        "support_imgs": [
+          "['images/w_r_170_.jpg']"
+        ],
+        "category": "SR"
+      },
+      {
+        "episode_id": 20,
+        "class_id": 6,
+        "iou": 54.6866,
+        "query_img": "images/w_r_174_.jpg",
+        "support_imgs": [
+          "['images/w_r_104_.jpg']"
+        ],
+        "category": "WR"
+      },
+      {
+        "episode_id": 21,
+        "class_id": 0,
+        "iou": 24.5328,
+        "query_img": "images/f_r_172_.jpg",
+        "support_imgs": [
+          "['images/f_r_916_.jpg']"
+        ],
+        "category": "FV"
+      },
+      {
+        "episode_id": 22,
+        "class_id": 1,
+        "iou": 61.4515,
+        "query_img": "images/d_r_738_.jpg",
+        "support_imgs": [
+          "['images/w_r_285_.jpg']"
+        ],
+        "category": "HD"
+      },
+      {
+        "episode_id": 23,
+        "class_id": 2,
+        "iou": 30.5934,
+        "query_img": "images/n_l_69_.jpg",
+        "support_imgs": [
+          "['images/f_r_1851_.jpg']"
+        ],
+        "category": "PF"
+      },
+      {
+        "episode_id": 24,
+        "class_id": 3,
+        "iou": 20.4121,
+        "query_img": "images/n_l_104_.jpg",
+        "support_imgs": [
+          "['images/f_r_692_.jpg']"
+        ],
+        "category": "RI"
+      },
+      {
+        "episode_id": 25,
+        "class_id": 4,
+        "iou": 4.5125,
+        "query_img": "images/d_r_594_.jpg",
+        "support_imgs": [
+          "['images/d_r_384_.jpg']"
+        ],
+        "category": "RO"
+      },
+      {
+        "episode_id": 26,
+        "class_id": 5,
+        "iou": 63.6802,
+        "query_img": "images/w_r_124_.jpg",
+        "support_imgs": [
+          "['images/d_r_345_.jpg']"
+        ],
+        "category": "SR"
+      },
+      {
+        "episode_id": 27,
+        "class_id": 6,
+        "iou": 27.5766,
+        "query_img": "images/w_r_172_.jpg",
+        "support_imgs": [
+          "['images/w_r_101_.jpg']"
+        ],
+        "category": "WR"
+      },
+      {
+        "episode_id": 28,
+        "class_id": 0,
+        "iou": 52.1922,
+        "query_img": "images/f_r_760_.jpg",
+        "support_imgs": [
+          "['images/f_r_963_.jpg']"
+        ],
+        "category": "FV"
+      },
+      {
+        "episode_id": 29,
+        "class_id": 1,
+        "iou": 28.8507,
+        "query_img": "images/f_r_583_.jpg",
+        "support_imgs": [
+          "['images/d_r_533_.jpg']"
+        ],
+        "category": "HD"
+      },
+      {
+        "episode_id": 30,
+        "class_id": 2,
+        "iou": 4.2979,
+        "query_img": "images/f_r_1087_.jpg",
+        "support_imgs": [
+          "['images/f_r_143_.jpg']"
+        ],
+        "category": "PF"
+      },
+      {
+        "episode_id": 31,
+        "class_id": 3,
+        "iou": 40.0139,
+        "query_img": "images/f_r_491_.jpg",
+        "support_imgs": [
+          "['images/w_r_176_.jpg']"
+        ],
+        "category": "RI"
+      },
+      {
+        "episode_id": 32,
+        "class_id": 4,
+        "iou": 51.8002,
+        "query_img": "images/d_r_690_.jpg",
+        "support_imgs": [
+          "['images/d_r_364_.jpg']"
+        ],
+        "category": "RO"
+      },
+      {
+        "episode_id": 33,
+        "class_id": 5,
+        "iou": 83.6698,
+        "query_img": "images/f_r_1876_.jpg",
+        "support_imgs": [
+          "['images/f_r_1887_.jpg']"
+        ],
+        "category": "SR"
+      },
+      {
+        "episode_id": 34,
+        "class_id": 6,
+        "iou": 40.9828,
+        "query_img": "images/w_r_53_.jpg",
+        "support_imgs": [
+          "['images/w_r_276_.jpg']"
+        ],
+        "category": "WR"
+      },
+      {
+        "episode_id": 35,
+        "class_id": 0,
+        "iou": 1.6151,
+        "query_img": "images/f_r_1087_.jpg",
+        "support_imgs": [
+          "['images/f_r_785_.jpg']"
+        ],
+        "category": "FV"
+      },
+      {
+        "episode_id": 36,
+        "class_id": 1,
+        "iou": 69.946,
+        "query_img": "images/d_r_801_.jpg",
+        "support_imgs": [
+          "['images/d_r_266_.jpg']"
+        ],
+        "category": "HD"
+      },
+      {
+        "episode_id": 37,
+        "class_id": 2,
+        "iou": 27.5336,
+        "query_img": "images/n_l_98_.jpg",
+        "support_imgs": [
+          "['images/f_r_643_.jpg']"
+        ],
+        "category": "PF"
+      },
+      {
+        "episode_id": 38,
+        "class_id": 3,
+        "iou": 58.6782,
+        "query_img": "images/f_r_953_.jpg",
+        "support_imgs": [
+          "['images/f_r_569_.jpg']"
+        ],
+        "category": "RI"
+      },
+      {
+        "episode_id": 39,
+        "class_id": 4,
+        "iou": 71.5529,
+        "query_img": "images/d_r_661_.jpg",
+        "support_imgs": [
+          "['images/d_r_51_.jpg']"
+        ],
+        "category": "RO"
+      },
+      {
+        "episode_id": 40,
+        "class_id": 5,
+        "iou": 65.9768,
+        "query_img": "images/d_r_664_.jpg",
+        "support_imgs": [
+          "['images/f_r_1920_.jpg']"
+        ],
+        "category": "SR"
+      },
+      {
+        "episode_id": 41,
+        "class_id": 6,
+        "iou": 63.0272,
+        "query_img": "images/w_r_288_.jpg",
+        "support_imgs": [
+          "['images/d_r_348_.jpg']"
+        ],
+        "category": "WR"
+      },
+      {
+        "episode_id": 42,
+        "class_id": 0,
+        "iou": 6.2153,
+        "query_img": "images/w_r_226_.jpg",
+        "support_imgs": [
+          "['images/f_r_1807_.jpg']"
+        ],
+        "category": "FV"
+      },
+      {
+        "episode_id": 43,
+        "class_id": 1,
+        "iou": 79.1429,
+        "query_img": "images/d_r_494_.jpg",
+        "support_imgs": [
+          "['images/w_r_295_.jpg']"
+        ],
+        "category": "HD"
+      },
+      {
+        "episode_id": 44,
+        "class_id": 2,
+        "iou": 30.2225,
+        "query_img": "images/n_l_96_.jpg",
+        "support_imgs": [
+          "['images/f_r_660_.jpg']"
+        ],
+        "category": "PF"
+      },
+      {
+        "episode_id": 45,
+        "class_id": 3,
+        "iou": 50.4622,
+        "query_img": "images/f_r_655_.jpg",
+        "support_imgs": [
+          "['images/f_r_729_.jpg']"
+        ],
+        "category": "RI"
+      },
+      {
+        "episode_id": 46,
+        "class_id": 4,
+        "iou": 4.3478,
+        "query_img": "images/n_l_16_.jpg",
+        "support_imgs": [
+          "['images/d_r_617_.jpg']"
+        ],
+        "category": "RO"
+      },
+      {
+        "episode_id": 47,
+        "class_id": 5,
+        "iou": 53.2807,
+        "query_img": "images/f_r_1274_.jpg",
+        "support_imgs": [
+          "['images/f_r_1667_.jpg']"
+        ],
+        "category": "SR"
+      },
+      {
+        "episode_id": 48,
+        "class_id": 6,
+        "iou": 73.3056,
+        "query_img": "images/w_r_121_.jpg",
+        "support_imgs": [
+          "['images/w_r_114_.jpg']"
+        ],
+        "category": "WR"
+      },
+      {
+        "episode_id": 49,
+        "class_id": 0,
+        "iou": 48.9361,
+        "query_img": "images/f_r_906_.jpg",
+        "support_imgs": [
+          "['images/f_r_55_.jpg']"
+        ],
+        "category": "FV"
+      },
+      {
+        "episode_id": 50,
+        "class_id": 1,
+        "iou": 51.8635,
+        "query_img": "images/w_r_168_.jpg",
+        "support_imgs": [
+          "['images/w_r_88_.jpg']"
+        ],
+        "category": "HD"
+      },
+      {
+        "episode_id": 51,
+        "class_id": 2,
+        "iou": 36.9309,
+        "query_img": "images/f_r_528_.jpg",
+        "support_imgs": [
+          "['images/n_l_35_.jpg']"
+        ],
+        "category": "PF"
+      },
+      {
+        "episode_id": 52,
+        "class_id": 3,
+        "iou": 60.499,
+        "query_img": "images/f_r_1698_.jpg",
+        "support_imgs": [
+          "['images/f_r_521_.jpg']"
+        ],
+        "category": "RI"
+      },
+      {
+        "episode_id": 53,
+        "class_id": 4,
+        "iou": 6.5825,
+        "query_img": "images/d_r_277_.jpg",
+        "support_imgs": [
+          "['images/d_r_160_.jpg']"
+        ],
+        "category": "RO"
+      },
+      {
+        "episode_id": 54,
+        "class_id": 5,
+        "iou": 53.7009,
+        "query_img": "images/f_r_1804_.jpg",
+        "support_imgs": [
+          "['images/f_r_1679_.jpg']"
+        ],
+        "category": "SR"
+      },
+      {
+        "episode_id": 55,
+        "class_id": 6,
+        "iou": 18.3913,
+        "query_img": "images/w_r_87_.jpg",
+        "support_imgs": [
+          "['images/w_r_282_.jpg']"
+        ],
+        "category": "WR"
+      },
+      {
+        "episode_id": 56,
+        "class_id": 0,
+        "iou": 17.4845,
+        "query_img": "images/f_r_1052_.jpg",
+        "support_imgs": [
+          "['images/d_r_297_.jpg']"
+        ],
+        "category": "FV"
+      },
+      {
+        "episode_id": 57,
+        "class_id": 1,
+        "iou": 48.2137,
+        "query_img": "images/w_r_166_.jpg",
+        "support_imgs": [
+          "['images/f_r_1678_.jpg']"
+        ],
+        "category": "HD"
+      },
+      {
+        "episode_id": 58,
+        "class_id": 2,
+        "iou": 5.1332,
+        "query_img": "images/d_r_144_.jpg",
+        "support_imgs": [
+          "['images/f_r_1577_.jpg']"
+        ],
+        "category": "PF"
+      },
+      {
+        "episode_id": 59,
+        "class_id": 3,
+        "iou": 50.4974,
+        "query_img": "images/f_r_312_.jpg",
+        "support_imgs": [
+          "['images/f_r_1691_.jpg']"
+        ],
+        "category": "RI"
+      },
+      {
+        "episode_id": 60,
+        "class_id": 4,
+        "iou": 41.639,
+        "query_img": "images/d_r_739_.jpg",
+        "support_imgs": [
+          "['images/n_l_27_.jpg']"
+        ],
+        "category": "RO"
+      },
+      {
+        "episode_id": 61,
+        "class_id": 5,
+        "iou": 2.3563,
+        "query_img": "images/f_r_1491_.jpg",
+        "support_imgs": [
+          "['images/n_l_65_.jpg']"
+        ],
+        "category": "SR"
+      },
+      {
+        "episode_id": 62,
+        "class_id": 6,
+        "iou": 90.6297,
+        "query_img": "images/w_r_223_.jpg",
+        "support_imgs": [
+          "['images/w_r_28_.jpg']"
+        ],
+        "category": "WR"
+      },
+      {
+        "episode_id": 63,
+        "class_id": 0,
+        "iou": 4.5028,
+        "query_img": "images/f_r_1577_.jpg",
+        "support_imgs": [
+          "['images/f_r_1044_.jpg']"
+        ],
+        "category": "FV"
+      },
+      {
+        "episode_id": 64,
+        "class_id": 1,
+        "iou": 20.9071,
+        "query_img": "images/d_r_67_.jpg",
+        "support_imgs": [
+          "['images/f_r_459_.jpg']"
+        ],
+        "category": "HD"
+      },
+      {
+        "episode_id": 65,
+        "class_id": 2,
+        "iou": 29.9652,
+        "query_img": "images/f_r_560_.jpg",
+        "support_imgs": [
+          "['images/f_r_1137_.jpg']"
+        ],
+        "category": "PF"
+      },
+      {
+        "episode_id": 66,
+        "class_id": 3,
+        "iou": 77.017,
+        "query_img": "images/d_r_376_.jpg",
+        "support_imgs": [
+          "['images/w_r_131_.jpg']"
+        ],
+        "category": "RI"
+      },
+      {
+        "episode_id": 67,
+        "class_id": 4,
+        "iou": 27.0735,
+        "query_img": "images/d_r_710_.jpg",
+        "support_imgs": [
+          "['images/d_r_1_.jpg']"
+        ],
+        "category": "RO"
+      },
+      {
+        "episode_id": 68,
+        "class_id": 5,
+        "iou": 49.6441,
+        "query_img": "images/f_r_1779_.jpg",
+        "support_imgs": [
+          "['images/f_r_823_.jpg']"
+        ],
+        "category": "SR"
+      },
+      {
+        "episode_id": 69,
+        "class_id": 6,
+        "iou": 71.7996,
+        "query_img": "images/n_l_18_.jpg",
+        "support_imgs": [
+          "['images/w_r_4_.jpg']"
+        ],
+        "category": "WR"
+      },
+      {
+        "episode_id": 70,
+        "class_id": 0,
+        "iou": 11.6735,
+        "query_img": "images/f_r_1096_.jpg",
+        "support_imgs": [
+          "['images/f_r_102_.jpg']"
+        ],
+        "category": "FV"
+      },
+      {
+        "episode_id": 71,
+        "class_id": 1,
+        "iou": 50.676,
+        "query_img": "images/d_r_745_.jpg",
+        "support_imgs": [
+          "['images/d_r_383_.jpg']"
+        ],
+        "category": "HD"
+      },
+      {
+        "episode_id": 72,
+        "class_id": 2,
+        "iou": 0.0,
+        "query_img": "images/f_r_1198_.jpg",
+        "support_imgs": [
+          "['images/w_r_114_.jpg']"
+        ],
+        "category": "PF"
+      },
+      {
+        "episode_id": 73,
+        "class_id": 3,
+        "iou": 41.6544,
+        "query_img": "images/f_r_1118_.jpg",
+        "support_imgs": [
+          "['images/f_r_1595_.jpg']"
+        ],
+        "category": "RI"
+      },
+      {
+        "episode_id": 74,
+        "class_id": 4,
+        "iou": 56.8117,
+        "query_img": "images/d_r_77_.jpg",
+        "support_imgs": [
+          "['images/d_r_474_.jpg']"
+        ],
+        "category": "RO"
+      },
+      {
+        "episode_id": 75,
+        "class_id": 5,
+        "iou": 50.6716,
+        "query_img": "images/f_r_1516_.jpg",
+        "support_imgs": [
+          "['images/f_r_1373_.jpg']"
+        ],
+        "category": "SR"
+      },
+      {
+        "episode_id": 76,
+        "class_id": 6,
+        "iou": 49.6771,
+        "query_img": "images/w_r_48_.jpg",
+        "support_imgs": [
+          "['images/w_r_154_.jpg']"
+        ],
+        "category": "WR"
+      },
+      {
+        "episode_id": 77,
+        "class_id": 0,
+        "iou": 77.1553,
+        "query_img": "images/f_r_1692_.jpg",
+        "support_imgs": [
+          "['images/f_r_1559_.jpg']"
+        ],
+        "category": "FV"
+      },
+      {
+        "episode_id": 78,
+        "class_id": 1,
+        "iou": 34.8878,
+        "query_img": "images/d_r_77_.jpg",
+        "support_imgs": [
+          "['images/n_l_30_.jpg']"
+        ],
+        "category": "HD"
+      },
+      {
+        "episode_id": 79,
+        "class_id": 2,
+        "iou": 13.9501,
+        "query_img": "images/f_r_1733_.jpg",
+        "support_imgs": [
+          "['images/f_r_444_.jpg']"
+        ],
+        "category": "PF"
+      },
+      {
+        "episode_id": 80,
+        "class_id": 3,
+        "iou": 67.4673,
+        "query_img": "images/d_r_783_.jpg",
+        "support_imgs": [
+          "['images/d_r_113_.jpg']"
+        ],
+        "category": "RI"
+      },
+      {
+        "episode_id": 81,
+        "class_id": 4,
+        "iou": 0.603,
+        "query_img": "images/d_r_513_.jpg",
+        "support_imgs": [
+          "['images/n_l_52_.jpg']"
+        ],
+        "category": "RO"
+      },
+      {
+        "episode_id": 82,
+        "class_id": 5,
+        "iou": 28.3691,
+        "query_img": "images/w_r_90_.jpg",
+        "support_imgs": [
+          "['images/f_r_490_.jpg']"
+        ],
+        "category": "SR"
+      },
+      {
+        "episode_id": 83,
+        "class_id": 6,
+        "iou": 75.2499,
+        "query_img": "images/f_r_1364_.jpg",
+        "support_imgs": [
+          "['images/w_r_190_.jpg']"
+        ],
+        "category": "WR"
+      },
+      {
+        "episode_id": 84,
+        "class_id": 0,
+        "iou": 48.3457,
+        "query_img": "images/f_r_1514_.jpg",
+        "support_imgs": [
+          "['images/f_r_94_.jpg']"
+        ],
+        "category": "FV"
+      },
+      {
+        "episode_id": 85,
+        "class_id": 1,
+        "iou": 2.3171,
+        "query_img": "images/w_r_87_.jpg",
+        "support_imgs": [
+          "['images/d_r_632_.jpg']"
+        ],
+        "category": "HD"
+      },
+      {
+        "episode_id": 86,
+        "class_id": 2,
+        "iou": 50.0664,
+        "query_img": "images/n_l_96_.jpg",
+        "support_imgs": [
+          "['images/d_r_788_.jpg']"
+        ],
+        "category": "PF"
+      },
+      {
+        "episode_id": 87,
+        "class_id": 3,
+        "iou": 43.9524,
+        "query_img": "images/f_r_1421_.jpg",
+        "support_imgs": [
+          "['images/f_r_909_.jpg']"
+        ],
+        "category": "RI"
+      },
+      {
+        "episode_id": 88,
+        "class_id": 4,
+        "iou": 1.7109,
+        "query_img": "images/d_r_723_.jpg",
+        "support_imgs": [
+          "['images/d_r_80_.jpg']"
+        ],
+        "category": "RO"
+      },
+      {
+        "episode_id": 89,
+        "class_id": 5,
+        "iou": 68.4609,
+        "query_img": "images/n_l_51_.jpg",
+        "support_imgs": [
+          "['images/d_r_383_.jpg']"
+        ],
+        "category": "SR"
+      },
+      {
+        "episode_id": 90,
+        "class_id": 6,
+        "iou": 75.9107,
+        "query_img": "images/f_r_1446_.jpg",
+        "support_imgs": [
+          "['images/n_l_87_.jpg']"
+        ],
+        "category": "WR"
+      },
+      {
+        "episode_id": 91,
+        "class_id": 0,
+        "iou": 12.8647,
+        "query_img": "images/n_l_73_.jpg",
+        "support_imgs": [
+          "['images/f_r_1696_.jpg']"
+        ],
+        "category": "FV"
+      },
+      {
+        "episode_id": 92,
+        "class_id": 1,
+        "iou": 29.603,
+        "query_img": "images/w_r_20_.jpg",
+        "support_imgs": [
+          "['images/w_r_82_.jpg']"
+        ],
+        "category": "HD"
+      },
+      {
+        "episode_id": 93,
+        "class_id": 2,
+        "iou": 26.3781,
+        "query_img": "images/d_r_788_.jpg",
+        "support_imgs": [
+          "['images/f_r_521_.jpg']"
+        ],
+        "category": "PF"
+      },
+      {
+        "episode_id": 94,
+        "class_id": 3,
+        "iou": 69.5537,
+        "query_img": "images/f_r_1985_.jpg",
+        "support_imgs": [
+          "['images/f_r_1320_.jpg']"
+        ],
+        "category": "RI"
+      },
+      {
+        "episode_id": 95,
+        "class_id": 4,
+        "iou": 4.5059,
+        "query_img": "images/d_r_145_.jpg",
+        "support_imgs": [
+          "['images/d_r_789_.jpg']"
+        ],
+        "category": "RO"
+      },
+      {
+        "episode_id": 96,
+        "class_id": 5,
+        "iou": 38.4017,
+        "query_img": "images/f_r_220_.jpg",
+        "support_imgs": [
+          "['images/d_r_624_.jpg']"
+        ],
+        "category": "SR"
+      },
+      {
+        "episode_id": 97,
+        "class_id": 6,
+        "iou": 26.7472,
+        "query_img": "images/w_r_172_.jpg",
+        "support_imgs": [
+          "['images/w_r_232_.jpg']"
+        ],
+        "category": "WR"
+      },
+      {
+        "episode_id": 98,
+        "class_id": 0,
+        "iou": 0.0526,
+        "query_img": "images/f_r_989_.jpg",
+        "support_imgs": [
+          "['images/f_r_1042_.jpg']"
+        ],
+        "category": "FV"
+      },
+      {
+        "episode_id": 99,
+        "class_id": 1,
+        "iou": 72.3468,
+        "query_img": "images/d_r_552_.jpg",
+        "support_imgs": [
+          "['images/w_r_232_.jpg']"
+        ],
+        "category": "HD"
+      }
+    ]
+  },
+  "summary": {
+    "timestamp": "20261006_080539",
+    "experiment": "E0",
+    "benchmark": "suim",
+    "adapter": "conv1x1",
+    "fusion": "mean",
+    "nshot": 1,
+    "episodes": 100,
+    "seed": 42,
+    "Mean_Episode_IoU": 39.56,
+    "Cumulative_mIoU": 37.01,
+    "FB-IoU": 53.9,
+    "manifest": "/root/ABCDFSS/experiments/episodes/suim_seed42_100episodes.json",
+    "manifest_sha256": "815b46460e672ce642320a35f8c6b5e576cc0289ca10bca95f7b159af130f5c0",
+    "log_file": "/root/results/suim/E0_100ep_seed42/suim_conv1x1_mean_1shot_E0_20261006_080539.log"
+  },
+  "log": "/root/results/suim/E0_100ep_seed42/suim_conv1x1_mean_1shot_E0_20261006_080539.log"
+}

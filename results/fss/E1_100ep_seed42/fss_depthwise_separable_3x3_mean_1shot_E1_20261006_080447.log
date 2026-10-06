@@ -1,0 +1,38 @@
+================================================================================
+                     CD-FSS EXPERIMENTAL AUDIT RUNNER
+================================================================================
+experiment_name:    E1
+dataset:            fss
+seed:               42
+nshot:              1
+requested_episodes: 100
+resolved_episodes:  100
+adapter:            depthwise_separable_3x3
+fusion:             mean
+adaptation_mode:    every-episode
+image_size:         400x400
+threshold_method:   pred_mean (max(Otsu, mean), drop_least=0.05)
+backbone:           ResNet-50 (Pre-ReLU unclipped features)
+checkpoint:         ResNet50_Weights.DEFAULT
+manifest_path:      /root/ABCDFSS/experiments/episodes/fss_seed42_100episodes.json
+manifest_sha256:    bed933c99154864c7238dba81e7a7efe37b897c03a1b75c0716ba819e1a907a9
+dataloader_workers: 2
+git_commit:         0ad471e32d6701f781be4bd2952593332b8074eb
+git_status:         injected_via_env
+PyTorch version:    2.1.2+cu121
+TorchVision version:0.16.2+cu121
+CUDA version:       12.1
+GPU:                Tesla T4
+Log file saved to:  /root/results/fss/E1_100ep_seed42/fss_depthwise_separable_3x3_mean_1shot_E1_20261006_080447.log
+================================================================================
+
+[*] FSS1000Dataset loaded 100 fixed episodes from manifest: /root/ABCDFSS/experiments/episodes/fss_seed42_100episodes.json
+
+:=========== CD-FSS Clean Framework Evaluation: FSS ===========
+| Device:         cuda
+| Adapter Type:   depthwise_separable_3x3
+| Fusion Mode:    mean (temp=1.0)
+| Adapt Mode:     every-episode
+| Total Episodes: 100
+:========================================================================
+
