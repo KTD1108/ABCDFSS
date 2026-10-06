@@ -21,18 +21,39 @@ if PROJECT_ROOT not in sys.path:
 
 from src.utils.manifest import resolve_manifest_path
 
+from typing import Optional
+
 def is_valid_fss_dir(path: str) -> bool:
-    """Checks whether the FSS directory contains at least 10 classes and valid images."""
-    if not os.path.exists(path):
+    """
+    Checks whether `path` DIRECTLY contains FSS class folders (with images/masks).
+    Does NOT recurse arbitrarily to avoid false-positives on parent datasets directories.
+    """
+    if not os.path.exists(path) or not os.path.isdir(path):
         return False
-    valid_classes = 0
-    for root, dirs, files in os.walk(path):
-        jpgs = [f for f in files if f.lower().endswith(('.jpg', '.jpeg'))]
-        if len(jpgs) >= 2:
-            valid_classes += 1
-            if valid_classes >= 10:
+    try:
+        from src.datasets.fss import FSS_TEST_CLASSES
+        entries = set(os.listdir(path))
+        matching_classes = entries.intersection(set(FSS_TEST_CLASSES))
+        if len(matching_classes) >= 5:
+            sample_cls = next(iter(matching_classes))
+            cls_p = os.path.join(path, sample_cls)
+            if os.path.isdir(cls_p) and any(f.lower().endswith(('.jpg', '.png')) for f in os.listdir(cls_p)):
                 return True
+    except Exception:
+        pass
     return False
+
+def find_fss_root(start_dir: str) -> Optional[str]:
+    """Recursively searches start_dir to find the directory that directly contains FSS class folders."""
+    if not os.path.exists(start_dir):
+        return None
+    if is_valid_fss_dir(start_dir):
+        return os.path.abspath(start_dir)
+    for root, dirs, files in os.walk(start_dir):
+        if is_valid_fss_dir(root):
+            return os.path.abspath(root)
+    return None
+
 
 def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
     """
@@ -84,37 +105,25 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
         from tqdm import tqdm
 
         fss_check_dirs = [
+            "/root/datasets_cache/fewshot1000",
+            "/root/datasets_cache/fss1000",
             "./datasets/fewshot1000",
             "./datasets/fss1000",
             "./datasets/fss",
             os.path.join(PROJECT_ROOT, "datasets", "fss1000"),
             os.path.join(PROJECT_ROOT, "datasets", "fewshot1000"),
-            "/root/datasets_cache/fewshot1000",
-            "/root/datasets_cache/fss1000"
         ]
         for cd in fss_check_dirs:
-            if is_valid_fss_dir(cd):
-                for root, dirs, files in os.walk(cd):
-                    if len(dirs) >= 10:
-                        sample_sub = dirs[0]
-                        sub_p = os.path.join(root, sample_sub)
-                        if os.path.isdir(sub_p):
-                            try:
-                                if any(f.endswith('.jpg') for f in os.listdir(sub_p)):
-                                    print(f"[OK] Found valid FSS-1000 at: {root}")
-                                    return root
-                            except Exception:
-                                pass
-                print(f"[OK] Found valid FSS-1000 at: {cd}")
-                return cd
+            valid_root = find_fss_root(cd)
+            if valid_root:
+                print(f"[OK] Found valid FSS-1000 at: {valid_root}")
+                return valid_root
 
-        # Clean corrupted directories before fresh download
-        for bad_dir in ["./datasets/fss1000", "./datasets/fewshot1000"]:
-            if os.path.exists(bad_dir):
-                shutil.rmtree(bad_dir, ignore_errors=True)
-
-        os.makedirs("./datasets", exist_ok=True)
-        zip_path = "./datasets/fss1000.zip"
+        # Determine target cache directory (Modal persistent volume cache if available, else local datasets)
+        cache_base = "/root/datasets_cache" if os.path.exists("/root/datasets_cache") else "./datasets"
+        target_dir = os.path.join(cache_base, "fewshot1000")
+        os.makedirs(target_dir, exist_ok=True)
+        zip_path = os.path.join(target_dir, "fewshot1000.zip")
 
         # Priority 1: Hugging Face CDN (fast, unauthenticated)
         hf_url = "https://huggingface.co/datasets/zhaoyuan666/ConceptSeg-Benchmark/resolve/main/fewshot1000.zip"
@@ -132,13 +141,13 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
                         pbar.update(len(chunk))
 
             if os.path.exists(zip_path) and os.path.getsize(zip_path) > 100000000:
-                print("[*] Extracting FSS-1000...")
+                print(f"[*] Extracting FSS-1000 into {target_dir}...")
                 with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                    zip_ref.extractall("./datasets")
-                for root, dirs, files in os.walk("./datasets"):
-                    if is_valid_fss_dir(root):
-                        print(f"[OK] Downloaded and extracted FSS-1000 to: {root}")
-                        return root
+                    zip_ref.extractall(target_dir)
+                valid_root = find_fss_root(target_dir)
+                if valid_root:
+                    print(f"[OK] Downloaded and extracted FSS-1000 to: {valid_root}")
+                    return valid_root
         except Exception as hf_err:
             print(f"[-] Hugging Face download failed ({hf_err}), falling back to Google Drive...")
 
@@ -153,13 +162,13 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
                     print(f"[*] Downloading fss1000.zip from Google Drive ID ({gid})...")
                     gdown.download(id=gid, output=zip_path, quiet=False)
                 if os.path.exists(zip_path) and os.path.getsize(zip_path) > 10000000:
-                    print("[*] Extracting FSS-1000...")
+                    print(f"[*] Extracting FSS-1000 into {target_dir}...")
                     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                        zip_ref.extractall("./datasets/fss1000")
-                    for root, dirs, files in os.walk("./datasets/fss1000"):
-                        if is_valid_fss_dir(root):
-                            print(f"[OK] Downloaded and extracted FSS-1000 to: {root}")
-                            return root
+                        zip_ref.extractall(target_dir)
+                    valid_root = find_fss_root(target_dir)
+                    if valid_root:
+                        print(f"[OK] Downloaded and extracted FSS-1000 to: {valid_root}")
+                        return valid_root
             except Exception as gde:
                 print(f"[-] Failed with Google Drive ID {gid}: {gde}")
 

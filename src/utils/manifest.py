@@ -184,6 +184,15 @@ def validate_manifest(
         elif not os.path.exists(os.path.join(effective_base, 'fewshot_data')) and os.path.exists(os.path.join(effective_base, 'fewshot1000')):
             effective_base = os.path.join(effective_base, 'fewshot1000')
 
+        if ep_list:
+            sample_q = ep_list[0]["query_img"].replace('\\', '/')
+            if not os.path.exists(os.path.join(effective_base, sample_q)):
+                for sub in ['fewshot1000', 'fewshot_data', 'fss1000', 'suim_merged']:
+                    cand = os.path.join(effective_base, sub)
+                    if os.path.exists(os.path.join(cand, sample_q)):
+                        effective_base = cand
+                        break
+
         is_all_mode = episodes is not None and str(episodes).lower().strip() == 'all'
         sample_to_check = ep_list if (check_files_limit is None or is_all_mode) else ep_list[:check_files_limit]
         for ep in sample_to_check:

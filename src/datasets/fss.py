@@ -56,32 +56,26 @@ class FSS1000Dataset(Dataset):
 
         # Auto-detect root directory containing class folders
         if os.path.exists(self.base_path):
-            sample_classes = {'bus', 'pizza', 'spiderman', 'egg', 'coin', 'fox'}
-            found = False
-            for root, dirs, files in os.walk(self.base_path):
-                if any(c in dirs for c in sample_classes):
-                    self.base_path = root
-                    found = True
-                    print(f"[*] FSS-1000 auto-detected base_path at: {self.base_path}")
-                    break
-                if len(dirs) >= 10:
-                    sample_sub = dirs[0]
-                    sub_p = os.path.join(root, sample_sub)
-                    if os.path.isdir(sub_p):
-                        try:
-                            sub_files = os.listdir(sub_p)
-                            if any(f.endswith(('.jpg', '.png')) for f in sub_files):
-                                self.base_path = root
-                                found = True
-                                print(f"[*] FSS-1000 auto-detected base_path at: {self.base_path}")
-                                break
-                        except Exception:
-                            pass
-                if found:
-                    break
+            test_cls_set = set(FSS_TEST_CLASSES)
+            # Direct check: does self.base_path directly contain FSS classes?
+            is_direct_root = False
+            try:
+                base_entries = set(os.listdir(self.base_path))
+                if len(base_entries.intersection(test_cls_set)) >= 5:
+                    is_direct_root = True
+            except Exception:
+                pass
 
-            if not found and os.path.exists(os.path.join(self.base_path, 'FSS-1000')):
-                self.base_path = os.path.join(self.base_path, 'FSS-1000')
+            if not is_direct_root:
+                found = False
+                for root, dirs, files in os.walk(self.base_path):
+                    if len(set(dirs).intersection(test_cls_set)) >= 5:
+                        self.base_path = root
+                        found = True
+                        print(f"[*] FSS-1000 auto-detected base_path at: {self.base_path}")
+                        break
+                if not found and os.path.exists(os.path.join(self.base_path, 'FSS-1000')):
+                    self.base_path = os.path.join(self.base_path, 'FSS-1000')
 
         # Collect class mapping: {class_name: class_dir_path}
         self.class_dirs = {}
