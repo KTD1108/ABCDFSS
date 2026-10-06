@@ -70,6 +70,8 @@ def parse_args():
                         help='Compute device: cuda or cpu')
     parser.add_argument('--seed', type=int, default=42,
                         help='Random seed for reproducibility')
+    parser.add_argument('--nworker', type=int, default=0,
+                        help='Number of dataloader workers (default: 0)')
     return parser.parse_args()
 
 class TeeLogger:
@@ -112,11 +114,16 @@ def main():
     if args.adapter == 'pointwise':
         args.adapter = 'conv1x1'
 
-    # Auto-detect default manifest if exists and episodes == 20
+    # Auto-detect default manifest if exists
     if args.manifest is None:
-        candidate_manifest = os.path.join(PROJECT_ROOT, "experiments", "episodes", f"{args.benchmark}_seed42_20episodes.json")
-        if os.path.exists(candidate_manifest) and (args.episodes == 20 or args.episodes is None):
-            args.manifest = candidate_manifest
+        if args.benchmark == 'lung':
+            candidate_lung = os.path.join(PROJECT_ROOT, "experiments", "episodes", "lung_seed42_20episodes.json")
+            if os.path.exists(candidate_lung) and (args.episodes == 20 or args.episodes is None):
+                args.manifest = candidate_lung
+        elif args.episodes and args.episodes != 20:
+            candidate_specific = os.path.join(PROJECT_ROOT, "experiments", "episodes", f"{args.benchmark}_seed{args.seed}_{args.episodes}episodes.json")
+            if os.path.exists(candidate_specific):
+                args.manifest = candidate_specific
 
     set_seed(args.seed)
 
@@ -150,6 +157,7 @@ def main():
     print(f"backbone:           ResNet-50 (Pre-ReLU unclipped features)")
     print(f"checkpoint:         ResNet50_Weights.DEFAULT")
     print(f"manifest_path:      {args.manifest if args.manifest else 'Runtime sampling'}")
+    print(f"dataloader_workers: {args.nworker}")
     print(f"PyTorch version:    {torch.__version__}")
     print(f"TorchVision version:{torchvision.__version__}")
     print(f"CUDA version:       {cuda_ver}")
@@ -164,7 +172,7 @@ def main():
         shot=args.nshot,
         img_size=args.img_size,
         bsz=1,
-        nworker=0,
+        nworker=args.nworker,
         split='test',
         manifest_path=args.manifest
     )

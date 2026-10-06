@@ -47,11 +47,12 @@ FSS_TEST_CLASSES = [
 
 class FSS1000Dataset(Dataset):
     """Clean FSS-1000 Dataset loader with robust nested directory auto-detection."""
-    def __init__(self, datapath: str, transform, shot: int = 1, split: str = 'test'):
+    def __init__(self, datapath: str, transform, shot: int = 1, split: str = 'test', manifest_path: str = None):
         self.shot = shot
         self.split = split
         self.transform = transform
         self.base_path = datapath
+        self.manifest_path = manifest_path
 
         # Auto-detect root directory containing class folders
         if os.path.exists(self.base_path):
@@ -102,23 +103,41 @@ class FSS1000Dataset(Dataset):
 
         self.classes = sorted(list(self.class_dirs.keys()))
         self.class_ids = list(range(len(self.classes)))
+        self.episodes = None
 
-        # Build list of valid query images: (img_path, mask_path, class_name)
-        self.img_metadata = []
-        for cat, cat_dir in self.class_dirs.items():
-            for i in range(1, 11):
-                img_p = os.path.join(cat_dir, f"{i}.jpg")
-                mask_p = os.path.join(cat_dir, f"{i}.png")
-                if os.path.exists(img_p) and os.path.exists(mask_p):
-                    self.img_metadata.append((img_p, mask_p, cat))
+        if self.manifest_path and os.path.exists(self.manifest_path):
+            import json
+            with open(self.manifest_path, 'r', encoding='utf-8') as f:
+                manifest_data = json.load(f)
+                self.episodes = manifest_data.get('episodes', manifest_data)
+                print(f"[*] FSS1000Dataset loaded {len(self.episodes)} fixed episodes from manifest: {self.manifest_path}")
+            self.img_metadata = []
+        else:
+            # Build list of valid query images: (img_path, mask_path, class_name)
+            self.img_metadata = []
+            for cat, cat_dir in self.class_dirs.items():
+                for i in range(1, 11):
+                    img_p = os.path.join(cat_dir, f"{i}.jpg")
+                    mask_p = os.path.join(cat_dir, f"{i}.png")
+                    if os.path.exists(img_p) and os.path.exists(mask_p):
+                        self.img_metadata.append((img_p, mask_p, cat))
 
-        print(f"[*] FSS-1000 loaded successfully: {len(self.classes)} classes, {len(self.img_metadata)} images.")
+            print(f"[*] FSS-1000 loaded successfully: {len(self.classes)} classes, {len(self.img_metadata)} images.")
 
     def __len__(self):
+        if self.episodes is not None:
+            return len(self.episodes)
         return len(self.img_metadata) if self.img_metadata else len(self.classes)
 
     def __getitem__(self, idx):
-        if self.img_metadata:
+        if self.episodes is not None:
+            ep = self.episodes[idx]
+            q_img_path = ep['query_img'] if os.path.isabs(ep['query_img']) else os.path.join(self.base_path, ep['query_img'])
+            q_mask_path = ep['query_mask'] if os.path.isabs(ep['query_mask']) else os.path.join(self.base_path, ep['query_mask'])
+            support_img_paths = [p if os.path.isabs(p) else os.path.join(self.base_path, p) for p in ep['support_imgs']]
+            support_mask_paths = [p if os.path.isabs(p) else os.path.join(self.base_path, p) for p in ep['support_masks']]
+            class_id = ep.get('class_id', 0)
+        elif self.img_metadata:
             q_img_path, q_mask_path, class_name = self.img_metadata[idx % len(self.img_metadata)]
             class_id = self.classes.index(class_name) if class_name in self.classes else 0
             query_id = int(os.path.splitext(os.path.basename(q_img_path))[0])

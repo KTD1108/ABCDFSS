@@ -6,6 +6,7 @@ and outputs a comprehensive verified benchmark summary table.
 
 Usage:
     python run_all_benchmarks.py
+    python run_all_benchmarks.py --experiments E0 E1 E2 E3 --episodes 100 --device cuda
 """
 
 import os
@@ -14,8 +15,10 @@ import json
 import subprocess
 from datetime import datetime
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 def is_valid_fss_dir(path: str) -> bool:
-    """Kiểm tra thư mục FSS có tối thiểu 10 lớp và ảnh hợp lệ hay không."""
+    """Checks whether the FSS directory contains at least 10 classes and valid images."""
     if not os.path.exists(path):
         return False
     valid_classes = 0
@@ -28,21 +31,51 @@ def is_valid_fss_dir(path: str) -> bool:
     return False
 
 def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
-    """Tự động tải trực tiếp từ internet nếu chưa có trong cache/thư mục cục bộ."""
-    # 1. Kiểm tra cache Kaggle
-    if kaggle_slug:
-        candidates = [
-            f"/root/.cache/kagglehub/datasets/{kaggle_slug}/versions/7",
-            f"/root/.cache/kagglehub/datasets/{kaggle_slug}/versions/2",
-            f"/root/.cache/kagglehub/datasets/{kaggle_slug}/versions/1",
-        ]
-        for c in candidates:
-            if os.path.exists(c):
-                print(f"[OK] Đã có sẵn '{benchmark}' trong cache: {c}")
-                return c
+    """
+    Robust dataset path locator and downloader.
+    Checks local directories and Kaggle cache roots across Windows, Linux, and Modal.
+    Downloads automatically if not found.
+    """
+    # 1. Check local project directory first
+    local_candidates = [
+        f"./datasets/{benchmark}",
+        f"./datasets/{benchmark}1000",
+        os.path.join(PROJECT_ROOT, "datasets", benchmark),
+        os.path.join(PROJECT_ROOT, "datasets", f"{benchmark}1000")
+    ]
+    for lc in local_candidates:
+        if os.path.exists(lc) and os.path.isdir(lc) and len(os.listdir(lc)) > 0:
+            print(f"[OK] Found '{benchmark}' in local directory: {lc}")
+            return lc
 
-    # 2. Xử lý chuyên biệt cho FSS-1000
-    if benchmark == 'fss':
+    # 2. Check Kaggle cache roots (Windows, Linux, Modal persistent volume)
+    cache_roots = []
+    if os.environ.get("KAGGLEHUB_CACHE"):
+        cache_roots.append(os.environ.get("KAGGLEHUB_CACHE"))
+    cache_roots.extend([
+        os.path.expanduser("~/.cache/kagglehub"),
+        "/root/.cache/kagglehub",
+        "/root/datasets_cache/kagglehub",
+        "/root/datasets_cache"
+    ])
+
+    if kaggle_slug:
+        slug_parts = kaggle_slug.split("/")
+        for cr in cache_roots:
+            slug_dir = os.path.join(cr, "datasets", *slug_parts, "versions")
+            if os.path.exists(slug_dir) and os.path.isdir(slug_dir):
+                versions = [v for v in os.listdir(slug_dir) if os.path.isdir(os.path.join(slug_dir, v))]
+                if versions:
+                    try:
+                        versions.sort(key=lambda x: int(x), reverse=True)
+                    except ValueError:
+                        versions.sort(reverse=True)
+                    chosen = os.path.join(slug_dir, versions[0])
+                    print(f"[OK] Found cached '{benchmark}' in: {chosen}")
+                    return chosen
+
+    # 3. Special handling for FSS-1000
+    if benchmark in ['fss', 'fss1000']:
         import shutil, zipfile, urllib.request
         from tqdm import tqdm
 
@@ -50,8 +83,10 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
             "./datasets/fewshot1000",
             "./datasets/fss1000",
             "./datasets/fss",
-            "/root/.cache/kagglehub/datasets/nikhilpandey360/fss-1000-a-1000-class-few-shot-segmentation/versions/1",
-            "/root/.cache/kagglehub/datasets/itsahmad/fss-1000/versions/1"
+            os.path.join(PROJECT_ROOT, "datasets", "fss1000"),
+            os.path.join(PROJECT_ROOT, "datasets", "fewshot1000"),
+            "/root/datasets_cache/fewshot1000",
+            "/root/datasets_cache/fss1000"
         ]
         for cd in fss_check_dirs:
             if is_valid_fss_dir(cd):
@@ -62,14 +97,14 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
                         if os.path.isdir(sub_p):
                             try:
                                 if any(f.endswith('.jpg') for f in os.listdir(sub_p)):
-                                    print(f"[OK] Đã có sẵn FSS-1000 hợp lệ tại: {root}")
+                                    print(f"[OK] Found valid FSS-1000 at: {root}")
                                     return root
                             except Exception:
                                 pass
-                print(f"[OK] Đã có sẵn FSS-1000 hợp lệ tại: {cd}")
+                print(f"[OK] Found valid FSS-1000 at: {cd}")
                 return cd
 
-        # Dọn dẹp thư mục lỗi trước khi tải mới
+        # Clean corrupted directories before fresh download
         for bad_dir in ["./datasets/fss1000", "./datasets/fewshot1000"]:
             if os.path.exists(bad_dir):
                 shutil.rmtree(bad_dir, ignore_errors=True)
@@ -77,10 +112,10 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
         os.makedirs("./datasets", exist_ok=True)
         zip_path = "./datasets/fss1000.zip"
 
-        # Ưu tiên 1: Tải trực tiếp siêu tốc từ Hugging Face CDN (không giới hạn quota, không cần API key)
+        # Priority 1: Hugging Face CDN (fast, unauthenticated)
         hf_url = "https://huggingface.co/datasets/zhaoyuan666/ConceptSeg-Benchmark/resolve/main/fewshot1000.zip"
         try:
-            print("[*] Đang tự động tải FSS-1000 từ Hugging Face CDN (679 MB)...")
+            print("[*] Downloading FSS-1000 from Hugging Face CDN (679 MB)...")
             req = urllib.request.Request(hf_url, headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req) as resp, open(zip_path, 'wb') as out_f:
                 total_size = int(resp.headers.get('Content-Length', 0))
@@ -93,17 +128,17 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
                         pbar.update(len(chunk))
 
             if os.path.exists(zip_path) and os.path.getsize(zip_path) > 100000000:
-                print("[*] Đang giải nén FSS-1000...")
+                print("[*] Extracting FSS-1000...")
                 with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                     zip_ref.extractall("./datasets")
                 for root, dirs, files in os.walk("./datasets"):
                     if is_valid_fss_dir(root):
-                        print(f"[OK] Tải và giải nén FSS-1000 thành công vào: {root}")
+                        print(f"[OK] Downloaded and extracted FSS-1000 to: {root}")
                         return root
         except Exception as hf_err:
-            print(f"[-] Lỗi tải Hugging Face ({hf_err}), chuyển sang Google Drive...")
+            print(f"[-] Hugging Face download failed ({hf_err}), falling back to Google Drive...")
 
-        # Ưu tiên 2: Tải từ Google Drive qua gdown
+        # Priority 2: Google Drive via gdown
         gdrive_ids = ["16TgqOeI_0P41Eh3jWQlxlRXG9KIqtMgI", "1tt3dkdASjXt58t-2A9zeucZ397ZRF7In"]
         for gid in gdrive_ids:
             try:
@@ -111,42 +146,32 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
                 if os.path.exists(zip_path) and os.path.getsize(zip_path) < 10000000:
                     os.remove(zip_path)
                 if not os.path.exists(zip_path):
-                    print(f"[*] Đang tải fss1000.zip từ Google Drive ID ({gid})...")
+                    print(f"[*] Downloading fss1000.zip from Google Drive ID ({gid})...")
                     gdown.download(id=gid, output=zip_path, quiet=False)
                 if os.path.exists(zip_path) and os.path.getsize(zip_path) > 10000000:
-                    print("[*] Đang giải nén FSS-1000...")
+                    print("[*] Extracting FSS-1000...")
                     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                         zip_ref.extractall("./datasets/fss1000")
                     for root, dirs, files in os.walk("./datasets/fss1000"):
                         if is_valid_fss_dir(root):
-                            print(f"[OK] Tải và giải nén FSS-1000 thành công vào: {root}")
+                            print(f"[OK] Downloaded and extracted FSS-1000 to: {root}")
                             return root
             except Exception as gde:
-                print(f"[-] Lỗi với Google Drive ID {gid}: {gde}")
+                print(f"[-] Failed with Google Drive ID {gid}: {gde}")
 
-        print("[!] Không thể tự động tải FSS-1000 từ internet.")
+        print("[!] Unable to download FSS-1000 automatically.")
         return "./datasets/fss1000"
 
-    # 3. Kiểm tra thư mục cục bộ ./datasets
-    local_candidates = [
-        f"./datasets/{benchmark}",
-        f"./datasets/{benchmark}1000"
-    ]
-    for lc in local_candidates:
-        if os.path.exists(lc) and len(os.listdir(lc)) > 0:
-            print(f"[OK] Đã có sẵn '{benchmark}' tại thư mục cục bộ: {lc}")
-            return lc
-
-    # 4. Tải tự động từ Kaggle qua kagglehub
+    # 4. Download from Kaggle via kagglehub
     if kaggle_slug:
-        print(f"[*] Đang tự động tải '{benchmark}' từ Kaggle ({kaggle_slug})...")
+        print(f"[*] Downloading '{benchmark}' from Kaggle ({kaggle_slug})...")
         try:
             import kagglehub
             path = kagglehub.dataset_download(kaggle_slug)
-            print(f"[OK] Tải thành công '{benchmark}' về: {path}")
+            print(f"[OK] Successfully downloaded '{benchmark}' to: {path}")
             return path
         except Exception as e:
-            print(f"[!] Lỗi khi tải {benchmark} từ kagglehub: {e}")
+            print(f"[!] Error downloading {benchmark} from kagglehub: {e}")
 
     return f"./datasets/{benchmark}"
 
@@ -165,16 +190,18 @@ def parse_args():
                         help='List of benchmarks to run')
     parser.add_argument('--device', type=str, default='cuda',
                         help='Compute device: cuda or cpu')
+    parser.add_argument('--nworker', type=int, default=0,
+                        help='Number of dataloader workers (default: 0)')
     return parser.parse_args()
 
 def main():
     args = parse_args()
     print("=" * 80)
-    print(f"      QUY TRÌNH CHẠY CD-FSS: {args.adapt_to.upper()} ({args.episodes} EPISODES)")
+    print(f"      CD-FSS BENCHMARK PIPELINE: {args.adapt_to.upper()} ({args.episodes} EPISODES)")
     print(f"      EXPERIMENTS: {args.experiments}")
     print("=" * 80)
 
-    # 1. Xác định đường dẫn cho các bộ dữ liệu được chọn
+    # 1. Resolve dataset paths
     all_slugs = {
         'isic': 'heyoujue/isic2018-classwise',
         'suim': 'heyoujue/suim-merged',
@@ -187,7 +214,7 @@ def main():
         if b in all_slugs:
             dataset_paths[b] = check_or_download_dataset(b, kaggle_slug=all_slugs[b])
 
-    # 2. Xây dựng ma trận 4 thử nghiệm chuẩn E0/E1/E2/E3
+    # 2. Build 4 standard experiment matrix (E0/E1/E2/E3)
     exp_definitions = {
         'E0': {'name': 'E0 — Original ABCDFSS Baseline', 'adapter': 'conv1x1', 'fusion': 'mean'},
         'E1': {'name': 'E1 — Adapter Ablation (DW3x3 + Mean)', 'adapter': 'depthwise_separable_3x3', 'fusion': 'mean'},
@@ -215,14 +242,13 @@ def main():
 
     log_dir = "./logs"
     os.makedirs(log_dir, exist_ok=True)
-    summary_results = []
 
-    # 3. Lần lượt chạy từng thử nghiệm
+    # 3. Execute experiments sequentially
     total_exp = len(experiments)
     for i, exp in enumerate(experiments, 1):
-        print(f"\n{'='*30} TIẾN TRÌNH [{i}/{total_exp}]: {exp['name']} {'='*30}")
+        print(f"\n{'='*30} PROGRESS [{i}/{total_exp}]: {exp['name']} {'='*30}")
         if not os.path.exists(exp['datapath']) or (exp['benchmark'] == 'fss' and not is_valid_fss_dir(exp['datapath'])):
-            print(f"[!] CẢNH BÁO: Thư mục dữ liệu '{exp['benchmark']}' tại {exp['datapath']} không hợp lệ hoặc chưa tải xong. Bỏ qua...")
+            print(f"[!] WARNING: Dataset directory '{exp['benchmark']}' at {exp['datapath']} is invalid or missing. Skipping...")
             continue
 
         cmd = [
@@ -236,18 +262,18 @@ def main():
             "--adapt-to", args.adapt_to,
             "--episodes", str(args.episodes),
             "--logpath", log_dir,
-            "--device", args.device
+            "--device", args.device,
+            "--nworker", str(args.nworker)
         ]
 
-        print(f"[*] Thực thi lệnh: {' '.join(cmd)}")
+        print(f"[*] Executing command: {' '.join(cmd)}")
         env = os.environ.copy()
-        project_root = os.path.dirname(os.path.abspath(__file__))
-        env["PYTHONPATH"] = project_root + (":" + env.get("PYTHONPATH", "") if env.get("PYTHONPATH") else "")
-        result = subprocess.run(cmd, cwd=project_root, env=env)
+        env["PYTHONPATH"] = PROJECT_ROOT + (":" + env.get("PYTHONPATH", "") if env.get("PYTHONPATH") else "")
+        result = subprocess.run(cmd, cwd=PROJECT_ROOT, env=env)
         if result.returncode != 0:
-            print(f"[!] Lỗi khi chạy thử nghiệm {exp['name']}")
+            print(f"[!] Error executing experiment {exp['name']}")
 
-    # 4. Đọc lại file summary_records.jsonl và tạo bảng Markdown tổng kết
+    # 4. Read summary_records.jsonl and output summary table
     summary_jsonl = os.path.join(log_dir, "summary_records.jsonl")
     if os.path.exists(summary_jsonl):
         records = []
@@ -257,22 +283,24 @@ def main():
                     records.append(json.loads(line.strip()))
 
         print("\n\n" + "=" * 80)
-        print("           BẢNG TỔNG KẾT KẾT QUẢ THỰC NGHIỆM ĐÃ XÁC THỰC TỪ LOG")
+        print("           VERIFIED EXPERIMENT BENCHMARK SUMMARY TABLE")
         print("=" * 80)
         md_table = [
-            "| Thời gian | Benchmark | Shot | Adapter | Fusion | mIoU (%) | FB-IoU (%) | File Log Chi Tiết |",
-            "| :--- | :--- | :---: | :--- | :--- | :---: | :---: | :--- |"
+            "| Timestamp | Benchmark | Shot | Adapter | Fusion | Mean Ep IoU (%) | Cum mIoU (%) | FB-IoU (%) | Log File |",
+            "| :--- | :--- | :---: | :--- | :--- | :---: | :---: | :---: | :--- |"
         ]
         for r in records:
-            md_table.append(f"| {r['timestamp']} | **{r['benchmark'].upper()}** | {r['nshot']} | `{r['adapter']}` | `{r['fusion']}` | **{r['mIoU']}%** | **{r['FB-IoU']}%** | `{os.path.basename(r['log_file'])}` |")
+            mean_ep = r.get('Mean_Episode_IoU', r.get('mIoU', 'N/A'))
+            cum_m = r.get('Cumulative_mIoU', r.get('mIoU', 'N/A'))
+            md_table.append(f"| {r['timestamp']} | **{r['benchmark'].upper()}** | {r['nshot']} | `{r['adapter']}` | `{r['fusion']}` | **{mean_ep}%** | **{cum_m}%** | **{r['FB-IoU']}%** | `{os.path.basename(r['log_file'])}` |")
 
         table_str = "\n".join(md_table)
         print(table_str)
 
         output_md_file = os.path.join(log_dir, "verified_benchmark_summary.md")
         with open(output_md_file, "w", encoding="utf-8") as f:
-            f.write("# BẢNG TỔNG HỢP KẾT QUẢ THỰC NGHIỆM ĐÃ KIỂM CHỨNG TỪ LOG\n\n" + table_str + "\n")
-        print(f"\n[OK] Đã xuất file tóm tắt ra: {output_md_file}")
+            f.write("# VERIFIED BENCHMARK EXPERIMENT SUMMARY\n\n" + table_str + "\n")
+        print(f"\n[OK] Summary exported to: {output_md_file}")
 
 if __name__ == '__main__':
     main()
