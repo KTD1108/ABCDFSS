@@ -6,7 +6,6 @@
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![PyTorch 2.1+](https://img.shields.io/badge/PyTorch-2.1%2B-ee4c2c.svg)](https://pytorch.org/)
 [![Modal GPU](https://img.shields.io/badge/Modal-Tesla%20T4%20GPU-00C49F.svg)](https://modal.com/)
-[![Unit Tests](https://img.shields.io/badge/Unit%20Tests-34%2F34%20Passing-brightgreen.svg)]()
 [![Seed Freeze](https://img.shields.io/badge/Seed-42%20Deterministic-orange.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -182,10 +181,6 @@ d:/xulyanhv2/ABCDFSS/
 │   ├── fss/                           # Kết quả 100ep E0-E3 FSS-1000 (JSON + logs)
 │   └── suim/                          # Kết quả 100ep E0-E3 SUIM (JSON + logs)
 │
-├── tests/                             # Bộ kiểm thử đơn vị (34 unit tests hoàn chỉnh)
-│   ├── test_pipeline.py               # Test kiến trúc, loss, adapters, thresholding
-│   └── test_reproducibility.py        # Test manifest, protocol signature, sai số
-│
 ├── docs/                              # Tài liệu báo cáo nghiên cứu & đặc tả môi trường
 │   ├── BASELINE_FREEZE_REPORT.md      # Báo cáo đóng băng baseline E0 chính thức
 │   ├── FULL_BENCHMARK_REPORT.md       # Báo cáo tổng hợp khoa học 20 runs chi tiết
@@ -214,16 +209,7 @@ cd ABCDFSS
 pip install -r requirements.txt
 ```
 
-### 6.2. Chạy Bộ Kiểm Thử Đơn Vị (Run Unit Tests)
-
-Để xác nhận hệ thống hoạt động chính xác trước khi thực thi thực nghiệm:
-
-```bash
-python -m unittest discover tests
-# Kết quả mong đợi: Ran 34 tests in ~28s — OK
-```
-
-### 6.3. Chạy Một Thực Nghiệm Đơn Lẻ (Single Benchmark)
+### 6.2. Chạy Một Thực Nghiệm Đơn Lẻ (Single Benchmark)
 
 Dự án hỗ trợ 2 cách gọi:
 
@@ -235,7 +221,7 @@ python main.py --benchmark isic --datapath ./datasets/isic --nshot 1
 python main.py --benchmark isic --experiment E3 --episodes 100 --seed 42 --device cuda
 ```
 
-### 6.4. Chạy Toàn Bộ Bộ Đối Chuẩn (Full 20-Run Suite Locally)
+### 6.3. Chạy Toàn Bộ Bộ Đối Chuẩn (Full 20-Run Suite Locally)
 
 Chạy tất cả 4 thực nghiệm (E0–E3) trên cả 5 datasets (tự động tải dữ liệu nếu chưa có, tự động khóa manifest và xác thực chữ ký giao thức):
 
@@ -247,7 +233,7 @@ python run_all_benchmarks.py \
     --device cuda
 ```
 
-### 6.5. Chạy Trên Đám Mây Modal Serverless GPU (Cloud GPU Execution)
+### 6.4. Chạy Trên Đám Mây Modal Serverless GPU (Cloud GPU Execution)
 
 Nếu muốn chạy trên GPU đám mây Tesla T4 / A10G thông qua [Modal](https://modal.com/):
 
@@ -263,7 +249,7 @@ modal run modal_runner.py --benchmark isic --experiment E3 --episodes 100
 modal run modal_runner.py --benchmark all --experiment all --episodes 100
 ```
 
-### 6.6. Kiểm Tra Tính Tái Lập Số Học (Audit Cross-Device Reproducibility)
+### 6.5. Kiểm Tra Tính Tái Lập Số Học (Audit Cross-Device Reproducibility)
 
 Để thẩm định tính nhất quán số học giữa 2 tệp kết quả với ngưỡng sai số nghiêm ngặt ($\Delta_{\text{mean}} \le 0.15\%$, $\Delta_{\text{max}} \le 0.50\%$):
 
@@ -275,7 +261,7 @@ python experiments/check_reproducibility.py \
     --tolerance-max 0.50
 ```
 
-### 6.7. Tái Tạo Báo Cáo Đối Chuẩn (Generate Official Benchmark Report)
+### 6.6. Tái Tạo Báo Cáo Đối Chuẩn (Generate Official Benchmark Report)
 
 ```bash
 python scripts/generate_full_benchmark_report.py
