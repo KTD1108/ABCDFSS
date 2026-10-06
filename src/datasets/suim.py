@@ -76,10 +76,12 @@ class SUIMDataset(Dataset):
     def __getitem__(self, idx):
         if self.episodes is not None:
             ep = self.episodes[idx]
-            q_img_path = ep['query_img'] if os.path.isabs(ep['query_img']) else os.path.join(self.base_path, ep['query_img'])
-            q_mask_path = ep['query_mask'] if os.path.isabs(ep['query_mask']) else os.path.join(self.base_path, ep['query_mask'])
-            s_img_paths = [p if os.path.isabs(p) else os.path.join(self.base_path, p) for p in ep['support_imgs']]
-            s_mask_paths = [p if os.path.isabs(p) else os.path.join(self.base_path, p) for p in ep['support_masks']]
+            q_img_rel = ep['query_img'].replace('\\', '/')
+            q_mask_rel = ep['query_mask'].replace('\\', '/')
+            q_img_path = q_img_rel if os.path.isabs(q_img_rel) else os.path.join(self.base_path, q_img_rel)
+            q_mask_path = q_mask_rel if os.path.isabs(q_mask_rel) else os.path.join(self.base_path, q_mask_rel)
+            s_img_paths = [p.replace('\\', '/') if os.path.isabs(p.replace('\\', '/')) else os.path.join(self.base_path, p.replace('\\', '/')) for p in ep['support_imgs']]
+            s_mask_paths = [p.replace('\\', '/') if os.path.isabs(p.replace('\\', '/')) else os.path.join(self.base_path, p.replace('\\', '/')) for p in ep['support_masks']]
             class_id = ep.get('class_id', 0)
 
             q_img = Image.open(q_img_path).convert('RGB')

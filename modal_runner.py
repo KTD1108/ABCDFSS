@@ -58,7 +58,7 @@ image = (
     .add_local_dir(
         LOCAL_DIR,
         remote_path="/root/ABCDFSS",
-        ignore=[".git", "*__pycache__*", "*.pdf", "*.log", "logs/*"]
+        ignore=[".git", "*__pycache__*", "*.pdf", "*.log", "logs/*", "datasets/*", "results/*"]
     )
 )
 

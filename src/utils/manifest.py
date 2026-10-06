@@ -187,20 +187,24 @@ def validate_manifest(
         is_all_mode = episodes is not None and str(episodes).lower().strip() == 'all'
         sample_to_check = ep_list if (check_files_limit is None or is_all_mode) else ep_list[:check_files_limit]
         for ep in sample_to_check:
-            # Query img & mask
-            q_img = ep["query_img"] if os.path.isabs(ep["query_img"]) else os.path.join(effective_base, ep["query_img"])
-            q_mask = ep["query_mask"] if os.path.isabs(ep["query_mask"]) else os.path.join(effective_base, ep["query_mask"])
+            # Query img & mask (normalize backslashes for cross-platform portability)
+            q_img_rel = ep["query_img"].replace('\\', '/')
+            q_mask_rel = ep["query_mask"].replace('\\', '/')
+            q_img = q_img_rel if os.path.isabs(q_img_rel) else os.path.join(effective_base, q_img_rel)
+            q_mask = q_mask_rel if os.path.isabs(q_mask_rel) else os.path.join(effective_base, q_mask_rel)
             if not os.path.exists(q_img):
                 raise FileNotFoundError(f"[Manifest Error] Query image does not exist: {q_img} (episode {ep.get('episode_id')})")
             if not os.path.exists(q_mask):
                 raise FileNotFoundError(f"[Manifest Error] Query mask does not exist: {q_mask} (episode {ep.get('episode_id')})")
 
             # Support imgs & masks
-            for s_img_rel in ep["support_imgs"]:
+            for s_img_rel_raw in ep["support_imgs"]:
+                s_img_rel = s_img_rel_raw.replace('\\', '/')
                 s_img = s_img_rel if os.path.isabs(s_img_rel) else os.path.join(effective_base, s_img_rel)
                 if not os.path.exists(s_img):
                     raise FileNotFoundError(f"[Manifest Error] Support image does not exist: {s_img} (episode {ep.get('episode_id')})")
-            for s_mask_rel in ep["support_masks"]:
+            for s_mask_rel_raw in ep["support_masks"]:
+                s_mask_rel = s_mask_rel_raw.replace('\\', '/')
                 s_mask = s_mask_rel if os.path.isabs(s_mask_rel) else os.path.join(effective_base, s_mask_rel)
                 if not os.path.exists(s_mask):
                     raise FileNotFoundError(f"[Manifest Error] Support mask does not exist: {s_mask} (episode {ep.get('episode_id')})")
