@@ -1,0 +1,1309 @@
+{
+  "seed": 42,
+  "benchmark": "suim",
+  "nshot": 1,
+  "mode": "sampled",
+  "num_episodes": 100,
+  "episodes": [
+    {
+      "episode_id": 0,
+      "class_id": 0,
+      "category": "FV",
+      "query_img": "images/f_r_1698_.jpg",
+      "query_mask": "masks/FV/f_r_1698_.bmp",
+      "support_imgs": [
+        "images/f_r_1915_.jpg"
+      ],
+      "support_masks": [
+        "masks/FV/f_r_1915_.bmp"
+      ]
+    },
+    {
+      "episode_id": 1,
+      "class_id": 1,
+      "category": "HD",
+      "query_img": "images/d_r_776_.jpg",
+      "query_mask": "masks/HD/d_r_776_.bmp",
+      "support_imgs": [
+        "images/w_r_186_.jpg"
+      ],
+      "support_masks": [
+        "masks/HD/w_r_186_.bmp"
+      ]
+    },
+    {
+      "episode_id": 2,
+      "class_id": 2,
+      "category": "PF",
+      "query_img": "images/n_l_24_.jpg",
+      "query_mask": "masks/PF/n_l_24_.bmp",
+      "support_imgs": [
+        "images/f_r_1745_.jpg"
+      ],
+      "support_masks": [
+        "masks/PF/f_r_1745_.bmp"
+      ]
+    },
+    {
+      "episode_id": 3,
+      "class_id": 3,
+      "category": "RI",
+      "query_img": "images/f_r_914_.jpg",
+      "query_mask": "masks/RI/f_r_914_.bmp",
+      "support_imgs": [
+        "images/f_r_1686_.jpg"
+      ],
+      "support_masks": [
+        "masks/RI/f_r_1686_.bmp"
+      ]
+    },
+    {
+      "episode_id": 4,
+      "class_id": 4,
+      "category": "RO",
+      "query_img": "images/d_r_798_.jpg",
+      "query_mask": "masks/RO/d_r_798_.bmp",
+      "support_imgs": [
+        "images/d_r_746_.jpg"
+      ],
+      "support_masks": [
+        "masks/RO/d_r_746_.bmp"
+      ]
+    },
+    {
+      "episode_id": 5,
+      "class_id": 5,
+      "category": "SR",
+      "query_img": "images/n_l_1_.jpg",
+      "query_mask": "masks/SR/n_l_1_.bmp",
+      "support_imgs": [
+        "images/n_l_68_.jpg"
+      ],
+      "support_masks": [
+        "masks/SR/n_l_68_.bmp"
+      ]
+    },
+    {
+      "episode_id": 6,
+      "class_id": 6,
+      "category": "WR",
+      "query_img": "images/w_r_135_.jpg",
+      "query_mask": "masks/WR/w_r_135_.bmp",
+      "support_imgs": [
+        "images/w_r_217_.jpg"
+      ],
+      "support_masks": [
+        "masks/WR/w_r_217_.bmp"
+      ]
+    },
+    {
+      "episode_id": 7,
+      "class_id": 0,
+      "category": "FV",
+      "query_img": "images/f_r_445_.jpg",
+      "query_mask": "masks/FV/f_r_445_.bmp",
+      "support_imgs": [
+        "images/f_r_1969_.jpg"
+      ],
+      "support_masks": [
+        "masks/FV/f_r_1969_.bmp"
+      ]
+    },
+    {
+      "episode_id": 8,
+      "class_id": 1,
+      "category": "HD",
+      "query_img": "images/n_l_30_.jpg",
+      "query_mask": "masks/HD/n_l_30_.bmp",
+      "support_imgs": [
+        "images/w_r_56_.jpg"
+      ],
+      "support_masks": [
+        "masks/HD/w_r_56_.bmp"
+      ]
+    },
+    {
+      "episode_id": 9,
+      "class_id": 2,
+      "category": "PF",
+      "query_img": "images/f_r_1215_.jpg",
+      "query_mask": "masks/PF/f_r_1215_.bmp",
+      "support_imgs": [
+        "images/w_r_162_.jpg"
+      ],
+      "support_masks": [
+        "masks/PF/w_r_162_.bmp"
+      ]
+    },
+    {
+      "episode_id": 10,
+      "class_id": 3,
+      "category": "RI",
+      "query_img": "images/f_r_1050_.jpg",
+      "query_mask": "masks/RI/f_r_1050_.bmp",
+      "support_imgs": [
+        "images/f_r_1500_.jpg"
+      ],
+      "support_masks": [
+        "masks/RI/f_r_1500_.bmp"
+      ]
+    },
+    {
+      "episode_id": 11,
+      "class_id": 4,
+      "category": "RO",
+      "query_img": "images/d_r_80_.jpg",
+      "query_mask": "masks/RO/d_r_80_.bmp",
+      "support_imgs": [
+        "images/d_r_588_.jpg"
+      ],
+      "support_masks": [
+        "masks/RO/d_r_588_.bmp"
+      ]
+    },
+    {
+      "episode_id": 12,
+      "class_id": 5,
+      "category": "SR",
+      "query_img": "images/d_r_297_.jpg",
+      "query_mask": "masks/SR/d_r_297_.bmp",
+      "support_imgs": [
+        "images/w_r_257_.jpg"
+      ],
+      "support_masks": [
+        "masks/SR/w_r_257_.bmp"
+      ]
+    },
+    {
+      "episode_id": 13,
+      "class_id": 6,
+      "category": "WR",
+      "query_img": "images/w_r_208_.jpg",
+      "query_mask": "masks/WR/w_r_208_.bmp",
+      "support_imgs": [
+        "images/w_r_257_.jpg"
+      ],
+      "support_masks": [
+        "masks/WR/w_r_257_.bmp"
+      ]
+    },
+    {
+      "episode_id": 14,
+      "class_id": 0,
+      "category": "FV",
+      "query_img": "images/f_r_603_.jpg",
+      "query_mask": "masks/FV/f_r_603_.bmp",
+      "support_imgs": [
+        "images/f_r_2031_.jpg"
+      ],
+      "support_masks": [
+        "masks/FV/f_r_2031_.bmp"
+      ]
+    },
+    {
+      "episode_id": 15,
+      "class_id": 1,
+      "category": "HD",
+      "query_img": "images/w_r_100_.jpg",
+      "query_mask": "masks/HD/w_r_100_.bmp",
+      "support_imgs": [
+        "images/w_r_130_.jpg"
+      ],
+      "support_masks": [
+        "masks/HD/w_r_130_.bmp"
+      ]
+    },
+    {
+      "episode_id": 16,
+      "class_id": 2,
+      "category": "PF",
+      "query_img": "images/f_r_643_.jpg",
+      "query_mask": "masks/PF/f_r_643_.bmp",
+      "support_imgs": [
+        "images/w_r_63_.jpg"
+      ],
+      "support_masks": [
+        "masks/PF/w_r_63_.bmp"
+      ]
+    },
+    {
+      "episode_id": 17,
+      "class_id": 3,
+      "category": "RI",
+      "query_img": "images/f_r_1531_.jpg",
+      "query_mask": "masks/RI/f_r_1531_.bmp",
+      "support_imgs": [
+        "images/f_r_280_.jpg"
+      ],
+      "support_masks": [
+        "masks/RI/f_r_280_.bmp"
+      ]
+    },
+    {
+      "episode_id": 18,
+      "class_id": 4,
+      "category": "RO",
+      "query_img": "images/d_r_160_.jpg",
+      "query_mask": "masks/RO/d_r_160_.bmp",
+      "support_imgs": [
+        "images/d_r_513_.jpg"
+      ],
+      "support_masks": [
+        "masks/RO/d_r_513_.bmp"
+      ]
+    },
+    {
+      "episode_id": 19,
+      "class_id": 5,
+      "category": "SR",
+      "query_img": "images/w_r_238_.jpg",
+      "query_mask": "masks/SR/w_r_238_.bmp",
+      "support_imgs": [
+        "images/w_r_170_.jpg"
+      ],
+      "support_masks": [
+        "masks/SR/w_r_170_.bmp"
+      ]
+    },
+    {
+      "episode_id": 20,
+      "class_id": 6,
+      "category": "WR",
+      "query_img": "images/w_r_174_.jpg",
+      "query_mask": "masks/WR/w_r_174_.bmp",
+      "support_imgs": [
+        "images/w_r_104_.jpg"
+      ],
+      "support_masks": [
+        "masks/WR/w_r_104_.bmp"
+      ]
+    },
+    {
+      "episode_id": 21,
+      "class_id": 0,
+      "category": "FV",
+      "query_img": "images/f_r_172_.jpg",
+      "query_mask": "masks/FV/f_r_172_.bmp",
+      "support_imgs": [
+        "images/f_r_916_.jpg"
+      ],
+      "support_masks": [
+        "masks/FV/f_r_916_.bmp"
+      ]
+    },
+    {
+      "episode_id": 22,
+      "class_id": 1,
+      "category": "HD",
+      "query_img": "images/d_r_738_.jpg",
+      "query_mask": "masks/HD/d_r_738_.bmp",
+      "support_imgs": [
+        "images/w_r_285_.jpg"
+      ],
+      "support_masks": [
+        "masks/HD/w_r_285_.bmp"
+      ]
+    },
+    {
+      "episode_id": 23,
+      "class_id": 2,
+      "category": "PF",
+      "query_img": "images/n_l_69_.jpg",
+      "query_mask": "masks/PF/n_l_69_.bmp",
+      "support_imgs": [
+        "images/f_r_1851_.jpg"
+      ],
+      "support_masks": [
+        "masks/PF/f_r_1851_.bmp"
+      ]
+    },
+    {
+      "episode_id": 24,
+      "class_id": 3,
+      "category": "RI",
+      "query_img": "images/n_l_104_.jpg",
+      "query_mask": "masks/RI/n_l_104_.bmp",
+      "support_imgs": [
+        "images/f_r_692_.jpg"
+      ],
+      "support_masks": [
+        "masks/RI/f_r_692_.bmp"
+      ]
+    },
+    {
+      "episode_id": 25,
+      "class_id": 4,
+      "category": "RO",
+      "query_img": "images/d_r_594_.jpg",
+      "query_mask": "masks/RO/d_r_594_.bmp",
+      "support_imgs": [
+        "images/d_r_384_.jpg"
+      ],
+      "support_masks": [
+        "masks/RO/d_r_384_.bmp"
+      ]
+    },
+    {
+      "episode_id": 26,
+      "class_id": 5,
+      "category": "SR",
+      "query_img": "images/w_r_124_.jpg",
+      "query_mask": "masks/SR/w_r_124_.bmp",
+      "support_imgs": [
+        "images/d_r_345_.jpg"
+      ],
+      "support_masks": [
+        "masks/SR/d_r_345_.bmp"
+      ]
+    },
+    {
+      "episode_id": 27,
+      "class_id": 6,
+      "category": "WR",
+      "query_img": "images/w_r_172_.jpg",
+      "query_mask": "masks/WR/w_r_172_.bmp",
+      "support_imgs": [
+        "images/w_r_101_.jpg"
+      ],
+      "support_masks": [
+        "masks/WR/w_r_101_.bmp"
+      ]
+    },
+    {
+      "episode_id": 28,
+      "class_id": 0,
+      "category": "FV",
+      "query_img": "images/f_r_760_.jpg",
+      "query_mask": "masks/FV/f_r_760_.bmp",
+      "support_imgs": [
+        "images/f_r_963_.jpg"
+      ],
+      "support_masks": [
+        "masks/FV/f_r_963_.bmp"
+      ]
+    },
+    {
+      "episode_id": 29,
+      "class_id": 1,
+      "category": "HD",
+      "query_img": "images/f_r_583_.jpg",
+      "query_mask": "masks/HD/f_r_583_.bmp",
+      "support_imgs": [
+        "images/d_r_533_.jpg"
+      ],
+      "support_masks": [
+        "masks/HD/d_r_533_.bmp"
+      ]
+    },
+    {
+      "episode_id": 30,
+      "class_id": 2,
+      "category": "PF",
+      "query_img": "images/f_r_1087_.jpg",
+      "query_mask": "masks/PF/f_r_1087_.bmp",
+      "support_imgs": [
+        "images/f_r_143_.jpg"
+      ],
+      "support_masks": [
+        "masks/PF/f_r_143_.bmp"
+      ]
+    },
+    {
+      "episode_id": 31,
+      "class_id": 3,
+      "category": "RI",
+      "query_img": "images/f_r_491_.jpg",
+      "query_mask": "masks/RI/f_r_491_.bmp",
+      "support_imgs": [
+        "images/w_r_176_.jpg"
+      ],
+      "support_masks": [
+        "masks/RI/w_r_176_.bmp"
+      ]
+    },
+    {
+      "episode_id": 32,
+      "class_id": 4,
+      "category": "RO",
+      "query_img": "images/d_r_690_.jpg",
+      "query_mask": "masks/RO/d_r_690_.bmp",
+      "support_imgs": [
+        "images/d_r_364_.jpg"
+      ],
+      "support_masks": [
+        "masks/RO/d_r_364_.bmp"
+      ]
+    },
+    {
+      "episode_id": 33,
+      "class_id": 5,
+      "category": "SR",
+      "query_img": "images/f_r_1876_.jpg",
+      "query_mask": "masks/SR/f_r_1876_.bmp",
+      "support_imgs": [
+        "images/f_r_1887_.jpg"
+      ],
+      "support_masks": [
+        "masks/SR/f_r_1887_.bmp"
+      ]
+    },
+    {
+      "episode_id": 34,
+      "class_id": 6,
+      "category": "WR",
+      "query_img": "images/w_r_53_.jpg",
+      "query_mask": "masks/WR/w_r_53_.bmp",
+      "support_imgs": [
+        "images/w_r_276_.jpg"
+      ],
+      "support_masks": [
+        "masks/WR/w_r_276_.bmp"
+      ]
+    },
+    {
+      "episode_id": 35,
+      "class_id": 0,
+      "category": "FV",
+      "query_img": "images/f_r_1087_.jpg",
+      "query_mask": "masks/FV/f_r_1087_.bmp",
+      "support_imgs": [
+        "images/f_r_785_.jpg"
+      ],
+      "support_masks": [
+        "masks/FV/f_r_785_.bmp"
+      ]
+    },
+    {
+      "episode_id": 36,
+      "class_id": 1,
+      "category": "HD",
+      "query_img": "images/d_r_801_.jpg",
+      "query_mask": "masks/HD/d_r_801_.bmp",
+      "support_imgs": [
+        "images/d_r_266_.jpg"
+      ],
+      "support_masks": [
+        "masks/HD/d_r_266_.bmp"
+      ]
+    },
+    {
+      "episode_id": 37,
+      "class_id": 2,
+      "category": "PF",
+      "query_img": "images/n_l_98_.jpg",
+      "query_mask": "masks/PF/n_l_98_.bmp",
+      "support_imgs": [
+        "images/f_r_643_.jpg"
+      ],
+      "support_masks": [
+        "masks/PF/f_r_643_.bmp"
+      ]
+    },
+    {
+      "episode_id": 38,
+      "class_id": 3,
+      "category": "RI",
+      "query_img": "images/f_r_953_.jpg",
+      "query_mask": "masks/RI/f_r_953_.bmp",
+      "support_imgs": [
+        "images/f_r_569_.jpg"
+      ],
+      "support_masks": [
+        "masks/RI/f_r_569_.bmp"
+      ]
+    },
+    {
+      "episode_id": 39,
+      "class_id": 4,
+      "category": "RO",
+      "query_img": "images/d_r_661_.jpg",
+      "query_mask": "masks/RO/d_r_661_.bmp",
+      "support_imgs": [
+        "images/d_r_51_.jpg"
+      ],
+      "support_masks": [
+        "masks/RO/d_r_51_.bmp"
+      ]
+    },
+    {
+      "episode_id": 40,
+      "class_id": 5,
+      "category": "SR",
+      "query_img": "images/d_r_664_.jpg",
+      "query_mask": "masks/SR/d_r_664_.bmp",
+      "support_imgs": [
+        "images/f_r_1920_.jpg"
+      ],
+      "support_masks": [
+        "masks/SR/f_r_1920_.bmp"
+      ]
+    },
+    {
+      "episode_id": 41,
+      "class_id": 6,
+      "category": "WR",
+      "query_img": "images/w_r_288_.jpg",
+      "query_mask": "masks/WR/w_r_288_.bmp",
+      "support_imgs": [
+        "images/d_r_348_.jpg"
+      ],
+      "support_masks": [
+        "masks/WR/d_r_348_.bmp"
+      ]
+    },
+    {
+      "episode_id": 42,
+      "class_id": 0,
+      "category": "FV",
+      "query_img": "images/w_r_226_.jpg",
+      "query_mask": "masks/FV/w_r_226_.bmp",
+      "support_imgs": [
+        "images/f_r_1807_.jpg"
+      ],
+      "support_masks": [
+        "masks/FV/f_r_1807_.bmp"
+      ]
+    },
+    {
+      "episode_id": 43,
+      "class_id": 1,
+      "category": "HD",
+      "query_img": "images/d_r_494_.jpg",
+      "query_mask": "masks/HD/d_r_494_.bmp",
+      "support_imgs": [
+        "images/w_r_295_.jpg"
+      ],
+      "support_masks": [
+        "masks/HD/w_r_295_.bmp"
+      ]
+    },
+    {
+      "episode_id": 44,
+      "class_id": 2,
+      "category": "PF",
+      "query_img": "images/n_l_96_.jpg",
+      "query_mask": "masks/PF/n_l_96_.bmp",
+      "support_imgs": [
+        "images/f_r_660_.jpg"
+      ],
+      "support_masks": [
+        "masks/PF/f_r_660_.bmp"
+      ]
+    },
+    {
+      "episode_id": 45,
+      "class_id": 3,
+      "category": "RI",
+      "query_img": "images/f_r_655_.jpg",
+      "query_mask": "masks/RI/f_r_655_.bmp",
+      "support_imgs": [
+        "images/f_r_729_.jpg"
+      ],
+      "support_masks": [
+        "masks/RI/f_r_729_.bmp"
+      ]
+    },
+    {
+      "episode_id": 46,
+      "class_id": 4,
+      "category": "RO",
+      "query_img": "images/n_l_16_.jpg",
+      "query_mask": "masks/RO/n_l_16_.bmp",
+      "support_imgs": [
+        "images/d_r_617_.jpg"
+      ],
+      "support_masks": [
+        "masks/RO/d_r_617_.bmp"
+      ]
+    },
+    {
+      "episode_id": 47,
+      "class_id": 5,
+      "category": "SR",
+      "query_img": "images/f_r_1274_.jpg",
+      "query_mask": "masks/SR/f_r_1274_.bmp",
+      "support_imgs": [
+        "images/f_r_1667_.jpg"
+      ],
+      "support_masks": [
+        "masks/SR/f_r_1667_.bmp"
+      ]
+    },
+    {
+      "episode_id": 48,
+      "class_id": 6,
+      "category": "WR",
+      "query_img": "images/w_r_121_.jpg",
+      "query_mask": "masks/WR/w_r_121_.bmp",
+      "support_imgs": [
+        "images/w_r_114_.jpg"
+      ],
+      "support_masks": [
+        "masks/WR/w_r_114_.bmp"
+      ]
+    },
+    {
+      "episode_id": 49,
+      "class_id": 0,
+      "category": "FV",
+      "query_img": "images/f_r_906_.jpg",
+      "query_mask": "masks/FV/f_r_906_.bmp",
+      "support_imgs": [
+        "images/f_r_55_.jpg"
+      ],
+      "support_masks": [
+        "masks/FV/f_r_55_.bmp"
+      ]
+    },
+    {
+      "episode_id": 50,
+      "class_id": 1,
+      "category": "HD",
+      "query_img": "images/w_r_168_.jpg",
+      "query_mask": "masks/HD/w_r_168_.bmp",
+      "support_imgs": [
+        "images/w_r_88_.jpg"
+      ],
+      "support_masks": [
+        "masks/HD/w_r_88_.bmp"
+      ]
+    },
+    {
+      "episode_id": 51,
+      "class_id": 2,
+      "category": "PF",
+      "query_img": "images/f_r_528_.jpg",
+      "query_mask": "masks/PF/f_r_528_.bmp",
+      "support_imgs": [
+        "images/n_l_35_.jpg"
+      ],
+      "support_masks": [
+        "masks/PF/n_l_35_.bmp"
+      ]
+    },
+    {
+      "episode_id": 52,
+      "class_id": 3,
+      "category": "RI",
+      "query_img": "images/f_r_1698_.jpg",
+      "query_mask": "masks/RI/f_r_1698_.bmp",
+      "support_imgs": [
+        "images/f_r_521_.jpg"
+      ],
+      "support_masks": [
+        "masks/RI/f_r_521_.bmp"
+      ]
+    },
+    {
+      "episode_id": 53,
+      "class_id": 4,
+      "category": "RO",
+      "query_img": "images/d_r_277_.jpg",
+      "query_mask": "masks/RO/d_r_277_.bmp",
+      "support_imgs": [
+        "images/d_r_160_.jpg"
+      ],
+      "support_masks": [
+        "masks/RO/d_r_160_.bmp"
+      ]
+    },
+    {
+      "episode_id": 54,
+      "class_id": 5,
+      "category": "SR",
+      "query_img": "images/f_r_1804_.jpg",
+      "query_mask": "masks/SR/f_r_1804_.bmp",
+      "support_imgs": [
+        "images/f_r_1679_.jpg"
+      ],
+      "support_masks": [
+        "masks/SR/f_r_1679_.bmp"
+      ]
+    },
+    {
+      "episode_id": 55,
+      "class_id": 6,
+      "category": "WR",
+      "query_img": "images/w_r_87_.jpg",
+      "query_mask": "masks/WR/w_r_87_.bmp",
+      "support_imgs": [
+        "images/w_r_282_.jpg"
+      ],
+      "support_masks": [
+        "masks/WR/w_r_282_.bmp"
+      ]
+    },
+    {
+      "episode_id": 56,
+      "class_id": 0,
+      "category": "FV",
+      "query_img": "images/f_r_1052_.jpg",
+      "query_mask": "masks/FV/f_r_1052_.bmp",
+      "support_imgs": [
+        "images/d_r_297_.jpg"
+      ],
+      "support_masks": [
+        "masks/FV/d_r_297_.bmp"
+      ]
+    },
+    {
+      "episode_id": 57,
+      "class_id": 1,
+      "category": "HD",
+      "query_img": "images/w_r_166_.jpg",
+      "query_mask": "masks/HD/w_r_166_.bmp",
+      "support_imgs": [
+        "images/f_r_1678_.jpg"
+      ],
+      "support_masks": [
+        "masks/HD/f_r_1678_.bmp"
+      ]
+    },
+    {
+      "episode_id": 58,
+      "class_id": 2,
+      "category": "PF",
+      "query_img": "images/d_r_144_.jpg",
+      "query_mask": "masks/PF/d_r_144_.bmp",
+      "support_imgs": [
+        "images/f_r_1577_.jpg"
+      ],
+      "support_masks": [
+        "masks/PF/f_r_1577_.bmp"
+      ]
+    },
+    {
+      "episode_id": 59,
+      "class_id": 3,
+      "category": "RI",
+      "query_img": "images/f_r_312_.jpg",
+      "query_mask": "masks/RI/f_r_312_.bmp",
+      "support_imgs": [
+        "images/f_r_1691_.jpg"
+      ],
+      "support_masks": [
+        "masks/RI/f_r_1691_.bmp"
+      ]
+    },
+    {
+      "episode_id": 60,
+      "class_id": 4,
+      "category": "RO",
+      "query_img": "images/d_r_739_.jpg",
+      "query_mask": "masks/RO/d_r_739_.bmp",
+      "support_imgs": [
+        "images/n_l_27_.jpg"
+      ],
+      "support_masks": [
+        "masks/RO/n_l_27_.bmp"
+      ]
+    },
+    {
+      "episode_id": 61,
+      "class_id": 5,
+      "category": "SR",
+      "query_img": "images/f_r_1491_.jpg",
+      "query_mask": "masks/SR/f_r_1491_.bmp",
+      "support_imgs": [
+        "images/n_l_65_.jpg"
+      ],
+      "support_masks": [
+        "masks/SR/n_l_65_.bmp"
+      ]
+    },
+    {
+      "episode_id": 62,
+      "class_id": 6,
+      "category": "WR",
+      "query_img": "images/w_r_223_.jpg",
+      "query_mask": "masks/WR/w_r_223_.bmp",
+      "support_imgs": [
+        "images/w_r_28_.jpg"
+      ],
+      "support_masks": [
+        "masks/WR/w_r_28_.bmp"
+      ]
+    },
+    {
+      "episode_id": 63,
+      "class_id": 0,
+      "category": "FV",
+      "query_img": "images/f_r_1577_.jpg",
+      "query_mask": "masks/FV/f_r_1577_.bmp",
+      "support_imgs": [
+        "images/f_r_1044_.jpg"
+      ],
+      "support_masks": [
+        "masks/FV/f_r_1044_.bmp"
+      ]
+    },
+    {
+      "episode_id": 64,
+      "class_id": 1,
+      "category": "HD",
+      "query_img": "images/d_r_67_.jpg",
+      "query_mask": "masks/HD/d_r_67_.bmp",
+      "support_imgs": [
+        "images/f_r_459_.jpg"
+      ],
+      "support_masks": [
+        "masks/HD/f_r_459_.bmp"
+      ]
+    },
+    {
+      "episode_id": 65,
+      "class_id": 2,
+      "category": "PF",
+      "query_img": "images/f_r_560_.jpg",
+      "query_mask": "masks/PF/f_r_560_.bmp",
+      "support_imgs": [
+        "images/f_r_1137_.jpg"
+      ],
+      "support_masks": [
+        "masks/PF/f_r_1137_.bmp"
+      ]
+    },
+    {
+      "episode_id": 66,
+      "class_id": 3,
+      "category": "RI",
+      "query_img": "images/d_r_376_.jpg",
+      "query_mask": "masks/RI/d_r_376_.bmp",
+      "support_imgs": [
+        "images/w_r_131_.jpg"
+      ],
+      "support_masks": [
+        "masks/RI/w_r_131_.bmp"
+      ]
+    },
+    {
+      "episode_id": 67,
+      "class_id": 4,
+      "category": "RO",
+      "query_img": "images/d_r_710_.jpg",
+      "query_mask": "masks/RO/d_r_710_.bmp",
+      "support_imgs": [
+        "images/d_r_1_.jpg"
+      ],
+      "support_masks": [
+        "masks/RO/d_r_1_.bmp"
+      ]
+    },
+    {
+      "episode_id": 68,
+      "class_id": 5,
+      "category": "SR",
+      "query_img": "images/f_r_1779_.jpg",
+      "query_mask": "masks/SR/f_r_1779_.bmp",
+      "support_imgs": [
+        "images/f_r_823_.jpg"
+      ],
+      "support_masks": [
+        "masks/SR/f_r_823_.bmp"
+      ]
+    },
+    {
+      "episode_id": 69,
+      "class_id": 6,
+      "category": "WR",
+      "query_img": "images/n_l_18_.jpg",
+      "query_mask": "masks/WR/n_l_18_.bmp",
+      "support_imgs": [
+        "images/w_r_4_.jpg"
+      ],
+      "support_masks": [
+        "masks/WR/w_r_4_.bmp"
+      ]
+    },
+    {
+      "episode_id": 70,
+      "class_id": 0,
+      "category": "FV",
+      "query_img": "images/f_r_1096_.jpg",
+      "query_mask": "masks/FV/f_r_1096_.bmp",
+      "support_imgs": [
+        "images/f_r_102_.jpg"
+      ],
+      "support_masks": [
+        "masks/FV/f_r_102_.bmp"
+      ]
+    },
+    {
+      "episode_id": 71,
+      "class_id": 1,
+      "category": "HD",
+      "query_img": "images/d_r_745_.jpg",
+      "query_mask": "masks/HD/d_r_745_.bmp",
+      "support_imgs": [
+        "images/d_r_383_.jpg"
+      ],
+      "support_masks": [
+        "masks/HD/d_r_383_.bmp"
+      ]
+    },
+    {
+      "episode_id": 72,
+      "class_id": 2,
+      "category": "PF",
+      "query_img": "images/f_r_1198_.jpg",
+      "query_mask": "masks/PF/f_r_1198_.bmp",
+      "support_imgs": [
+        "images/w_r_114_.jpg"
+      ],
+      "support_masks": [
+        "masks/PF/w_r_114_.bmp"
+      ]
+    },
+    {
+      "episode_id": 73,
+      "class_id": 3,
+      "category": "RI",
+      "query_img": "images/f_r_1118_.jpg",
+      "query_mask": "masks/RI/f_r_1118_.bmp",
+      "support_imgs": [
+        "images/f_r_1595_.jpg"
+      ],
+      "support_masks": [
+        "masks/RI/f_r_1595_.bmp"
+      ]
+    },
+    {
+      "episode_id": 74,
+      "class_id": 4,
+      "category": "RO",
+      "query_img": "images/d_r_77_.jpg",
+      "query_mask": "masks/RO/d_r_77_.bmp",
+      "support_imgs": [
+        "images/d_r_474_.jpg"
+      ],
+      "support_masks": [
+        "masks/RO/d_r_474_.bmp"
+      ]
+    },
+    {
+      "episode_id": 75,
+      "class_id": 5,
+      "category": "SR",
+      "query_img": "images/f_r_1516_.jpg",
+      "query_mask": "masks/SR/f_r_1516_.bmp",
+      "support_imgs": [
+        "images/f_r_1373_.jpg"
+      ],
+      "support_masks": [
+        "masks/SR/f_r_1373_.bmp"
+      ]
+    },
+    {
+      "episode_id": 76,
+      "class_id": 6,
+      "category": "WR",
+      "query_img": "images/w_r_48_.jpg",
+      "query_mask": "masks/WR/w_r_48_.bmp",
+      "support_imgs": [
+        "images/w_r_154_.jpg"
+      ],
+      "support_masks": [
+        "masks/WR/w_r_154_.bmp"
+      ]
+    },
+    {
+      "episode_id": 77,
+      "class_id": 0,
+      "category": "FV",
+      "query_img": "images/f_r_1692_.jpg",
+      "query_mask": "masks/FV/f_r_1692_.bmp",
+      "support_imgs": [
+        "images/f_r_1559_.jpg"
+      ],
+      "support_masks": [
+        "masks/FV/f_r_1559_.bmp"
+      ]
+    },
+    {
+      "episode_id": 78,
+      "class_id": 1,
+      "category": "HD",
+      "query_img": "images/d_r_77_.jpg",
+      "query_mask": "masks/HD/d_r_77_.bmp",
+      "support_imgs": [
+        "images/n_l_30_.jpg"
+      ],
+      "support_masks": [
+        "masks/HD/n_l_30_.bmp"
+      ]
+    },
+    {
+      "episode_id": 79,
+      "class_id": 2,
+      "category": "PF",
+      "query_img": "images/f_r_1733_.jpg",
+      "query_mask": "masks/PF/f_r_1733_.bmp",
+      "support_imgs": [
+        "images/f_r_444_.jpg"
+      ],
+      "support_masks": [
+        "masks/PF/f_r_444_.bmp"
+      ]
+    },
+    {
+      "episode_id": 80,
+      "class_id": 3,
+      "category": "RI",
+      "query_img": "images/d_r_783_.jpg",
+      "query_mask": "masks/RI/d_r_783_.bmp",
+      "support_imgs": [
+        "images/d_r_113_.jpg"
+      ],
+      "support_masks": [
+        "masks/RI/d_r_113_.bmp"
+      ]
+    },
+    {
+      "episode_id": 81,
+      "class_id": 4,
+      "category": "RO",
+      "query_img": "images/d_r_513_.jpg",
+      "query_mask": "masks/RO/d_r_513_.bmp",
+      "support_imgs": [
+        "images/n_l_52_.jpg"
+      ],
+      "support_masks": [
+        "masks/RO/n_l_52_.bmp"
+      ]
+    },
+    {
+      "episode_id": 82,
+      "class_id": 5,
+      "category": "SR",
+      "query_img": "images/w_r_90_.jpg",
+      "query_mask": "masks/SR/w_r_90_.bmp",
+      "support_imgs": [
+        "images/f_r_490_.jpg"
+      ],
+      "support_masks": [
+        "masks/SR/f_r_490_.bmp"
+      ]
+    },
+    {
+      "episode_id": 83,
+      "class_id": 6,
+      "category": "WR",
+      "query_img": "images/f_r_1364_.jpg",
+      "query_mask": "masks/WR/f_r_1364_.bmp",
+      "support_imgs": [
+        "images/w_r_190_.jpg"
+      ],
+      "support_masks": [
+        "masks/WR/w_r_190_.bmp"
+      ]
+    },
+    {
+      "episode_id": 84,
+      "class_id": 0,
+      "category": "FV",
+      "query_img": "images/f_r_1514_.jpg",
+      "query_mask": "masks/FV/f_r_1514_.bmp",
+      "support_imgs": [
+        "images/f_r_94_.jpg"
+      ],
+      "support_masks": [
+        "masks/FV/f_r_94_.bmp"
+      ]
+    },
+    {
+      "episode_id": 85,
+      "class_id": 1,
+      "category": "HD",
+      "query_img": "images/w_r_87_.jpg",
+      "query_mask": "masks/HD/w_r_87_.bmp",
+      "support_imgs": [
+        "images/d_r_632_.jpg"
+      ],
+      "support_masks": [
+        "masks/HD/d_r_632_.bmp"
+      ]
+    },
+    {
+      "episode_id": 86,
+      "class_id": 2,
+      "category": "PF",
+      "query_img": "images/n_l_96_.jpg",
+      "query_mask": "masks/PF/n_l_96_.bmp",
+      "support_imgs": [
+        "images/d_r_788_.jpg"
+      ],
+      "support_masks": [
+        "masks/PF/d_r_788_.bmp"
+      ]
+    },
+    {
+      "episode_id": 87,
+      "class_id": 3,
+      "category": "RI",
+      "query_img": "images/f_r_1421_.jpg",
+      "query_mask": "masks/RI/f_r_1421_.bmp",
+      "support_imgs": [
+        "images/f_r_909_.jpg"
+      ],
+      "support_masks": [
+        "masks/RI/f_r_909_.bmp"
+      ]
+    },
+    {
+      "episode_id": 88,
+      "class_id": 4,
+      "category": "RO",
+      "query_img": "images/d_r_723_.jpg",
+      "query_mask": "masks/RO/d_r_723_.bmp",
+      "support_imgs": [
+        "images/d_r_80_.jpg"
+      ],
+      "support_masks": [
+        "masks/RO/d_r_80_.bmp"
+      ]
+    },
+    {
+      "episode_id": 89,
+      "class_id": 5,
+      "category": "SR",
+      "query_img": "images/n_l_51_.jpg",
+      "query_mask": "masks/SR/n_l_51_.bmp",
+      "support_imgs": [
+        "images/d_r_383_.jpg"
+      ],
+      "support_masks": [
+        "masks/SR/d_r_383_.bmp"
+      ]
+    },
+    {
+      "episode_id": 90,
+      "class_id": 6,
+      "category": "WR",
+      "query_img": "images/f_r_1446_.jpg",
+      "query_mask": "masks/WR/f_r_1446_.bmp",
+      "support_imgs": [
+        "images/n_l_87_.jpg"
+      ],
+      "support_masks": [
+        "masks/WR/n_l_87_.bmp"
+      ]
+    },
+    {
+      "episode_id": 91,
+      "class_id": 0,
+      "category": "FV",
+      "query_img": "images/n_l_73_.jpg",
+      "query_mask": "masks/FV/n_l_73_.bmp",
+      "support_imgs": [
+        "images/f_r_1696_.jpg"
+      ],
+      "support_masks": [
+        "masks/FV/f_r_1696_.bmp"
+      ]
+    },
+    {
+      "episode_id": 92,
+      "class_id": 1,
+      "category": "HD",
+      "query_img": "images/w_r_20_.jpg",
+      "query_mask": "masks/HD/w_r_20_.bmp",
+      "support_imgs": [
+        "images/w_r_82_.jpg"
+      ],
+      "support_masks": [
+        "masks/HD/w_r_82_.bmp"
+      ]
+    },
+    {
+      "episode_id": 93,
+      "class_id": 2,
+      "category": "PF",
+      "query_img": "images/d_r_788_.jpg",
+      "query_mask": "masks/PF/d_r_788_.bmp",
+      "support_imgs": [
+        "images/f_r_521_.jpg"
+      ],
+      "support_masks": [
+        "masks/PF/f_r_521_.bmp"
+      ]
+    },
+    {
+      "episode_id": 94,
+      "class_id": 3,
+      "category": "RI",
+      "query_img": "images/f_r_1985_.jpg",
+      "query_mask": "masks/RI/f_r_1985_.bmp",
+      "support_imgs": [
+        "images/f_r_1320_.jpg"
+      ],
+      "support_masks": [
+        "masks/RI/f_r_1320_.bmp"
+      ]
+    },
+    {
+      "episode_id": 95,
+      "class_id": 4,
+      "category": "RO",
+      "query_img": "images/d_r_145_.jpg",
+      "query_mask": "masks/RO/d_r_145_.bmp",
+      "support_imgs": [
+        "images/d_r_789_.jpg"
+      ],
+      "support_masks": [
+        "masks/RO/d_r_789_.bmp"
+      ]
+    },
+    {
+      "episode_id": 96,
+      "class_id": 5,
+      "category": "SR",
+      "query_img": "images/f_r_220_.jpg",
+      "query_mask": "masks/SR/f_r_220_.bmp",
+      "support_imgs": [
+        "images/d_r_624_.jpg"
+      ],
+      "support_masks": [
+        "masks/SR/d_r_624_.bmp"
+      ]
+    },
+    {
+      "episode_id": 97,
+      "class_id": 6,
+      "category": "WR",
+      "query_img": "images/w_r_172_.jpg",
+      "query_mask": "masks/WR/w_r_172_.bmp",
+      "support_imgs": [
+        "images/w_r_232_.jpg"
+      ],
+      "support_masks": [
+        "masks/WR/w_r_232_.bmp"
+      ]
+    },
+    {
+      "episode_id": 98,
+      "class_id": 0,
+      "category": "FV",
+      "query_img": "images/f_r_989_.jpg",
+      "query_mask": "masks/FV/f_r_989_.bmp",
+      "support_imgs": [
+        "images/f_r_1042_.jpg"
+      ],
+      "support_masks": [
+        "masks/FV/f_r_1042_.bmp"
+      ]
+    },
+    {
+      "episode_id": 99,
+      "class_id": 1,
+      "category": "HD",
+      "query_img": "images/d_r_552_.jpg",
+      "query_mask": "masks/HD/d_r_552_.bmp",
+      "support_imgs": [
+        "images/w_r_232_.jpg"
+      ],
+      "support_masks": [
+        "masks/HD/w_r_232_.bmp"
+      ]
+    }
+  ]
+}
