@@ -194,11 +194,6 @@ d:/xulyanhv2/ABCDFSS/
 │   ├── fss/                           # Kết quả E0-E3 FSS-1000 (JSON artifacts + logs)
 │   └── suim/                          # Kết quả E0-E3 SUIM (JSON artifacts + logs)
 │
-├── docs/                              # Tài liệu báo cáo nghiên cứu & đặc tả môi trường
-│   ├── BASELINE_FREEZE_REPORT.md      # Báo cáo đóng băng baseline E0 chính thức
-│   ├── FULL_BENCHMARK_REPORT.md       # Báo cáo tổng hợp khoa học 20 runs chi tiết
-│   └── ENVIRONMENT.md                 # Đặc tả môi trường phần cứng, phần mềm, CUDA
-│
 ├── main.py                            # Điểm vào chuẩn tác giả gốc CVPR 2024 (mặc định GPU)
 ├── evaluate.py                        # Điểm vào thực thi chi tiết (Single-run CLI, mặc định GPU)
 ├── run_all_benchmarks.py              # Master runner điều phối toàn bộ suite 20 runs
@@ -283,11 +278,6 @@ modal run modal_runner.py --benchmark all --experiment all --episodes 100
 | **Tất Định Manifest (Manifest Determinism)** | 100% episodes được lưu thành file JSON trong `experiments/episodes/`, thẩm định bằng SHA-256 |
 | **Chữ Ký Giao Thức (Protocol Signature)** | Mỗi tệp `run_result.json` chứa chữ ký mã hóa gồm 13 trường siêu tham số nhằm chống nhầm lẫn dữ liệu |
 | **Môi Trường Tính Toán (Hardware Environment)** | NVIDIA Tesla T4 GPU (16GB VRAM), Debian Slim, PyTorch 2.1.2 + CUDA 12.1 |
-
-Chi tiết toàn văn các báo cáo thẩm định được lưu trữ tại:
-- 📄 [Báo Cáo Đóng Băng Baseline (docs/BASELINE_FREEZE_REPORT.md)](docs/BASELINE_FREEZE_REPORT.md)
-- 📄 [Báo Cáo Đối Chuẩn Đầy Đủ (docs/FULL_BENCHMARK_REPORT.md)](docs/FULL_BENCHMARK_REPORT.md)
-- 📄 [Đặc Tả Môi Trường Kỹ Thuật (docs/ENVIRONMENT.md)](docs/ENVIRONMENT.md)
 
 ---
 
