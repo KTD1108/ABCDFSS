@@ -61,6 +61,10 @@ Bài báo gốc *"Adapt Before Comparison: A New Perspective on Cross-Domain Few
 [Adaptive Thresholding] ──────> max(Otsu, mean), drop_least=0.05 ──> Mặt nạ phân đoạn Query
 ```
 
+> **Cơ chế điều phối Adapter (`src/models/adapter_module.py` - `TaskAdaptedHead`)**:
+> - [`adapters.py`](src/models/adapters.py): Định nghĩa lớp adapter đơn lẻ (`PointwiseAdapter` $1\times 1$ hoặc `DepthwiseSeparableAdapter` $3\times 3$ với residual connection).
+> - [`adapter_module.py`](src/models/adapter_module.py): Đóng vai trò container đa tầng (`TaskAdaptedHead`), quản lý 13 adapter gắn trên 13 tầng đặc trưng (Bottleneck $l_0=3$ đến 15) của ResNet-50. Module này trực tiếp điều phối **vòng lặp thích ứng trực tuyến 25 epochs per episode (Test-Time Online SGD - Thuật toán 2 CVPR 2024)**, tính toán 3 thành phần hàm mất mát ($\mathcal{L}_{\text{InfoNCE}}$, $\mathcal{L}_{\text{var}}$, và $\mathcal{L}_{\text{proto}}$) để cập nhật trọng số adapter cho từng episode trước khi suy luận.
+
 ### Ma Trận Định Nghĩa Thực Nghiệm
 
 | Mã | Tên Cấu Hình | Adapter Module | Layer Fusion | Vai Trò Khoa Học |
@@ -159,11 +163,12 @@ d:/xulyanhv2/ABCDFSS/
 │   │   ├── metrics.py                 # MetricTracker (Cumulative mIoU & Mean Ep-IoU)
 │   │   └── thresholding.py            # Phân ngưỡng nhị phân Otsu & Mean
 │   ├── models/
-│   │   ├── adapters.py                # Factory dựng Adapter 1x1 và Depthwise 3x3
-│   │   ├── attention.py               # Dense Cross-Attention
-│   │   ├── backbone.py                # ResNet-50 Feature Extractor
+│   │   ├── adapters.py                # Định nghĩa lớp Adapter 1x1 và Depthwise 3x3
+│   │   ├── adapter_module.py          # TaskAdaptedHead: Quản lý 13 adapters đa tầng & Test-time SGD
+│   │   ├── attention.py               # Dense Cross-Attention (tính ma trận tương quan)
+│   │   ├── backbone.py                # ResNet-50 Feature Extractor (Pre-ReLU frozen)
 │   │   ├── fusion.py                  # Factory dựng Mean Fusion & Softmax Margin Fusion
-│   │   └── loss.py                    # Dense InfoNCE Loss & Keep Variance Loss
+│   │   └── loss.py                    # Dense InfoNCE Loss, Variance Loss & Prototype Loss
 │   └── utils/
 │       ├── augmentations.py           # Phép biến đổi tăng cường dữ liệu support
 │       ├── manifest.py                # Trình phân giải & thẩm định manifest (SHA256)
@@ -171,6 +176,7 @@ d:/xulyanhv2/ABCDFSS/
 │
 ├── experiments/                       # Quản lý thực nghiệm, tái lập & kiểm toán
 │   ├── episodes/                      # Tập JSON manifest 100 & 1.000 episodes tất định (seed=42)
+│   ├── smoke_test.py                  # Bộ kiểm thử khói 1-click tự động (kiểm tra 6/6 hạng mục)
 │   ├── audit_benchmark_results.py     # Script kiểm toán ma trận 20 runs tự động
 │   ├── check_reproducibility.py       # Công cụ đối chuẩn tái lập run-vs-run
 │   └── generate_manifests.py          # Trình sinh manifest tất định SHA-256
