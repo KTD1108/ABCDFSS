@@ -6,7 +6,6 @@ Enforces rigorous resume criteria, environmental telemetry, and git version trac
 
 import os
 import sys
-import json
 import subprocess
 from typing import Dict, Any, Tuple, Optional
 

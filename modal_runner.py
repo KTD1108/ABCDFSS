@@ -91,13 +91,16 @@ def _run_eval_logic(
     from src.utils.manifest import resolve_manifest_path, validate_manifest
 
     if caller_git_commit == "unknown":
-        try:
-            from src.utils.protocol import get_git_info
-            git_info = get_git_info("/root/ABCDFSS")
-            caller_git_commit = git_info.get("git_commit", "61470cf205ed282b58701512852e2c4b05418a2e")
-            caller_git_dirty = bool(git_info.get("git_dirty", False))
-        except Exception:
-            caller_git_commit = "61470cf205ed282b58701512852e2c4b05418a2e"
+        caller_git_commit = os.environ.get("ABCDFSS_GIT_COMMIT", "unknown")
+        caller_git_dirty = os.environ.get("ABCDFSS_GIT_DIRTY", "false").lower() == "true"
+        if caller_git_commit == "unknown":
+            try:
+                from src.utils.protocol import get_git_info
+                git_info = get_git_info("/root/ABCDFSS")
+                caller_git_commit = git_info.get("git_commit", "unknown")
+                caller_git_dirty = bool(git_info.get("git_dirty", False))
+            except Exception:
+                pass
 
     ep_str = str(episodes).lower().strip()
 

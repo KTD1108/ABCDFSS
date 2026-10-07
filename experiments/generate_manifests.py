@@ -21,7 +21,6 @@ import json
 import argparse
 import random
 import numpy as np
-from PIL import Image
 from typing import Any, List, Dict
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

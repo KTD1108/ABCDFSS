@@ -21,8 +21,6 @@ import sys
 import json
 import time
 import argparse
-import subprocess
-from datetime import datetime
 from typing import Optional
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -112,7 +110,6 @@ def check_or_download_dataset(benchmark: str, kaggle_slug: str = None) -> str:
 
     # 3. Special handling for FSS-1000
     if benchmark in ['fss', 'fss1000']:
-        import urllib.request
         import zipfile
         from tqdm import tqdm
 

@@ -20,13 +20,12 @@ import argparse
 import torch
 import random
 import numpy as np
-import torchvision
 from datetime import datetime
 import json
 
 from src.datasets import build_dataloader
 from src.engine import CDFSSEngine
-from src.utils.manifest import resolve_manifest_path, validate_manifest, compute_manifest_sha256
+from src.utils.manifest import resolve_manifest_path, validate_manifest
 from src.utils.protocol import get_git_info, get_environment_info, create_protocol_signature
 
 def set_seed(seed: int = 42):

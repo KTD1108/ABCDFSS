@@ -1,6 +1,8 @@
 import os
 import json
 
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 benchmarks = ['deepglobe', 'isic', 'lung', 'fss', 'suim']
 experiments = ['E0', 'E1', 'E2', 'E3']
 
@@ -21,7 +23,7 @@ summary_table = {}
 for b in benchmarks:
     summary_table[b] = {}
     for exp in experiments:
-        path = os.path.join("results", b, f"{exp}_1000ep_seed42", "run_result.json")
+        path = os.path.join(PROJECT_ROOT, "results", b, f"{exp}_1000ep_seed42", "run_result.json")
         if os.path.exists(path):
             with open(path, "r", encoding="utf-8") as f:
                 data = json.load(f)

@@ -1,7 +1,6 @@
 import torch
 import torchvision.transforms as T
 import torchvision.transforms.functional as TF
-import numpy as np
 
 class RandomAffineProxy:
     """Affine transformation proxy preserving spatial alignment across images and masks."""
