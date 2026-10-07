@@ -50,7 +50,10 @@ backbone: ResNet-50 (Pre-ReLU unclipped features, ImageNet weights frozen)
 ## 3. Benchmark Results — Cumulative mIoU (%) trên 1.000 Episodes
 
 Cumulative mIoU là thước đo chính thức trong bài báo gốc CVPR 2024, tính bằng cách tổng hợp ma trận Intersection và Union trên toàn bộ 1.000 episodes trước khi tính trung bình:
-$$\text{IoU}_c = \frac{\sum_{i \in \mathcal{E}_c} |P_i \cap G_i|}{\sum_{i \in \mathcal{E}_c} |P_i \cup G_i|}, \quad \text{Cumulative mIoU} = \frac{1}{|C|} \sum_{c \in C} \text{IoU}_c$$
+
+$$
+\text{IoU}_c = \frac{\sum_{i \in \mathcal{E}_c} |P_i \cap G_i|}{\sum_{i \in \mathcal{E}_c} |P_i \cup G_i|}, \quad \text{Cumulative mIoU} = \frac{1}{|C|} \sum_{c \in C} \text{IoU}_c
+$$
 
 | Dataset | Paper (CVPR 2024) | E0 (Baseline) | E1 (DW+Mean) | E2 (1x1+Margin) | E3 (DW+Margin) | $\Delta$ Best vs E0 |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -66,7 +69,10 @@ $$\text{IoU}_c = \frac{\sum_{i \in \mathcal{E}_c} |P_i \cap G_i|}{\sum_{i \in \m
 ## 4. Benchmark Results — Mean Episode-IoU (%) trên 1.000 Episodes
 
 Mean Episode-IoU tính trung bình cộng trực tiếp của chỉ số IoU từng episode:
-$$\text{Mean Episode-IoU} = \frac{1}{N} \sum_{i=1}^N \frac{|P_i \cap G_i|}{|P_i \cup G_i|}$$
+
+$$
+\text{Mean Episode-IoU} = \frac{1}{N} \sum_{i=1}^N \frac{|P_i \cap G_i|}{|P_i \cup G_i|}
+$$
 
 | Dataset | E0 (Baseline) | E1 (DW+Mean) | E2 (1x1+Margin) | E3 (DW+Margin) | Nhận xét xu hướng |
 | :--- | :---: | :---: | :---: | :---: | :--- |

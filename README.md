@@ -82,8 +82,11 @@ Toàn bộ **20 cấu hình thực nghiệm** (5 datasets $\times$ 4 experiments
 
 ### 3.1. Bảng Kết Quả Cumulative mIoU (%)
 
-> **Cumulative mIoU**: Tích lũy tổng diện tích giao (Intersection) và hợp (Union) trên toàn bộ các pixel query của từng lớp trước khi tính trung bình macro:
-> $$\text{IoU}_c = \frac{\sum_{i \in \mathcal{E}_c} |P_i \cap G_i|}{\sum_{i \in \mathcal{E}_c} |P_i \cup G_i|}, \quad \text{Cumulative mIoU} = \frac{1}{|C|} \sum_{c \in C} \text{IoU}_c$$
+**Cumulative mIoU** tích lũy tổng diện tích giao (Intersection) và hợp (Union) trên toàn bộ các pixel query của từng lớp trước khi tính trung bình macro:
+
+$$
+\text{IoU}_c = \frac{\sum_{i \in \mathcal{E}_c} |P_i \cap G_i|}{\sum_{i \in \mathcal{E}_c} |P_i \cup G_i|}, \quad \text{Cumulative mIoU} = \frac{1}{|C|} \sum_{c \in C} \text{IoU}_c
+$$
 
 | Tập Dữ Liệu (Domain) | Số Lớp | E0 (Base) | E1 (Adp) | $\Delta$ E1 | E2 (Fus) | $\Delta$ E2 | E3 (Prop) | $\Delta$ E3 vs E0 |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -98,8 +101,11 @@ Toàn bộ **20 cấu hình thực nghiệm** (5 datasets $\times$ 4 experiments
 
 ### 3.2. Bảng Kết Quả Mean Episode-IoU (%)
 
-> **Mean Episode-IoU**: Trung bình số học không trọng số của IoU từng episode:
-> $$\text{Mean Episode-IoU} = \frac{1}{N} \sum_{i=1}^N \frac{|P_i \cap G_i|}{|P_i \cup G_i|}$$
+**Mean Episode-IoU** tính trung bình số học không trọng số của IoU từng episode:
+
+$$
+\text{Mean Episode-IoU} = \frac{1}{N} \sum_{i=1}^N \frac{|P_i \cap G_i|}{|P_i \cup G_i|}
+$$
 
 | Tập Dữ Liệu (Domain) | Số Lớp | E0 (Base) | E1 (Adp) | $\Delta$ E1 | E2 (Fus) | $\Delta$ E2 | E3 (Prop) | $\Delta$ E3 vs E0 |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
