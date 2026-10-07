@@ -1,0 +1,71 @@
+================================================================================
+                     CD-FSS EXPERIMENTAL AUDIT RUNNER
+================================================================================
+experiment_name:    E2
+dataset:            suim
+seed:               42
+nshot:              1
+requested_episodes: 1000
+resolved_episodes:  1000
+adapter:            conv1x1
+fusion:             softmax_margin
+adaptation_mode:    every-episode
+image_size:         400x400
+threshold_method:   pred_mean (max(Otsu, mean), drop_least=0.05)
+backbone:           ResNet-50 (Pre-ReLU unclipped features)
+checkpoint:         ResNet50_Weights.DEFAULT
+manifest_path:      /root/ABCDFSS/experiments/episodes/suim_seed42_1000episodes.json
+manifest_sha256:    94d36cc42929235e88ee9065246d890f4dfeb1ad1f698689be0b9632c454a798
+dataloader_workers: 2
+git_commit:         unknown
+git_status:         injected_via_env
+PyTorch version:    2.1.2+cu121
+TorchVision version:0.16.2+cu121
+CUDA version:       12.1
+GPU:                Tesla T4
+Log file saved to:  /root/results/suim/E2_1000ep_seed42/suim_conv1x1_softmax_margin_1shot_E2_20261007_113241.log
+================================================================================
+
+[*] SUIM auto-detected base_path at: /root/datasets_cache/kagglehub/datasets/heyoujue/suim-merged/versions/2/suim_merged
+[*] SUIMDataset loaded 1000 fixed episodes from manifest: /root/ABCDFSS/experiments/episodes/suim_seed42_1000episodes.json
+
+:=========== CD-FSS Clean Framework Evaluation: SUIM ===========
+| Device:         cuda
+| Adapter Type:   conv1x1
+| Fusion Mode:    softmax_margin (temp=1.0)
+| Adapt Mode:     every-episode
+| Total Episodes: 1000
+:========================================================================
+
+[Batch: 0001/1000]  mIoU:  4.04%  |  FB-IoU: 41.06%
+[Batch: 0050/1000]  mIoU: 37.91%  |  FB-IoU: 54.57%
+[Batch: 0100/1000]  mIoU: 36.68%  |  FB-IoU: 53.78%
+[Batch: 0150/1000]  mIoU: 36.87%  |  FB-IoU: 54.17%
+[Batch: 0200/1000]  mIoU: 36.19%  |  FB-IoU: 54.23%
+[Batch: 0250/1000]  mIoU: 35.58%  |  FB-IoU: 54.25%
+[Batch: 0300/1000]  mIoU: 34.82%  |  FB-IoU: 53.34%
+[Batch: 0350/1000]  mIoU: 34.63%  |  FB-IoU: 53.65%
+[Batch: 0400/1000]  mIoU: 33.33%  |  FB-IoU: 52.62%
+[Batch: 0450/1000]  mIoU: 32.68%  |  FB-IoU: 52.20%
+[Batch: 0500/1000]  mIoU: 32.78%  |  FB-IoU: 52.21%
+[Batch: 0550/1000]  mIoU: 32.86%  |  FB-IoU: 52.53%
+[Batch: 0600/1000]  mIoU: 32.97%  |  FB-IoU: 52.75%
+[Batch: 0650/1000]  mIoU: 33.17%  |  FB-IoU: 52.86%
+[Batch: 0700/1000]  mIoU: 33.04%  |  FB-IoU: 52.83%
+[Batch: 0750/1000]  mIoU: 33.10%  |  FB-IoU: 52.89%
+[Batch: 0800/1000]  mIoU: 33.23%  |  FB-IoU: 53.04%
+[Batch: 0850/1000]  mIoU: 33.17%  |  FB-IoU: 52.94%
+[Batch: 0900/1000]  mIoU: 33.47%  |  FB-IoU: 53.11%
+[Batch: 0950/1000]  mIoU: 33.29%  |  FB-IoU: 53.04%
+[Batch: 1000/1000]  mIoU: 33.14%  |  FB-IoU: 52.98%
+
+================ FINAL RESULTS ================
+Benchmark:   SUIM
+Adapter:     conv1x1
+Fusion:      softmax_margin
+Final mIoU (Cumulative): 33.14%
+Mean Episode-IoU:       34.97%
+Final FB-IoU:           52.98%
+Elapsed Time:           3604.19s (3.604s/episode)
+================================================
+

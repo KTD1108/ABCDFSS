@@ -1,0 +1,70 @@
+================================================================================
+                     CD-FSS EXPERIMENTAL AUDIT RUNNER
+================================================================================
+experiment_name:    E1
+dataset:            fss
+seed:               42
+nshot:              1
+requested_episodes: 1000
+resolved_episodes:  1000
+adapter:            depthwise_separable_3x3
+fusion:             mean
+adaptation_mode:    every-episode
+image_size:         400x400
+threshold_method:   pred_mean (max(Otsu, mean), drop_least=0.05)
+backbone:           ResNet-50 (Pre-ReLU unclipped features)
+checkpoint:         ResNet50_Weights.DEFAULT
+manifest_path:      /root/ABCDFSS/experiments/episodes/fss_seed42_1000episodes.json
+manifest_sha256:    709436c27fe1fc6d271341c3c2b2895034efe8fd96215ccf24b295969421b78b
+dataloader_workers: 2
+git_commit:         61470cf205ed282b58701512852e2c4b05418a2e
+git_status:         injected_via_env
+PyTorch version:    2.1.2+cu121
+TorchVision version:0.16.2+cu121
+CUDA version:       12.1
+GPU:                Tesla T4
+Log file saved to:  /root/results/fss/E1_1000ep_seed42/fss_depthwise_separable_3x3_mean_1shot_E1_20261007_021658.log
+================================================================================
+
+[*] FSS1000Dataset loaded 1000 fixed episodes from manifest: /root/ABCDFSS/experiments/episodes/fss_seed42_1000episodes.json
+
+:=========== CD-FSS Clean Framework Evaluation: FSS ===========
+| Device:         cuda
+| Adapter Type:   depthwise_separable_3x3
+| Fusion Mode:    mean (temp=1.0)
+| Adapt Mode:     every-episode
+| Total Episodes: 1000
+:========================================================================
+
+[Batch: 0001/1000]  mIoU: 82.78%  |  FB-IoU: 88.37%
+[Batch: 0050/1000]  mIoU: 65.32%  |  FB-IoU: 76.50%
+[Batch: 0100/1000]  mIoU: 65.73%  |  FB-IoU: 76.78%
+[Batch: 0150/1000]  mIoU: 65.07%  |  FB-IoU: 76.28%
+[Batch: 0200/1000]  mIoU: 66.42%  |  FB-IoU: 76.99%
+[Batch: 0250/1000]  mIoU: 68.04%  |  FB-IoU: 77.68%
+[Batch: 0300/1000]  mIoU: 67.97%  |  FB-IoU: 77.72%
+[Batch: 0350/1000]  mIoU: 67.81%  |  FB-IoU: 77.50%
+[Batch: 0400/1000]  mIoU: 67.27%  |  FB-IoU: 76.66%
+[Batch: 0450/1000]  mIoU: 66.80%  |  FB-IoU: 76.57%
+[Batch: 0500/1000]  mIoU: 66.70%  |  FB-IoU: 76.67%
+[Batch: 0550/1000]  mIoU: 66.71%  |  FB-IoU: 76.85%
+[Batch: 0600/1000]  mIoU: 66.92%  |  FB-IoU: 76.89%
+[Batch: 0650/1000]  mIoU: 66.99%  |  FB-IoU: 76.82%
+[Batch: 0700/1000]  mIoU: 66.92%  |  FB-IoU: 76.90%
+[Batch: 0750/1000]  mIoU: 67.01%  |  FB-IoU: 77.00%
+[Batch: 0800/1000]  mIoU: 67.09%  |  FB-IoU: 77.14%
+[Batch: 0850/1000]  mIoU: 67.04%  |  FB-IoU: 77.04%
+[Batch: 0900/1000]  mIoU: 67.22%  |  FB-IoU: 77.17%
+[Batch: 0950/1000]  mIoU: 66.98%  |  FB-IoU: 77.13%
+[Batch: 1000/1000]  mIoU: 66.71%  |  FB-IoU: 76.93%
+
+================ FINAL RESULTS ================
+Benchmark:   FSS
+Adapter:     depthwise_separable_3x3
+Fusion:      mean
+Final mIoU (Cumulative): 66.71%
+Mean Episode-IoU:       67.11%
+Final FB-IoU:           76.93%
+Elapsed Time:           4386.58s (4.387s/episode)
+================================================
+

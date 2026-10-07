@@ -1,0 +1,70 @@
+================================================================================
+                     CD-FSS EXPERIMENTAL AUDIT RUNNER
+================================================================================
+experiment_name:    E1
+dataset:            lung
+seed:               42
+nshot:              1
+requested_episodes: 1000
+resolved_episodes:  1000
+adapter:            depthwise_separable_3x3
+fusion:             mean
+adaptation_mode:    every-episode
+image_size:         400x400
+threshold_method:   pred_mean (max(Otsu, mean), drop_least=0.05)
+backbone:           ResNet-50 (Pre-ReLU unclipped features)
+checkpoint:         ResNet50_Weights.DEFAULT
+manifest_path:      /root/ABCDFSS/experiments/episodes/lung_seed42_1000episodes.json
+manifest_sha256:    f1bdf8dd6d6845dd525e8b6e59c6c72de910914555b5c6845694eabe3c53689c
+dataloader_workers: 2
+git_commit:         61470cf205ed282b58701512852e2c4b05418a2e
+git_status:         injected_via_env
+PyTorch version:    2.1.2+cu121
+TorchVision version:0.16.2+cu121
+CUDA version:       12.1
+GPU:                Tesla T4
+Log file saved to:  /root/results/lung/E1_1000ep_seed42/lung_depthwise_separable_3x3_mean_1shot_E1_20261006_212605.log
+================================================================================
+
+[*] LungDataset loaded 1000 fixed episodes from manifest: /root/ABCDFSS/experiments/episodes/lung_seed42_1000episodes.json
+
+:=========== CD-FSS Clean Framework Evaluation: LUNG ===========
+| Device:         cuda
+| Adapter Type:   depthwise_separable_3x3
+| Fusion Mode:    mean (temp=1.0)
+| Adapt Mode:     every-episode
+| Total Episodes: 1000
+:========================================================================
+
+[Batch: 0001/1000]  mIoU: 82.19%  |  FB-IoU: 87.73%
+[Batch: 0050/1000]  mIoU: 81.03%  |  FB-IoU: 87.16%
+[Batch: 0100/1000]  mIoU: 81.90%  |  FB-IoU: 87.70%
+[Batch: 0150/1000]  mIoU: 80.52%  |  FB-IoU: 86.69%
+[Batch: 0200/1000]  mIoU: 80.46%  |  FB-IoU: 86.66%
+[Batch: 0250/1000]  mIoU: 80.49%  |  FB-IoU: 86.64%
+[Batch: 0300/1000]  mIoU: 80.32%  |  FB-IoU: 86.50%
+[Batch: 0350/1000]  mIoU: 80.48%  |  FB-IoU: 86.60%
+[Batch: 0400/1000]  mIoU: 80.65%  |  FB-IoU: 86.70%
+[Batch: 0450/1000]  mIoU: 80.31%  |  FB-IoU: 86.47%
+[Batch: 0500/1000]  mIoU: 80.34%  |  FB-IoU: 86.50%
+[Batch: 0550/1000]  mIoU: 80.21%  |  FB-IoU: 86.41%
+[Batch: 0600/1000]  mIoU: 80.17%  |  FB-IoU: 86.39%
+[Batch: 0650/1000]  mIoU: 80.07%  |  FB-IoU: 86.31%
+[Batch: 0700/1000]  mIoU: 80.16%  |  FB-IoU: 86.38%
+[Batch: 0750/1000]  mIoU: 80.03%  |  FB-IoU: 86.30%
+[Batch: 0800/1000]  mIoU: 80.05%  |  FB-IoU: 86.32%
+[Batch: 0850/1000]  mIoU: 79.97%  |  FB-IoU: 86.25%
+[Batch: 0900/1000]  mIoU: 80.04%  |  FB-IoU: 86.29%
+[Batch: 0950/1000]  mIoU: 80.05%  |  FB-IoU: 86.29%
+[Batch: 1000/1000]  mIoU: 80.18%  |  FB-IoU: 86.38%
+
+================ FINAL RESULTS ================
+Benchmark:   LUNG
+Adapter:     depthwise_separable_3x3
+Fusion:      mean
+Final mIoU (Cumulative): 80.18%
+Mean Episode-IoU:       80.22%
+Final FB-IoU:           86.38%
+Elapsed Time:           5528.70s (5.529s/episode)
+================================================
+

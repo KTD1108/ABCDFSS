@@ -1,0 +1,70 @@
+================================================================================
+                     CD-FSS EXPERIMENTAL AUDIT RUNNER
+================================================================================
+experiment_name:    E0
+dataset:            isic
+seed:               42
+nshot:              1
+requested_episodes: 1000
+resolved_episodes:  1000
+adapter:            conv1x1
+fusion:             mean
+adaptation_mode:    every-episode
+image_size:         400x400
+threshold_method:   pred_mean (max(Otsu, mean), drop_least=0.05)
+backbone:           ResNet-50 (Pre-ReLU unclipped features)
+checkpoint:         ResNet50_Weights.DEFAULT
+manifest_path:      /root/ABCDFSS/experiments/episodes/isic_seed42_1000episodes.json
+manifest_sha256:    bc13857c7579f7a081a3548d3c21fb643b8776aa5fd5a6623f19598f0ad68ba3
+dataloader_workers: 2
+git_commit:         61470cf205ed282b58701512852e2c4b05418a2e
+git_status:         injected_via_env
+PyTorch version:    2.1.2+cu121
+TorchVision version:0.16.2+cu121
+CUDA version:       12.1
+GPU:                Tesla T4
+Log file saved to:  /root/results/isic/E0_1000ep_seed42/isic_conv1x1_mean_1shot_E0_20261006_155439.log
+================================================================================
+
+[*] ISICDataset loaded 1000 fixed episodes from manifest: /root/ABCDFSS/experiments/episodes/isic_seed42_1000episodes.json
+
+:=========== CD-FSS Clean Framework Evaluation: ISIC ===========
+| Device:         cuda
+| Adapter Type:   conv1x1
+| Fusion Mode:    mean (temp=1.0)
+| Adapt Mode:     every-episode
+| Total Episodes: 1000
+:========================================================================
+
+[Batch: 0001/1000]  mIoU: 41.67%  |  FB-IoU: 51.99%
+[Batch: 0050/1000]  mIoU: 41.78%  |  FB-IoU: 56.76%
+[Batch: 0100/1000]  mIoU: 43.29%  |  FB-IoU: 58.73%
+[Batch: 0150/1000]  mIoU: 44.10%  |  FB-IoU: 59.18%
+[Batch: 0200/1000]  mIoU: 43.14%  |  FB-IoU: 58.84%
+[Batch: 0250/1000]  mIoU: 42.74%  |  FB-IoU: 58.25%
+[Batch: 0300/1000]  mIoU: 42.47%  |  FB-IoU: 58.24%
+[Batch: 0350/1000]  mIoU: 42.50%  |  FB-IoU: 58.22%
+[Batch: 0400/1000]  mIoU: 42.92%  |  FB-IoU: 58.70%
+[Batch: 0450/1000]  mIoU: 41.80%  |  FB-IoU: 57.79%
+[Batch: 0500/1000]  mIoU: 41.46%  |  FB-IoU: 57.54%
+[Batch: 0550/1000]  mIoU: 41.78%  |  FB-IoU: 57.87%
+[Batch: 0600/1000]  mIoU: 42.05%  |  FB-IoU: 57.98%
+[Batch: 0650/1000]  mIoU: 42.19%  |  FB-IoU: 57.99%
+[Batch: 0700/1000]  mIoU: 42.47%  |  FB-IoU: 58.09%
+[Batch: 0750/1000]  mIoU: 42.48%  |  FB-IoU: 58.11%
+[Batch: 0800/1000]  mIoU: 42.20%  |  FB-IoU: 57.97%
+[Batch: 0850/1000]  mIoU: 42.33%  |  FB-IoU: 58.04%
+[Batch: 0900/1000]  mIoU: 42.13%  |  FB-IoU: 57.84%
+[Batch: 0950/1000]  mIoU: 42.12%  |  FB-IoU: 57.78%
+[Batch: 1000/1000]  mIoU: 41.75%  |  FB-IoU: 57.54%
+
+================ FINAL RESULTS ================
+Benchmark:   ISIC
+Adapter:     conv1x1
+Fusion:      mean
+Final mIoU (Cumulative): 41.75%
+Mean Episode-IoU:       45.30%
+Final FB-IoU:           57.54%
+Elapsed Time:           3322.81s (3.323s/episode)
+================================================
+

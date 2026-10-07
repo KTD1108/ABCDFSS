@@ -1,0 +1,71 @@
+================================================================================
+                     CD-FSS EXPERIMENTAL AUDIT RUNNER
+================================================================================
+experiment_name:    E3
+dataset:            deepglobe
+seed:               42
+nshot:              1
+requested_episodes: 1000
+resolved_episodes:  1000
+adapter:            depthwise_separable_3x3
+fusion:             softmax_margin
+adaptation_mode:    every-episode
+image_size:         400x400
+threshold_method:   pred_mean (max(Otsu, mean), drop_least=0.05)
+backbone:           ResNet-50 (Pre-ReLU unclipped features)
+checkpoint:         ResNet50_Weights.DEFAULT
+manifest_path:      /root/ABCDFSS/experiments/episodes/deepglobe_seed42_1000episodes.json
+manifest_sha256:    fb9667b771d2e29aa21f57edf19f1551b28c4ce791755502bb25bcb0fb63436d
+dataloader_workers: 2
+git_commit:         61470cf205ed282b58701512852e2c4b05418a2e
+git_status:         injected_via_env
+PyTorch version:    2.1.2+cu121
+TorchVision version:0.16.2+cu121
+CUDA version:       12.1
+GPU:                Tesla T4
+Log file saved to:  /root/results/deepglobe/E3_1000ep_seed42/deepglobe_depthwise_separable_3x3_softmax_margin_1shot_E3_20261006_144334.log
+================================================================================
+
+[*] Deepglobe auto-detected base_path at: /root/datasets_cache/kagglehub/datasets/heyoujue/deepglobe/versions/7
+[*] DeepglobeDataset loaded 1000 fixed episodes from manifest: /root/ABCDFSS/experiments/episodes/deepglobe_seed42_1000episodes.json
+
+:=========== CD-FSS Clean Framework Evaluation: DEEPGLOBE ===========
+| Device:         cuda
+| Adapter Type:   depthwise_separable_3x3
+| Fusion Mode:    softmax_margin (temp=1.0)
+| Adapt Mode:     every-episode
+| Total Episodes: 1000
+:========================================================================
+
+[Batch: 0001/1000]  mIoU: 25.72%  |  FB-IoU: 40.99%
+[Batch: 0050/1000]  mIoU: 44.24%  |  FB-IoU: 46.91%
+[Batch: 0100/1000]  mIoU: 43.73%  |  FB-IoU: 46.35%
+[Batch: 0150/1000]  mIoU: 42.64%  |  FB-IoU: 46.12%
+[Batch: 0200/1000]  mIoU: 42.05%  |  FB-IoU: 46.07%
+[Batch: 0250/1000]  mIoU: 42.32%  |  FB-IoU: 46.48%
+[Batch: 0300/1000]  mIoU: 40.98%  |  FB-IoU: 45.71%
+[Batch: 0350/1000]  mIoU: 41.42%  |  FB-IoU: 45.93%
+[Batch: 0400/1000]  mIoU: 41.64%  |  FB-IoU: 45.75%
+[Batch: 0450/1000]  mIoU: 41.65%  |  FB-IoU: 46.04%
+[Batch: 0500/1000]  mIoU: 41.36%  |  FB-IoU: 45.92%
+[Batch: 0550/1000]  mIoU: 41.77%  |  FB-IoU: 46.02%
+[Batch: 0600/1000]  mIoU: 41.82%  |  FB-IoU: 46.07%
+[Batch: 0650/1000]  mIoU: 41.45%  |  FB-IoU: 45.76%
+[Batch: 0700/1000]  mIoU: 41.59%  |  FB-IoU: 45.97%
+[Batch: 0750/1000]  mIoU: 41.34%  |  FB-IoU: 45.80%
+[Batch: 0800/1000]  mIoU: 41.43%  |  FB-IoU: 45.92%
+[Batch: 0850/1000]  mIoU: 41.57%  |  FB-IoU: 46.05%
+[Batch: 0900/1000]  mIoU: 41.45%  |  FB-IoU: 46.08%
+[Batch: 0950/1000]  mIoU: 41.13%  |  FB-IoU: 45.92%
+[Batch: 1000/1000]  mIoU: 41.17%  |  FB-IoU: 45.93%
+
+================ FINAL RESULTS ================
+Benchmark:   DEEPGLOBE
+Adapter:     depthwise_separable_3x3
+Fusion:      softmax_margin
+Final mIoU (Cumulative): 41.17%
+Mean Episode-IoU:       40.76%
+Final FB-IoU:           45.93%
+Elapsed Time:           4256.16s (4.256s/episode)
+================================================
+
