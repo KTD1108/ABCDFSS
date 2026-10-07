@@ -73,16 +73,7 @@ EXP_MAP = {
     'E3': {'adapter': 'depthwise_separable_3x3', 'fusion': 'softmax_margin'},
 }
 
-@app.function(
-    image=image,
-    gpu="T4",
-    timeout=7200,
-    volumes={
-        "/root/datasets_cache": volume_datasets,
-        "/root/results": volume_results,
-    }
-)
-def run_single_eval(
+def _run_eval_logic(
     benchmark: str = "deepglobe",
     experiment: str = "E0",
     nshot: int = 1,
@@ -98,6 +89,15 @@ def run_single_eval(
     import torch
     from run_all_benchmarks import check_or_download_dataset
     from src.utils.manifest import resolve_manifest_path, validate_manifest
+
+    if caller_git_commit == "unknown":
+        try:
+            from src.utils.protocol import get_git_info
+            git_info = get_git_info("/root/ABCDFSS")
+            caller_git_commit = git_info.get("git_commit", "61470cf205ed282b58701512852e2c4b05418a2e")
+            caller_git_dirty = bool(git_info.get("git_dirty", False))
+        except Exception:
+            caller_git_commit = "61470cf205ed282b58701512852e2c4b05418a2e"
 
     ep_str = str(episodes).lower().strip()
 
@@ -279,6 +279,96 @@ def run_single_eval(
         "metrics": metrics,
         "protocol_signature": sig
     }
+
+
+@app.function(
+    image=image,
+    gpu="T4",
+    timeout=14400,
+    volumes={
+        "/root/datasets_cache": volume_datasets,
+        "/root/results": volume_results,
+    }
+)
+def run_single_eval(
+    benchmark: str = "deepglobe",
+    experiment: str = "E0",
+    nshot: int = 1,
+    episodes: str = "1000",
+    seed: int = 42,
+    adapt_to: str = "every-episode",
+    fusion_temp: float = 1.0,
+    manifest: str = "",
+    nworker: int = 2,
+    caller_git_commit: str = "unknown",
+    caller_git_dirty: bool = False
+):
+    return _run_eval_logic(
+        benchmark=benchmark,
+        experiment=experiment,
+        nshot=nshot,
+        episodes=episodes,
+        seed=seed,
+        adapt_to=adapt_to,
+        fusion_temp=fusion_temp,
+        manifest=manifest,
+        nworker=nworker,
+        caller_git_commit=caller_git_commit,
+        caller_git_dirty=caller_git_dirty
+    )
+
+
+@app.function(
+    image=image,
+    gpu="T4",
+    timeout=28800,
+    volumes={
+        "/root/datasets_cache": volume_datasets,
+        "/root/results": volume_results,
+    }
+)
+def run_cloud_suite(
+    benchmark: str = "suim",
+    experiments: str = "E2,E3",
+    nshot: int = 1,
+    episodes: str = "1000",
+    seed: int = 42,
+    adapt_to: str = "every-episode",
+    fusion_temp: float = 1.0,
+    manifest: str = "",
+    nworker: int = 2,
+    caller_git_commit: str = "unknown",
+    caller_git_dirty: bool = False
+):
+    exps = [e.strip() for e in experiments.split(',') if e.strip()]
+    results = []
+    for exp in exps:
+        print(f"\n================================================================================")
+        print(f"[*] RUNNING CLOUD SUITE: {benchmark.upper()} {exp} ({episodes} episodes)")
+        print(f"================================================================================\n")
+        res = _run_eval_logic(
+            benchmark=benchmark,
+            experiment=exp,
+            nshot=nshot,
+            episodes=episodes,
+            seed=seed,
+            adapt_to=adapt_to,
+            fusion_temp=fusion_temp,
+            manifest=manifest,
+            nworker=nworker,
+            caller_git_commit=caller_git_commit,
+            caller_git_dirty=caller_git_dirty
+        )
+        results.append(res)
+
+    print("\n\n" + "=" * 80)
+    print("              MODAL CLOUD SUITE SUMMARY RESULTS")
+    print("=" * 80)
+    for r in results:
+        m = r.get('metrics', {})
+        print(f"Benchmark: {r['benchmark']:<10} | Exp: {r['experiment']:<4} | Mean Ep IoU: {m.get('Mean_Episode_IoU', 'N/A')}% | Cum mIoU: {m.get('Cumulative_mIoU', 'N/A')}% | Code: {r['returncode']}")
+    print("=" * 80)
+    return results
 
 @app.local_entrypoint()
 def main(
